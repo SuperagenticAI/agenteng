@@ -1,0 +1,35 @@
+name: Tool-directory suggestion or correction
+description: Suggest a public tool, corrected link, duplicate merge or discipline tag.
+title: '[Tools] '
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Provide primary public sources. Listing is not an endorsement or a promise
+        of inclusion, response or a review deadline. Do not share credentials,
+        personal contact details or private speaker proposals here.
+  - type: input
+    id: tool
+    attributes:
+      label: Tool name or existing ID
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Suggested addition or correction
+      description: Explain the name, links, duplicate or discipline mapping to change.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Primary public references
+      description: Official product documentation, repository or announcement links.
+    validations:
+      required: true
+  - type: input
+    id: affiliation
+    attributes:
+      label: Relevant affiliation
+      description: Disclose whether you maintain, work for or sponsor the project.

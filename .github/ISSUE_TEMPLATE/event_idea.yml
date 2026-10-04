@@ -1,0 +1,56 @@
+name: Public event idea
+description: Discuss a conference topic or workshop idea you want to share publicly.
+title: '[Event idea] '
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        This issue and its edit history are public. Do not include email addresses,
+        private speaker proposals or confidential material. For a private proposal,
+        contact events@agentengineering.world. Discussion is not an event booking,
+        active call for proposals or promise of organizer action.
+  - type: input
+    id: topic
+    attributes:
+      label: Working topic
+      placeholder: 'Practitioner workshop on evaluating agent memory'
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Audience and problem
+      description: Who would benefit, and what would they learn or work on?
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Possible format
+      options:
+        - Discussion / brainstorming
+        - Practitioner meetup
+        - Workshop
+        - Conference session
+        - Other format described below
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Suggested city or online format
+      description: Optional suggestion; no venue or schedule is implied.
+  - type: textarea
+    id: outline
+    attributes:
+      label: Outline and public references
+      description: Optional context, links and alternatives. No personal contact details.
+  - type: checkboxes
+    id: expectations
+    attributes:
+      label: Public discussion and organizer discretion
+      options:
+        - label: I want this idea shared publicly and have removed private information.
+          required: true
+        - label: Submission, comments and interest do not guarantee review, acceptance or an event.
+          required: true

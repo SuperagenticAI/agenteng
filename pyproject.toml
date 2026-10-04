@@ -1,0 +1,65 @@
+[project]
+name = "agenteng-hq"
+version = "0.1.0"
+description = "AgentEng conferences and events in London and San Francisco: CLI, MCP and A2A for Agent Engineering HQ"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+keywords = ["agent-engineering", "agenteng", "conferences", "london", "san-francisco", "coding-agents", "events", "cli", "mcp", "a2a"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2.12,<3", "click>=8.1,<9", "httpx>=0.28,<1"]
+
+[project.urls]
+Homepage = "https://agentengineering.world"
+Repository = "https://github.com/SuperagenticAI/agenteng"
+Issues = "https://github.com/SuperagenticAI/agenteng/issues"
+Documentation = "https://github.com/SuperagenticAI/agenteng/blob/main/README.md"
+Changelog = "https://github.com/SuperagenticAI/agenteng/blob/main/CHANGELOG.md"
+
+[project.scripts]
+agenteng = "agenteng.cli:main"
+
+[project.optional-dependencies]
+mcp = ["mcp==1.27.1"]
+a2a = ["a2a-sdk[fastapi]==1.1.2", "uvicorn>=0.34,<1"]
+server = ["mcp==1.27.1", "a2a-sdk[fastapi]==1.1.2", "uvicorn>=0.34,<1"]
+rlm = ["pydantic-monty==1.0.0"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "pytest-asyncio>=0.24,<2", "ruff>=0.11,<1", "build>=1,<2"]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agenteng"]
+
+# Use a positive allowlist: private notes and local artifacts must never ship.
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src", "/tests", "/scripts", "/deploy", "/experiments", "/.github",
+  "/docs/ARCHITECTURE.md", "/docs/COMMUNITY.md", "/docs/DATA.md", "/docs/RELEASING.md",
+  "/docs/INTEGRATIONS.md", "/docs/PARTICIPATION.md", "/docs/TOOLS.md",
+  "/README.md", "/CONTRIBUTING.md", "/CODE_OF_CONDUCT.md", "/SECURITY.md",
+  "/CHANGELOG.md", "/LICENSE", "/NOTICE", "/pyproject.toml", "/uv.lock",
+  "/.env.example", "/.gitignore", "/.dockerignore", "/.gcloudignore", "/Dockerfile",
+  "/.editorconfig", "/.gitattributes",
+]
+exclude = ["/.private", "/PLAN.md", "/RLM-DESIGN.md", "/docs/IMPLEMENTATION.md", "**/__pycache__", "**/*.pyc"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

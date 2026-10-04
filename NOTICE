@@ -1,0 +1,14 @@
+Agent Engineering HQ (AgentEng)
+Copyright 2026 Agent Engineering HQ contributors
+
+The software in this project is licensed under the Apache License, Version 2.0.
+Third-party dependencies retain their own licenses.
+
+The software license does not grant rights to third-party biographies, talk
+abstracts, trademarks, photographs, videos or linked recordings. Event content
+is attributed to its original public sources. See docs/DATA.md.
+
+Tool names and public links are attributed to SuperRadar (Superagentic AI).
+AgentEng supplies classifications and normalization; upstream descriptions,
+rankings and images are not copied. Linked projects, trademarks and assets
+retain their own rights. See docs/TOOLS.md for snapshot provenance.

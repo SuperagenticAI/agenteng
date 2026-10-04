@@ -1,0 +1,34 @@
+name: Software feature idea
+description: Suggest an improvement to the open-source software.
+title: '[Feature] '
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Ideas are considered by maintainers, without a promised implementation or timeline.
+        For conference topics, use Public event idea. For private proposals, contact the organizer.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the user and concrete workflow.
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Suggested behavior and alternatives
+    validations:
+      required: true
+  - type: textarea
+    id: contribute
+    attributes:
+      label: Would you like to help?
+      description: Optional; proposing a feature does not require you to implement it.
+  - type: checkboxes
+    id: expectations
+    attributes:
+      label: Expectations
+      options:
+        - label: This suggestion does not create a commitment to implement it or respond by a deadline.
+          required: true

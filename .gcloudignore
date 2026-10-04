@@ -1,0 +1,5 @@
+# Cloud Build uploads must use the same private/local exclusions as Git.
+.gcloudignore
+.git
+.git/**
+#!include:.gitignore
