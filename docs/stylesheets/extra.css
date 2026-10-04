@@ -1,10 +1,93 @@
 :root {
-  --md-primary-fg-color: #111827;
-  --md-accent-fg-color: #a724da;
+  --md-text-font: system-ui;
+  --md-code-font: ui-monospace;
+}
+
+/* Match SuperQode's violet accents, black chrome and lifted code panels. */
+[data-md-color-scheme="default"] {
+  color-scheme: light;
+  --md-primary-fg-color: #ffffff;
+  --md-primary-fg-color--light: #ffffff;
+  --md-primary-fg-color--dark: #f8fafc;
+  --md-primary-bg-color: #111827;
+  --md-primary-bg-color--light: #334155;
+  --md-accent-fg-color: #6d28d9;
+  --md-accent-fg-color--transparent: rgba(109, 40, 217, 0.12);
+  --md-typeset-a-color: #6d28d9;
+  --md-default-bg-color: #ffffff;
+  --md-code-bg-color: #f5f3ff;
+  --md-footer-bg-color: #111827;
+  --md-footer-bg-color--dark: #020617;
+  --agenteng-header-border: rgba(15, 23, 42, 0.1);
 }
 
 [data-md-color-scheme="slate"] {
-  --md-accent-fg-color: #df72f6;
+  color-scheme: dark;
+  --md-primary-fg-color: #000000;
+  --md-primary-fg-color--light: #14141a;
+  --md-primary-fg-color--dark: #000000;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: #dbeafe;
+  --md-accent-fg-color: #a78bfa;
+  --md-accent-fg-color--transparent: rgba(167, 139, 250, 0.14);
+  --md-typeset-a-color: #a78bfa;
+  --md-default-bg-color: #0a0a0c;
+  --md-code-bg-color: #14161f;
+  --md-code-fg-color: #e7e7ea;
+  --md-footer-bg-color: #000000;
+  --md-footer-bg-color--dark: #000000;
+  --agenteng-header-border: rgba(255, 255, 255, 0.07);
+
+  --md-code-hl-comment-color: #969dad;
+  --md-code-hl-keyword-color: #c792ea;
+  --md-code-hl-string-color: #c3e88d;
+  --md-code-hl-number-color: #f78c6c;
+  --md-code-hl-function-color: #82aaff;
+  --md-code-hl-constant-color: #ff5572;
+  --md-code-hl-name-color: #e7e7ea;
+  --md-code-hl-operator-color: #89ddff;
+  --md-code-hl-punctuation-color: #89ddff;
+  --md-code-hl-variable-color: #f07178;
+  --md-code-hl-special-color: #ffcb6b;
+  --md-code-hl-color: rgba(167, 139, 250, 0.18);
+}
+
+.md-header {
+  border-bottom: 1px solid var(--agenteng-header-border);
+}
+
+.md-typeset {
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.md-typeset h1,
+.md-typeset h2 {
+  font-weight: 700;
+}
+
+.md-typeset h2 {
+  margin-top: 2.2em;
+}
+
+.md-typeset code {
+  font-size: 0.92em;
+  border-radius: 0.2rem;
+}
+
+.md-typeset pre > code {
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+.md-typeset table:not([class]) {
+  display: table;
+  width: 100%;
+  font-size: 0.74rem;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-accent-fg-color--transparent);
 }
 
 .md-header__button.md-logo img {

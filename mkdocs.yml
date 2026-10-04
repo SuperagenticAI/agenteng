@@ -12,18 +12,18 @@ theme:
   favicon: assets/favicon.png
   font: false
   palette:
-    - scheme: default
-      primary: black
-      accent: purple
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
     - scheme: slate
-      primary: black
-      accent: purple
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
   features:
     - navigation.top
     - content.code.copy
@@ -37,7 +37,9 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      anchor_linenums: true
+      pygments_lang_class: true
   - pymdownx.superfences
 
 extra_css:
