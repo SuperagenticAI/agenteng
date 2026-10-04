@@ -1,0 +1,128 @@
+name: Publish
+
+"on":
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag to retry, for example v0.1.0'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# Serialize reruns of each tag; never cancel an in-progress PyPI upload.
+concurrency:
+  group: publish-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    if: github.repository == 'SuperagenticAI/agenteng'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.release.outputs.tag }}
+      commit: ${{ steps.release.outputs.commit }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Resolve an existing version tag to an immutable commit
+        id: release
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, re, sys
+          tag = os.environ['RELEASE_TAG']
+          pattern = r'v[0-9]+\.[0-9]+\.[0-9]+(?:(?:a|b|rc)[0-9]+)?(?:\.post[0-9]+)?(?:\.dev[0-9]+)?'
+          if not re.fullmatch(pattern, tag):
+              sys.exit('Use a version tag such as v0.1.0 or v0.2.0rc1.')
+          PY
+          commit=$(git rev-parse --verify "refs/tags/${RELEASE_TAG}^{commit}")
+          printf 'tag=%s\ncommit=%s\n' "$RELEASE_TAG" "$commit" >> "$GITHUB_OUTPUT"
+
+  verify:
+    needs: resolve
+    uses: ./.github/workflows/ci.yml
+    with:
+      source_ref: ${{ needs.resolve.outputs.commit }}
+      release_tag: ${{ needs.resolve.outputs.tag }}
+
+  publish:
+    needs: [resolve, verify]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Publish the exact Python 3.12 artifacts verified by CI; do not rebuild
+      # in the credentialed job. Both Python test jobs must have succeeded.
+      - uses: actions/download-artifact@v4
+        with:
+          name: agenteng-python-3.12
+          path: dist
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.8.0'
+      - name: Check the release tag still identifies the verified commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.resolve.outputs.tag }}
+          RELEASE_COMMIT: ${{ needs.resolve.outputs.commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_commit=$(gh api "repos/${GH_REPO}/commits/${RELEASE_TAG}" --jq '.sha')
+          if [ "$remote_commit" != "$RELEASE_COMMIT" ]; then
+            echo 'Release tag moved after verification; refusing to publish.' >&2
+            exit 1
+          fi
+      - name: Publish verified distributions to PyPI
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$UV_PUBLISH_TOKEN" ]; then
+            echo 'Configure the repository secret PYPI_API_TOKEN with access to agenteng-hq.' >&2
+            exit 1
+          fi
+          uv publish --trusted-publishing never --check-url https://pypi.org/simple/ dist/*.whl dist/*.tar.gz
+      - name: Create or update the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.resolve.outputs.tag }}
+          RELEASE_COMMIT: ${{ needs.resolve.outputs.commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Check tag identity again before attaching the verified files.
+          remote_commit=$(gh api "repos/${GH_REPO}/commits/${RELEASE_TAG}" --jq '.sha')
+          if [ "$remote_commit" != "$RELEASE_COMMIT" ]; then
+            echo 'Release tag moved after verification; refusing to attach artifacts.' >&2
+            exit 1
+          fi
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          distributions = sorted([*Path('dist').glob('*.whl'), *Path('dist').glob('*.tar.gz')])
+          Path('dist/SHA256SUMS').write_text(''.join(
+              f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}\n' for p in distributions
+          ))
+          PY
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" dist/*.whl dist/*.tar.gz dist/SHA256SUMS --clobber
+          else
+            prerelease=()
+            if [[ "$RELEASE_TAG" =~ (a|b|rc)[0-9]+|\.dev[0-9]+ ]]; then
+              prerelease=(--prerelease)
+            fi
+            gh release create "$RELEASE_TAG" dist/*.whl dist/*.tar.gz dist/SHA256SUMS \
+              --verify-tag --title "AgentEng ${RELEASE_TAG#v}" --generate-notes "${prerelease[@]}"
+          fi

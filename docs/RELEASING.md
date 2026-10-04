@@ -2,6 +2,57 @@
 
 Release artifacts should contain only public source, documentation, event data and tool-directory metadata. Keep credentials, private notes, proposals, local environments and generated files out of Git. The installer source is versioned at `src/agenteng/data/install.sh`; generated release files live under ignored `dist/`.
 
+## Tag-triggered PyPI publishing
+
+`.github/workflows/publish.yml` follows the SuperQode release pattern: pushing a
+`v*` version tag runs the reusable CI workflow, publishes the verified wheel and
+source archive to PyPI, and creates or updates the matching GitHub release with
+those files and `SHA256SUMS`. Publishing waits for both Python 3.12 and 3.13 jobs,
+including the full test suite, lint/format, archive audit and core-only wheel check.
+The credentialed job downloads the already-tested Python 3.12 artifacts instead
+of rebuilding them.
+
+One-time setup: in the `SuperagenticAI/agenteng` repository's **Settings → Secrets
+and variables → Actions**, add `PYPI_API_TOKEN` containing a PyPI API token
+that can publish `agenteng-hq`. The workflow maps it to `UV_PUBLISH_TOKEN`, matching
+SuperQode's setup. An organization secret can also be used if this repository is
+authorized to access it. A token scoped only to `superqode` cannot publish another
+project. Never put the token in source, logs or an issue. This workflow uses token
+authentication, not PyPI Trusted Publishing/OIDC.
+
+Before tagging, update `pyproject.toml`, `src/agenteng/__init__.py`, the project
+version in `uv.lock`, installer `VERSION` and its default versioned release URL.
+Update the changelog and release-facing documentation. Check locally:
+
+```sh
+uv run --frozen python scripts/check-release-metadata.py --tag v0.1.0
+```
+
+Commit and push the workflow and version changes first. Then tag the intended
+commit and push that tag:
+
+```sh
+git tag -a v0.1.0 -m 'AgentEng 0.1.0'
+git push origin v0.1.0
+```
+
+The tag must exactly match `v` plus the package version. Canonical tags such as
+`v0.2.0rc1` work when all version files match; prerelease/dev tags produce a GitHub
+prerelease. Normal branch pushes and pull requests run CI without publishing.
+Forks do not publish through this workflow.
+
+For a retry, use **Actions → Publish → Run workflow**, supplying the existing
+tag. The tag is resolved to an immutable commit before verification and rechecked
+before publishing. `uv publish --check-url` checks distributions already on PyPI,
+allowing a partially completed release to be retried; it does not overwrite a
+published version. Do not move an already-published tag. Use a new version for
+changed release bytes.
+
+The workflow does not deploy the server or publish website assets. The staged
+installer, wheel, checksum and discovery feeds remain a separate website release.
+PyPI availability should only be announced after the Publish run succeeds. See
+[uv publishing documentation](https://docs.astral.sh/uv/guides/package/).
+
 Before a release:
 
 ```sh

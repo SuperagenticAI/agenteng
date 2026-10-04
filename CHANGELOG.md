@@ -4,6 +4,8 @@
 
 ### Added
 
+- Version-tag PyPI publishing and GitHub releases using verified CI artifacts, with release metadata validation and existing-tag retry support.
+
 - Offline tool directory: 456 listings covering 461 attributed source entries across twelve disciplines; CLI/MCP/A2A list, search, filters, aliases and pagination, crawlable pages/feed, and validated maintainer import.
 
 - Public event catalogue with source attribution, snapshot freshness and timezone-aware event states.

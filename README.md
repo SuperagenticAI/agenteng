@@ -162,7 +162,7 @@ The website is the event-data source. Updating its public catalogue requires a w
 node scripts/export-website.mjs /path/to/agent-engineering-summit
 ```
 
-Exports record their source revision/content hash and publication time. Changed event content requires a refreshed build; no background synchronization is claimed. See [release verification](docs/RELEASING.md) and [CHANGELOG.md](CHANGELOG.md).
+Exports record their source revision/content hash and publication time. Changed event content requires a refreshed build; no background synchronization is claimed. Version tags trigger verified PyPI publishing and a GitHub release once the repository publishing secret is configured. See [release verification and publisher setup](docs/RELEASING.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
