@@ -14,7 +14,7 @@ of rebuilding them.
 
 One-time setup: in the `SuperagenticAI/agenteng` repository's **Settings → Secrets
 and variables → Actions**, add `PYPI_API_TOKEN` containing a PyPI API token
-that can publish `agenteng-hq`. The workflow maps it to `UV_PUBLISH_TOKEN`, matching
+that can publish `agenteng`. The workflow maps it to `UV_PUBLISH_TOKEN`, matching
 SuperQode's setup. An organization secret can also be used if this repository is
 authorized to access it. A token scoped only to `superqode` cannot publish another
 project. Never put the token in source, logs or an issue. This workflow uses token
@@ -71,10 +71,35 @@ Keep `pyproject.toml`, `agenteng.__version__`, the changelog and installer `VERS
 
 The archive uses an explicit file allowlist, and the release check inspects both Git candidates and packaged files. Neither `.gitignore` nor a pattern scan can guarantee the absence of secrets; review the final diff and artifact contents as well. If a real secret was committed or published, removing the file does not revoke it: rotate the credential and address the exposed history.
 
-Publish the versioned wheel and `SHA256SUMS` together, then publish the installer on the official website. Checksums identify the released bytes but are not independent signatures. The installer must not point at a missing or unverified release. Package registry publication is a separate maintainer action; do not claim that `agenteng-hq` is on PyPI before it is available.
+Publish the versioned wheel and `SHA256SUMS` together, then publish the installer on the official website. Checksums identify the released bytes but are not independent signatures. The installer must not point at a missing or unverified release. Package registry publication is a separate maintainer action; do not claim that `agenteng` is on PyPI before it is available.
 
 Staging also creates `agenteng-agent-guide.txt`, `agenteng-events.json` and `agenteng-tools.json` for the website. The feed is a dated snapshot, not live availability. Publish and link the guide only after verifying the referenced agent host; add its link to the website's existing `llms.txt` without replacing that file's established event/organizer facts. Rebuild the feeds whenever the public event catalogue or tool directory changes. No staging command edits or deploys the website.
 
 The intended GitHub repository is `SuperagenticAI/agenteng`; package and documentation links use that address. For GitHub publication, enable private vulnerability reporting, set branch protection requiring CI and review, and give release credentials only to approved maintainer workflows. Avoid workflows that execute untrusted pull-request code with write credentials. The provided CI workflow has read-only repository permissions and no deployment steps.
 
-See [deployment](../deploy/README.md) for hosting configuration and post-deployment checks. This document does not promise a release schedule or maintenance SLA.
+See [deployment](https://github.com/SuperagenticAI/agenteng/blob/main/deploy/README.md) for hosting configuration and post-deployment checks. This document does not promise a release schedule or maintenance SLA.
+
+## Documentation on GitHub Pages
+
+Public documentation is written in Markdown under `docs/` and built with MkDocs
+Material, using the event website's logo and favicon. The intended site URL is
+`https://superagenticai.github.io/agenteng/`. Preview and verify it locally:
+
+```sh
+uv venv .venv-docs --python 3.12
+uv pip install --python .venv-docs/bin/python -r requirements-docs.txt
+.venv-docs/bin/python -m mkdocs serve
+.venv-docs/bin/python -m mkdocs build --strict
+```
+
+In the repository's **Settings → Pages → Build and deployment**, select
+**GitHub Actions** as the source. After the changes are pushed to `main`, the
+Documentation workflow builds and publishes the site. Pull requests build it
+without deploying; **Actions → Documentation → Run workflow** on `main` can retry
+publication. No separate publishing token or `gh-pages` branch is required.
+See [GitHub's Pages workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+
+Keep the site small: update the existing guides and quick start before adding
+pages. `mkdocs.yml` explicitly includes reviewed public documents and brand assets.
+Add any new public page to both the include list and navigation. Generated
+`site/` and the documentation environment are ignored; do not commit them.

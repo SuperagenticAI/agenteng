@@ -2,7 +2,13 @@
 
 ## Unreleased
 
+### Changed
+
+- Use `agenteng` as the Python package distribution name, matching the CLI and module.
+
 ### Added
+
+- Minimal Markdown documentation with the official logo and favicon, MkDocs Material preview and GitHub Pages publishing.
 
 - Version-tag PyPI publishing and GitHub releases using verified CI artifacts, with release metadata validation and existing-tag retry support.
 

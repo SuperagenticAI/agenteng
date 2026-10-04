@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--output", type=Path, default=root / "dist" / "website-public")
 args = parser.parse_args()
 
-wheel = root / "dist" / f"agenteng_hq-{__version__}-py3-none-any.whl"
+wheel = root / "dist" / f"agenteng-{__version__}-py3-none-any.whl"
 if not wheel.is_file():
     parser.error("Build the release wheel first: uv build")
 installer = root / "src/agenteng/data/install.sh"

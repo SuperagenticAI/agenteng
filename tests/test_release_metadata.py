@@ -54,12 +54,12 @@ def test_mismatched_or_unsafe_tags_are_rejected(release_root, tag):
         ("src/agenteng/__init__.py", '__version__ = "0.1.0"', '__version__ = "0.2.0"'),
         (
             "uv.lock",
-            'name = "agenteng-hq"\nversion = "0.1.0"',
-            'name = "agenteng-hq"\nversion = "0.2.0"',
+            'name = "agenteng"\nversion = "0.1.0"',
+            'name = "agenteng"\nversion = "0.2.0"',
         ),
         ("src/agenteng/data/install.sh", "VERSION=0.1.0", "VERSION=0.2.0"),
         ("src/agenteng/data/install.sh", "releases/0.1.0", "releases/0.2.0"),
-        ("pyproject.toml", 'name = "agenteng-hq"', 'name = "wrong-package"'),
+        ("pyproject.toml", 'name = "agenteng"', 'name = "wrong-package"'),
         ("pyproject.toml", 'agenteng = "agenteng.cli:main"', 'agenteng = "wrong:main"'),
     ],
 )

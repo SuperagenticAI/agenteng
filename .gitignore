@@ -1,5 +1,6 @@
 # Local environments, dependencies and Python caches
 .venv/
+.venv-docs/
 venv/
 env/
 __pypackages__/
@@ -16,6 +17,7 @@ __pycache__/
 
 # Build/release output (the installer source stays in src/agenteng/data)
 build/
+/site/
 dist/
 wheelhouse/
 .coverage

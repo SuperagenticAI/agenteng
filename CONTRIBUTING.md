@@ -21,6 +21,13 @@ Keep changes focused. Explain the user-visible behavior and the validation in yo
 
 Runtime code lives in `src/agenteng`. Public catalogue export is in `scripts/export-website.mjs`; it requires a checkout of the website with TypeScript installed. Most contributors can use the bundled catalogue without that checkout. Changes to event facts should cite the original public page; do not invent dates, prices or availability. Report content corrections privately to the organizer if you cannot update the source website.
 
+## Documentation
+
+Edit the existing Markdown guides under `docs/`. The documentation site uses
+MkDocs Material; its logo and favicon match the event website. See
+[local preview and GitHub Pages setup](docs/RELEASING.md#documentation-on-github-pages).
+Run a strict documentation build before submitting documentation changes.
+
 ## Contribution boundaries
 
 - Keep lookup and `auto` free of server-side model calls. Optional inference stays disabled by default.

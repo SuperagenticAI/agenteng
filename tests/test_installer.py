@@ -26,7 +26,7 @@ def test_installer_rejects_corrupt_artifact_before_install(tmp_path):
     tools.mkdir()
     fixture = tmp_path / "release"
     fixture.mkdir()
-    wheel = "agenteng_hq-0.1.0-py3-none-any.whl"
+    wheel = "agenteng-0.1.0-py3-none-any.whl"
     (fixture / wheel).write_bytes(b"corrupt artifact")
     (fixture / "SHA256SUMS").write_text("0" * 64 + "  " + wheel + "\n")
     fake = tools / "curl"

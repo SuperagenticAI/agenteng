@@ -15,8 +15,8 @@ def release_metadata_errors(root: Path, tag: str | None = None) -> list[str]:
     project = tomllib.loads((root / "pyproject.toml").read_text())["project"]
     version = project["version"]
     errors = []
-    if project["name"] != "agenteng-hq":
-        errors.append("Package name must be agenteng-hq.")
+    if project["name"] != "agenteng":
+        errors.append("Package name must be agenteng.")
     if not isinstance(version, str) or not RELEASE_TAG.fullmatch("v" + version):
         errors.append("Package version must be a canonical three-component release version.")
     if tag is not None and (not RELEASE_TAG.fullmatch(tag) or tag != "v" + version):
@@ -36,7 +36,7 @@ def release_metadata_errors(root: Path, tag: str | None = None) -> list[str]:
     if versions != [version]:
         errors.append("Package __version__ differs from project.version.")
     lock = tomllib.loads((root / "uv.lock").read_text())
-    if [p.get("version") for p in lock["package"] if p["name"] == "agenteng-hq"] != [version]:
+    if [p.get("version") for p in lock["package"] if p["name"] == "agenteng"] != [version]:
         errors.append("uv.lock project version differs from project.version.")
     installer = (root / "src/agenteng/data/install.sh").read_text()
     if re.findall(r"^VERSION=(\S+)$", installer, re.MULTILINE) != [version]:

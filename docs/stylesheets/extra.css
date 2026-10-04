@@ -1,0 +1,18 @@
+:root {
+  --md-primary-fg-color: #111827;
+  --md-accent-fg-color: #a724da;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-accent-fg-color: #df72f6;
+}
+
+.md-header__button.md-logo img {
+  width: 2rem;
+  height: 2rem;
+}
+
+.agenteng-logo {
+  width: 7rem;
+  height: 7rem;
+}

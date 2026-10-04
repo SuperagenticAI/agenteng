@@ -1,0 +1,3 @@
+# Documentation tooling only; not required by the CLI, MCP or A2A runtime.
+mkdocs==1.6.1
+mkdocs-material==9.7.1

@@ -20,7 +20,7 @@ from packaging.requirements import Requirement
 from agenteng import __version__
 
 root = Path(__file__).resolve().parents[1]
-wheel = root / "dist" / f"agenteng_hq-{__version__}-py3-none-any.whl"
+wheel = root / "dist" / f"agenteng-{__version__}-py3-none-any.whl"
 if not wheel.exists():
     raise SystemExit("Build the release wheel first.")
 with tempfile.TemporaryDirectory(prefix="agenteng-release-") as temporary:
@@ -77,9 +77,12 @@ with tempfile.TemporaryDirectory(prefix="agenteng-release-") as temporary:
             "-c",
             """
 import importlib.util
+from importlib.metadata import metadata, version
 assert all(importlib.util.find_spec(name) is None for name in ['mcp', 'a2a', 'pydantic_monty'])
 import agenteng
 assert agenteng.__version__ == __import__("sys").argv[1]
+assert metadata("agenteng")["Name"] == "agenteng"
+assert version("agenteng") == agenteng.__version__
 """,
             __version__,
         ],

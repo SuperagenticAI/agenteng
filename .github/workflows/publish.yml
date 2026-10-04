@@ -89,7 +89,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$UV_PUBLISH_TOKEN" ]; then
-            echo 'Configure the repository secret PYPI_API_TOKEN with access to agenteng-hq.' >&2
+            echo 'Configure the repository secret PYPI_API_TOKEN with access to agenteng.' >&2
             exit 1
           fi
           uv publish --trusted-publishing never --check-url https://pypi.org/simple/ dist/*.whl dist/*.tar.gz

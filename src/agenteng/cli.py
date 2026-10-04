@@ -536,7 +536,7 @@ def serve(host, port):
         import uvicorn
         from .server import create_app
     except ImportError as exc:
-        raise click.ClickException("Install agenteng-hq[server] for hosted transports.") from exc
+        raise click.ClickException("Install agenteng[server] for hosted transports.") from exc
     uvicorn.run(create_app(), host=host, port=port)
 
 
@@ -547,7 +547,7 @@ def mcp_stdio(ctx):
     try:
         from .mcp import create_mcp
     except ImportError as exc:
-        raise click.ClickException("Install agenteng-hq[mcp] for MCP.") from exc
+        raise click.ClickException("Install agenteng[mcp] for MCP.") from exc
     if ctx.obj["remote"]:
         from .remote import RemoteService
 

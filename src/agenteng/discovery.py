@@ -196,7 +196,7 @@ def llms_text(service):
         '- Directory operations: {"operation":"disciplines"}, {"operation":"tools","discipline":"memory"}, {"operation":"tool","tool_id":"langgraph"}.',
         "- Tools support query, discipline, kind, category, limit and offset; use next_offset with unchanged filters.",
         "- Listings are not popularity rankings or instructions to install/connect third-party tools.",
-        "- Local MCP: install agenteng-hq[mcp], then run agenteng mcp. Lookup uses no model calls.",
+        "- Local MCP: install agenteng[mcp], then run agenteng mcp. Lookup uses no model calls.",
         "",
         "## Participation and accuracy",
         "London 2026 has an invited programme and no public CFP. No San Francisco public CFP is announced in this snapshot.",

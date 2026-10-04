@@ -13,7 +13,7 @@ if { [ -e "$BIN_DIR/agenteng" ] || [ -L "$BIN_DIR/agenteng" ]; } && [ "$(readlin
 fi
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT HUP INT TERM
-WHEEL="agenteng_hq-${VERSION}-py3-none-any.whl"
+WHEEL="agenteng-${VERSION}-py3-none-any.whl"
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' "$RELEASE_BASE/$WHEEL" -o "$TMP_DIR/$WHEEL"
 curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' "$RELEASE_BASE/SHA256SUMS" -o "$TMP_DIR/SHA256SUMS"
 "$PYTHON" - "$TMP_DIR" "$WHEEL" <<'PY'

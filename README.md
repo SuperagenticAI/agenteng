@@ -1,10 +1,12 @@
+<img src="https://raw.githubusercontent.com/SuperagenticAI/agenteng/main/docs/assets/logo.png" alt="Agent Engineering HQ" width="96" height="96">
+
 # AgentEng · Agent Engineering HQ
 
 Find the Agent Engineering Conference and Agent Engineering HQ events in **London and San Francisco**, explore the speakers, and participate from your coding agent or terminal.
 
 AgentEng provides an offline-capable Python CLI, a single-tool MCP server and an A2A 1.0 agent over one public catalogue. Default requests use **zero server-side model calls**. Optional model synthesis and bounded RLM are included, disabled by default.
 
-[Source](https://github.com/SuperagenticAI/agenteng) · [Issues](https://github.com/SuperagenticAI/agenteng/issues) · [Getting started](#getting-started) · [Coding-agent integrations](docs/INTEGRATIONS.md) · [Participation](docs/PARTICIPATION.md) · [Contribute](CONTRIBUTING.md) · [Security](SECURITY.md)
+[Source](https://github.com/SuperagenticAI/agenteng) · [Issues](https://github.com/SuperagenticAI/agenteng/issues) · [Documentation](docs/index.md) · [Getting started](#getting-started) · [Coding-agent integrations](docs/INTEGRATIONS.md) · [Participation](docs/PARTICIPATION.md) · [Contribute](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 ## What it does
 

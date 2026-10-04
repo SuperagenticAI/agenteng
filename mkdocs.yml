@@ -1,0 +1,81 @@
+site_name: AgentEng
+site_url: https://superagenticai.github.io/agenteng/
+site_description: Agent Engineering HQ events in London and San Francisco, from your terminal or coding agent.
+site_author: Agent Engineering HQ
+repo_name: SuperagenticAI/agenteng
+repo_url: https://github.com/SuperagenticAI/agenteng
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.png
+  font: false
+  palette:
+    - scheme: default
+      primary: black
+      accent: purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: black
+      accent: purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+
+plugins:
+  - search
+
+markdown_extensions:
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+extra_css:
+  - stylesheets/extra.css
+
+# Publish only reviewed public guides and brand assets, even if other files
+# happen to exist in the local docs directory. Keep Material's bundled CSS/JS.
+exclude_docs: |
+  **
+  !/index.md
+  !/INTEGRATIONS.md
+  !/TOOLS.md
+  !/PARTICIPATION.md
+  !/COMMUNITY.md
+  !/DATA.md
+  !/ARCHITECTURE.md
+  !/RELEASING.md
+  !/assets/
+  !/assets/logo.png
+  !/assets/favicon.png
+  !/assets/stylesheets/
+  !/assets/stylesheets/**
+  !/assets/javascripts/
+  !/assets/javascripts/**
+  !/stylesheets/
+  !/stylesheets/extra.css
+
+nav:
+  - Quick start: index.md
+  - MCP & A2A: INTEGRATIONS.md
+  - Tool directory: TOOLS.md
+  - Participation: PARTICIPATION.md
+  - Reference:
+      - Community: COMMUNITY.md
+      - Data & attribution: DATA.md
+      - Architecture & optional RLM: ARCHITECTURE.md
+      - Releases & documentation: RELEASING.md
+  - Event website: https://agentengineering.world
+
+extra:
+  generator: false

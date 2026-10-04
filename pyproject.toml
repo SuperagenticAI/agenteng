@@ -1,5 +1,5 @@
 [project]
-name = "agenteng-hq"
+name = "agenteng"
 version = "0.1.0"
 description = "AgentEng conferences and events in London and San Francisco: CLI, MCP and A2A for Agent Engineering HQ"
 readme = "README.md"
@@ -21,7 +21,7 @@ dependencies = ["pydantic>=2.12,<3", "click>=8.1,<9", "httpx>=0.28,<1"]
 Homepage = "https://agentengineering.world"
 Repository = "https://github.com/SuperagenticAI/agenteng"
 Issues = "https://github.com/SuperagenticAI/agenteng/issues"
-Documentation = "https://github.com/SuperagenticAI/agenteng/blob/main/README.md"
+Documentation = "https://superagenticai.github.io/agenteng/"
 Changelog = "https://github.com/SuperagenticAI/agenteng/blob/main/CHANGELOG.md"
 
 [project.scripts]
@@ -49,6 +49,8 @@ include = [
   "/src", "/tests", "/scripts", "/deploy", "/experiments", "/.github",
   "/docs/ARCHITECTURE.md", "/docs/COMMUNITY.md", "/docs/DATA.md", "/docs/RELEASING.md",
   "/docs/INTEGRATIONS.md", "/docs/PARTICIPATION.md", "/docs/TOOLS.md",
+  "/docs/index.md", "/docs/assets/logo.png", "/docs/assets/favicon.png",
+  "/docs/stylesheets/extra.css", "/mkdocs.yml", "/requirements-docs.txt",
   "/README.md", "/CONTRIBUTING.md", "/CODE_OF_CONDUCT.md", "/SECURITY.md",
   "/CHANGELOG.md", "/LICENSE", "/NOTICE", "/pyproject.toml", "/uv.lock",
   "/.env.example", "/.gitignore", "/.dockerignore", "/.gcloudignore", "/Dockerfile",

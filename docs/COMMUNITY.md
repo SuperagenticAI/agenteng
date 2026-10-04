@@ -16,7 +16,7 @@ Describe the problem practitioners face, the audience, a possible topic/format a
 
 ## Software feedback
 
-Use the bug or feature issue form for CLI, catalogue, MCP/A2A and documentation feedback. Private security reports follow [SECURITY.md](../SECURITY.md). Code contributions follow [CONTRIBUTING.md](../CONTRIBUTING.md).
+Use the bug or feature issue form for CLI, catalogue, MCP/A2A and documentation feedback. Private security reports follow [SECURITY.md](https://github.com/SuperagenticAI/agenteng/blob/main/SECURITY.md). Code contributions follow [CONTRIBUTING.md](https://github.com/SuperagenticAI/agenteng/blob/main/CONTRIBUTING.md).
 
 ## CLI and agent participation
 
