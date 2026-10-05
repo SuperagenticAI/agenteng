@@ -14,6 +14,7 @@ from starlette.responses import HTMLResponse, JSONResponse, Response
 from fastapi import Query, Path as PathParameter
 from typing import Annotated, Literal
 
+from . import __version__
 from .a2a import add_a2a
 from .auth import bearer
 from .mcp import create_mcp
@@ -78,7 +79,7 @@ def create_app(service: Service | None = None):
         async with mcp.session_manager.run():
             yield
 
-    app = FastAPI(title="Agent Engineering HQ", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="Agent Engineering HQ", version=__version__, lifespan=lifespan)
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request, exc):

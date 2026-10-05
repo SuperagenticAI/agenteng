@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Align the initial package and installer release to `0.0.1`; derive the HTTP API version from package metadata and show the expected tag in release-check failures.
+
 - Use `agenteng` as the Python package distribution name, matching the CLI and module.
 
 ### Added

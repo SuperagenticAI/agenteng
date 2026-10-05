@@ -53,7 +53,7 @@ def deployment(tmp_path):
         "DEPLOY_PROJECT": "example-project",
         "DEPLOY_REGION": "europe-west1",
         "DEPLOY_SERVICE": "agenteng-hq",
-        "DEPLOY_IMAGE": "europe-west1-docker.pkg.dev/example-project/cloud-run-source-deploy/agenteng-hq:v0.1.0",
+        "DEPLOY_IMAGE": "europe-west1-docker.pkg.dev/example-project/cloud-run-source-deploy/agenteng-hq:v0.0.1",
         "DEPLOY_RUNTIME_ACCOUNT": "agenteng-runtime@example-project.iam.gserviceaccount.com",
         "DEPLOY_PUBLIC_URL": "",
         "DEPLOY_URL_FILE": str(tmp_path / "deployed-url"),

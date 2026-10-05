@@ -1,8 +1,8 @@
 #!/bin/sh
 # Install a checksum-verified AgentEng wheel into a user-owned virtual environment.
 set -eu
-VERSION=0.1.0
-RELEASE_BASE=${AGENTENG_RELEASE_BASE:-https://agentengineering.world/releases/0.1.0}
+VERSION=0.0.1
+RELEASE_BASE=${AGENTENG_RELEASE_BASE:-https://agentengineering.world/releases/0.0.1}
 case "$RELEASE_BASE" in https://*) ;; *) echo 'Release URL must use HTTPS.' >&2; exit 1;; esac
 PYTHON=${AGENTENG_PYTHON:-python3}
 "$PYTHON" -c 'import sys; sys.version_info >= (3,12) or sys.exit("AgentEng requires Python 3.12+")'

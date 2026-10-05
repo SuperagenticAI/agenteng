@@ -20,7 +20,7 @@ def release_metadata_errors(root: Path, tag: str | None = None) -> list[str]:
     if not isinstance(version, str) or not RELEASE_TAG.fullmatch("v" + version):
         errors.append("Package version must be a canonical three-component release version.")
     if tag is not None and (not RELEASE_TAG.fullmatch(tag) or tag != "v" + version):
-        errors.append("Release tag must exactly match v + project.version.")
+        errors.append(f"Release tag must exactly match v + project.version (expected v{version}).")
     if project.get("scripts", {}).get("agenteng") != "agenteng.cli:main":
         errors.append("Unexpected agenteng CLI entry point.")
     module = ast.parse((root / "src/agenteng/__init__.py").read_text())

@@ -127,7 +127,7 @@ with permission to publish the `agenteng` project. See the
 [release guide](../docs/RELEASING.md) for token setup and version updates.
 
 After all the setup above and the source changes are pushed, open GitHub
-**Releases → Draft a new release → Choose a tag**. Create `v0.1.0`, targeting the
+**Releases → Draft a new release → Choose a tag**. Create `v0.0.1`, targeting the
 reviewed `main` commit, and publish the release. This is the version currently
 declared in the source. If that version already exists on PyPI, use a new version
 and update all release metadata before creating its matching tag.
@@ -206,7 +206,7 @@ uv run python scripts/stage-release.py
 # Copy dist/website-public contents into the website's public/ directory and publish it.
 ```
 
-That publishes `/install.sh`, `/releases/0.1.0/agenteng-0.1.0-py3-none-any.whl` and its `SHA256SUMS`. Integrate the staged files into your website deployment pipeline. The service also serves the same installer, which downloads its versioned release from the main website. Test the three public URLs before announcing installation. The script uses HTTPS and verifies the wheel checksum before creating a user-owned Python environment; it needs Python 3.12+, curl, venv and pip. It refuses to replace an unrelated `agenteng` executable.
+That publishes `/install.sh`, `/releases/0.0.1/agenteng-0.0.1-py3-none-any.whl` and its `SHA256SUMS`. Integrate the staged files into your website deployment pipeline. The service also serves the same installer, which downloads its versioned release from the main website. Test the three public URLs before announcing installation. The script uses HTTPS and verifies the wheel checksum before creating a user-owned Python environment; it needs Python 3.12+, curl, venv and pip. It refuses to replace an unrelated `agenteng` executable.
 
 Refresh `catalogue.json` from the website sources and rebuild whenever public event content changes. The exporter fails on known inline/calendar metadata drift, rather than silently reusing it. The API reports the source commit/hash, export time and staleness. Catalogue refresh is a build-time action; there is no polling job or private database connection in this release.
 

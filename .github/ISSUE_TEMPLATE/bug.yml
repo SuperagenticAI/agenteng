@@ -11,7 +11,7 @@ body:
     id: version
     attributes:
       label: AgentEng version and environment
-      placeholder: '0.1.0; Python 3.12; Linux; CLI / MCP / A2A'
+      placeholder: '0.0.1; Python 3.12; Linux; CLI / MCP / A2A'
     validations:
       required: true
   - type: textarea
