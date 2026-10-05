@@ -33,7 +33,7 @@ curl -fsSL https://agentengineering.world/install.sh | sh
 uv tool install --upgrade 'agenteng[server]'
 ```
 
-Pin a version with `AGENTENG_VERSION=0.0.4`, change extras with `AGENTENG_EXTRAS=mcp`, or re-run the installer to upgrade. The installer bootstraps [uv](https://docs.astral.sh/uv/) when needed, never uses sudo, and falls back to a user virtualenv with pip if uv tool install fails.
+Pin a version with `AGENTENG_VERSION=0.0.5`, change extras with `AGENTENG_EXTRAS=mcp`, or re-run the installer to upgrade. The installer bootstraps [uv](https://docs.astral.sh/uv/) when needed, never uses sudo, and falls back to a user virtualenv with pip if uv tool install fails.
 
 Then try (`ae` is a short alias for `agenteng`):
 
@@ -78,7 +78,7 @@ uv run --frozen agenteng participate
 uv run --frozen agenteng plan agenteng-london-2026 --interest evaluation --format ics --output agenda.ics
 ```
 
-This source tracks the **0.0.4 alpha** release. The published package is on [PyPI](https://pypi.org/project/agenteng/).
+This source tracks the **0.0.5 alpha** release. The published package is on [PyPI](https://pypi.org/project/agenteng/).
 
 The CLI uses its bundled catalogue offline. Put global options before the command:
 

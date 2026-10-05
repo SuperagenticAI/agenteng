@@ -1,13 +1,14 @@
 # Changelog
 
-## Unreleased
+## 0.0.5 - 2026-10-05
 
 ### Added
 
-- Human-readable Rich cards and tables on a TTY, with `--json` / `AGENTENG_OUTPUT=json` / piped stdout keeping the shared Result JSON contract for agents.
+- Native `ae` console-script alias alongside `agenteng`.
+- Rich human-readable TTY output (cards and tables), with auto JSON for agents via `--json`, `AGENTENG_OUTPUT=json`, or piped stdout.
 - Interactive `ae` / `agenteng` menu (questionary) for browsing events, search, tools, proposals and agent connection.
-- Catalogue parity with the website: full talk abstracts, speaker links/projects/location/disciplines, FAQ, venue tour, sponsors/support options, program themes and code of conduct summary.
-- Agent- and developer-facing commands: `speaker`, `talk`/`talks`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`/`next`, local `save`/`unsave`/`my-agenda`, and `agenda --format ics`.
+- Full website content parity: talk abstracts, speaker bios and links, FAQ, venue, sponsors, code of conduct, and program themes.
+- Local engagement helpers: `now` / `next`, `save` / `unsave` / `my-agenda` bookmarks, and `agenda --format ics` export.
 
 ## 0.0.4
 
