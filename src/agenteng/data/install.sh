@@ -2,9 +2,9 @@
 #
 # AgentEng one-line installer for macOS, Linux, and WSL:
 #
-#   curl -fsSL https://a2a.agentengineering.world/install.sh | sh
+#   curl -fsSL https://agentengineering.world/install.sh | sh
 #
-# Will also be served at https://agentengineering.world/install.sh
+# Also served at https://a2a.agentengineering.world/install.sh
 #
 # Installs the latest AgentEng from PyPI (CLI + MCP + A2A extras; RLM stays
 # optional and is not included). Bootstraps uv when missing, never uses sudo,

@@ -72,12 +72,11 @@ hide:
 
 Install the latest AgentEng from PyPI. The one-liner installs the CLI with the
 `server` extras (MCP + A2A). RLM stays optional and is not included.
-The installer is served at [a2a.agentengineering.world/install.sh](https://a2a.agentengineering.world/install.sh).
-It moves to agentengineering.world/install.sh once that host lets non-browser
-clients through its bot check.
+The installer is served at [agentengineering.world/install.sh](https://agentengineering.world/install.sh)
+and mirrored at [a2a.agentengineering.world/install.sh](https://a2a.agentengineering.world/install.sh).
 
 ```sh title="Install AgentEng"
-curl -fsSL https://a2a.agentengineering.world/install.sh | sh
+curl -fsSL https://agentengineering.world/install.sh | sh
 # Or: uv tool install --upgrade 'agenteng[server]'
 ae discover
 ae events --upcoming

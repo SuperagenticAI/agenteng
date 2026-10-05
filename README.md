@@ -26,9 +26,8 @@ The catalogue is a snapshot. It does not verify live ticket availability or regi
 Install the latest AgentEng from [PyPI](https://pypi.org/project/agenteng/) (CLI plus MCP and A2A extras; RLM stays optional and is not included):
 
 ```sh
-# One-liner (moves to agentengineering.world/install.sh once that host
-# lets non-browser clients through its bot check)
-curl -fsSL https://a2a.agentengineering.world/install.sh | sh
+# One-liner
+curl -fsSL https://agentengineering.world/install.sh | sh
 
 # Or install directly with uv
 uv tool install --upgrade 'agenteng[server]'
