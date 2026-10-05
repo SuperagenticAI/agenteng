@@ -111,7 +111,20 @@ ae --json events
 
 ```sh title="Explore a published programme"
 ae speakers --city London
+ae speaker samuel-colvin
+ae talks --search memory
+ae talk samuel-colvin
 ae agenda agenteng-london-2026 --topic memory
+ae agenda agenteng-london-2026 --format ics --output london.ics
+ae faq --search tickets
+ae venue agenteng-london-2026
+ae sponsors
+ae conduct
+ae themes
+ae now agenteng-london-2026
+ae next agenteng-london-2026
+ae save samuel-colvin
+ae my-agenda
 ae tickets agenteng-london-2026
 ```
 

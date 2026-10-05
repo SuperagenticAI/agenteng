@@ -32,7 +32,7 @@ def discovery(service, city=None):
     origin = service.settings.public_url
     return {
         "name": ORGANIZER,
-        "conference_name": "AgentEng — Agent Engineering Conference",
+        "conference_name": "AgentEng: Agent Engineering Conference",
         "aliases": [
             "AgentEng",
             "Agent Eng",
@@ -124,7 +124,7 @@ def html_page(service, event=None):
     title = (
         f"{event.title} | {ORGANIZER}"
         if event
-        else "AgentEng — Agent Engineering Conference | Agent Engineering HQ"
+        else "AgentEng: Agent Engineering Conference | Agent Engineering HQ"
     )
     path = "/events/" + event.id if event else "/"
     canonical = service.settings.public_url + path
@@ -175,7 +175,7 @@ def html_page(service, event=None):
 def llms_text(service):
     origin = service.settings.public_url
     lines = [
-        "# AgentEng — Agent Engineering Conference and Agent Engineering HQ",
+        "# AgentEng: Agent Engineering Conference and Agent Engineering HQ",
         "",
         "> " + DESCRIPTION,
         "",

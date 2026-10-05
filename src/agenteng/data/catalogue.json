@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-47b2c3268299",
-  "published_at": "2026-10-04T18:18:32.505Z",
-  "source_commit": "f171e7ffadbeb562fa5eeb3591617d456a679afe",
-  "source_hash": "47b2c32682991827012a995d4ea0a5f919c4205b23bbe8a4d16bd5a04197d3a6",
+  "version": "website-3bfc652b57aa",
+  "published_at": "2026-10-05T19:15:29.127Z",
+  "source_commit": "17d84812e681625708cd798660cb65fb91c81de0",
+  "source_hash": "3bfc652b57aa313966868bae46fe4830fc3a57a8d51726abd77e3953a2032e58",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -12,6 +12,8 @@
       "timezone": "Europe/London",
       "date": "2026-10-16",
       "venue": "Everyman Canary Wharf, Crossrail Place, London E14 5AR",
+      "venue_tour_url": "https://my.matterport.com/show/?m=WL1mZonGN11",
+      "track": "single",
       "start": "2026-10-16T08:00:00+01:00",
       "end": "2026-10-16T16:30:00+01:00",
       "registration_url": "https://luma.com/agentenglondon",
@@ -194,6 +196,45 @@
       "name": "Samuel Colvin",
       "role": "Founder & CEO",
       "company": "Pydantic",
+      "company_url": "https://pydantic.dev",
+      "note": null,
+      "location": {
+        "city": "London",
+        "country": "GB"
+      },
+      "links": {
+        "x": "https://x.com/samuelcolvin",
+        "github": "https://github.com/samuelcolvin",
+        "linkedin": "https://www.linkedin.com/in/samuel-colvin"
+      },
+      "projects": [
+        {
+          "name": "Pydantic",
+          "url": "https://pydantic.dev/docs/",
+          "blurb": "Data validation for Python"
+        },
+        {
+          "name": "Pydantic AI",
+          "url": "https://pydantic.dev/pydantic-ai",
+          "blurb": "Agent framework, with the harness and Code Mode"
+        },
+        {
+          "name": "Logfire",
+          "url": "https://pydantic.dev/logfire",
+          "blurb": "OpenTelemetry observability for agent runs"
+        },
+        {
+          "name": "Monty",
+          "url": "https://github.com/pydantic/monty",
+          "blurb": "Minimal sandboxed Python interpreter, written in Rust"
+        }
+      ],
+      "announced_on": "2026-08-05",
+      "disciplines": [
+        "harness",
+        "eval",
+        "loop"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -208,6 +249,35 @@
       "name": "Andrey Breslav",
       "role": "Founder",
       "company": "CodeSpeak",
+      "company_url": "https://codespeak.dev",
+      "note": null,
+      "location": {
+        "city": "London",
+        "country": "GB"
+      },
+      "links": {
+        "x": "https://x.com/abreslav",
+        "github": "https://github.com/abreslav",
+        "linkedin": "https://www.linkedin.com/in/abreslav",
+        "website": "https://www.abreslav.com"
+      },
+      "projects": [
+        {
+          "name": "CodeSpeak",
+          "url": "https://codespeak.dev",
+          "blurb": "Software specified in plain English, compiled and maintained by agents"
+        },
+        {
+          "name": "hello-codespeak",
+          "url": "https://github.com/codespeak-dev/hello-codespeak",
+          "blurb": "Starter template for building an application from a CodeSpeak spec"
+        }
+      ],
+      "announced_on": "2026-08-06",
+      "disciplines": [
+        "agentic",
+        "code"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -222,6 +292,44 @@
       "name": "Ismail Homan Pelaseyed",
       "role": "Co-founder & CTO",
       "company": "Superagent",
+      "company_url": "https://superagent.sh",
+      "note": null,
+      "location": {
+        "city": null,
+        "country": "SE"
+      },
+      "links": {
+        "x": "https://x.com/pelaseyed",
+        "github": "https://github.com/homanp",
+        "linkedin": "https://www.linkedin.com/in/pelaseyed"
+      },
+      "projects": [
+        {
+          "name": "Superagent SDK",
+          "url": "https://github.com/superagent-ai/superagent",
+          "blurb": "Guard, redact and scan, embedded in the app itself"
+        },
+        {
+          "name": "VibeKit",
+          "url": "https://github.com/superagent-ai/vibekit",
+          "blurb": "Runs Claude Code, Codex or any coding agent in an isolated sandbox"
+        },
+        {
+          "name": "Grok CLI",
+          "url": "https://github.com/superagent-ai/grok-cli",
+          "blurb": "Open-source coding agent for the Grok API"
+        },
+        {
+          "name": "Superagent Guard",
+          "url": "https://huggingface.co/superagent-ai",
+          "blurb": "Open-weight guard models, 0.6B to 4B, small enough to run locally"
+        }
+      ],
+      "announced_on": "2026-08-10",
+      "disciplines": [
+        "harness",
+        "code"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -236,6 +344,45 @@
       "name": "Tobie Morgan Hitchcock",
       "role": "Founder & CEO",
       "company": "SurrealDB",
+      "company_url": "https://surrealdb.com",
+      "note": null,
+      "location": {
+        "city": "London",
+        "country": "GB"
+      },
+      "links": {
+        "x": "https://x.com/tobiemh",
+        "github": "https://github.com/tobiemh",
+        "linkedin": "https://www.linkedin.com/in/tobiemorganhitchcock"
+      },
+      "projects": [
+        {
+          "name": "SurrealDB",
+          "url": "https://surrealdb.com",
+          "blurb": "Document, graph, vector and time-series in one ACID transaction"
+        },
+        {
+          "name": "Spectron",
+          "url": "https://surrealdb.com/spectron",
+          "blurb": "Memory layer giving agents durable recall across sessions"
+        },
+        {
+          "name": "SurrealQL",
+          "url": "https://surrealdb.com/docs/reference/query-language",
+          "blurb": "Query language that traverses graph edges and vectors in one statement"
+        },
+        {
+          "name": "Surrealist",
+          "url": "https://github.com/surrealdb/surrealist",
+          "blurb": "Query IDE and visual explorer for a running database"
+        }
+      ],
+      "announced_on": "2026-08-11",
+      "disciplines": [
+        "memory",
+        "graph",
+        "context"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -250,6 +397,45 @@
       "name": "Sergey Ignatov",
       "role": "Director of Engineering",
       "company": "JetBrains",
+      "company_url": "https://www.jetbrains.com",
+      "note": "Lead ACP maintainer",
+      "location": {
+        "city": "Amsterdam",
+        "country": "NL"
+      },
+      "links": {
+        "x": "https://x.com/sergey__ignatov",
+        "github": "https://github.com/ignatov",
+        "linkedin": "https://www.linkedin.com/in/sergey-ignatov"
+      },
+      "projects": [
+        {
+          "name": "Agent Client Protocol",
+          "url": "https://agentclientprotocol.com",
+          "blurb": "The standard between editors and coding agents, which he co-leads"
+        },
+        {
+          "name": "GoLand",
+          "url": "https://www.jetbrains.com/go/",
+          "blurb": "The Go IDE, which he co-created"
+        },
+        {
+          "name": "DataGrip",
+          "url": "https://www.jetbrains.com/datagrip/",
+          "blurb": "Database IDE, one of the teams he has led"
+        },
+        {
+          "name": "intellij-erlang",
+          "url": "https://github.com/ignatov/intellij-erlang",
+          "blurb": "Erlang IDE plugin he wrote and still maintains"
+        }
+      ],
+      "announced_on": "2026-08-11",
+      "disciplines": [
+        "protocol",
+        "code",
+        "loop"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -264,6 +450,44 @@
       "name": "Jon Bratseth",
       "role": "CEO",
       "company": "Vespa.ai",
+      "company_url": "https://vespa.ai",
+      "note": null,
+      "location": {
+        "city": "Trondheim",
+        "country": "NO"
+      },
+      "links": {
+        "x": "https://x.com/jonbratseth",
+        "github": "https://github.com/bratseth",
+        "linkedin": "https://www.linkedin.com/in/jon-bratseth-6a6585"
+      },
+      "projects": [
+        {
+          "name": "Vespa",
+          "url": "https://github.com/vespa-engine/vespa",
+          "blurb": "Vector, text and structured retrieval with ranking in one engine"
+        },
+        {
+          "name": "Vespa Cloud",
+          "url": "https://cloud.vespa.ai",
+          "blurb": "Managed Vespa on AWS, Azure and GCP, autoscaled with usage"
+        },
+        {
+          "name": "The RAG Blueprint",
+          "url": "https://docs.vespa.ai/en/learn/tutorials/rag-blueprint.html",
+          "blurb": "Reference application for production RAG, phased ranking and all"
+        },
+        {
+          "name": "pyvespa",
+          "url": "https://vespa-engine.github.io/pyvespa/",
+          "blurb": "Python API for defining, deploying and querying an application"
+        }
+      ],
+      "announced_on": "2026-08-19",
+      "disciplines": [
+        "search",
+        "context"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -278,6 +502,42 @@
       "name": "Meryem Arik",
       "role": "CEO",
       "company": "Doubleword",
+      "company_url": "https://doubleword.ai",
+      "note": null,
+      "location": {
+        "city": "London",
+        "country": "GB"
+      },
+      "links": {
+        "x": "https://x.com/MeryemArik9",
+        "linkedin": "https://www.linkedin.com/in/meryemarik"
+      },
+      "projects": [
+        {
+          "name": "Inference Stack",
+          "url": "https://github.com/doublewordai/inference-stack",
+          "blurb": "Their serving stack, run inside a private environment"
+        },
+        {
+          "name": "Control Layer",
+          "url": "https://github.com/doublewordai/control-layer",
+          "blurb": "Gateway putting hosted and self-hosted models behind one auth layer"
+        },
+        {
+          "name": "llmux",
+          "url": "https://github.com/doublewordai/llmux",
+          "blurb": "Several models on one GPU, switched with no reload"
+        },
+        {
+          "name": "inference-lab",
+          "url": "https://github.com/doublewordai/inference-lab",
+          "blurb": "Simulator for analysing how a serving system behaves"
+        }
+      ],
+      "announced_on": "2026-09-15",
+      "disciplines": [
+        "inference"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -292,6 +552,43 @@
       "name": "Frédéric Barthelet",
       "role": "CTO & Co-founder",
       "company": "Alpic",
+      "company_url": "https://alpic.ai",
+      "note": null,
+      "location": {
+        "city": "Paris",
+        "country": "FR"
+      },
+      "links": {
+        "x": "https://x.com/bartheletf",
+        "github": "https://github.com/fredericbarthelet",
+        "linkedin": "https://www.linkedin.com/in/frederic-barthelet"
+      },
+      "projects": [
+        {
+          "name": "Skybridge",
+          "url": "https://github.com/alpic-ai/skybridge",
+          "blurb": "Full-stack TypeScript framework for MCP apps, type-safe and React-powered"
+        },
+        {
+          "name": "webmcp-proxy",
+          "url": "https://github.com/alpic-ai/webmcp-proxy",
+          "blurb": "Puts an existing MCP server on a website, for browsing agents"
+        },
+        {
+          "name": "mcp-app-conformance",
+          "url": "https://github.com/alpic-ai/mcp-app-conformance",
+          "blurb": "Host-conformance suite for the MCP Apps spec, built the way WPT is"
+        },
+        {
+          "name": "alpic-plugin",
+          "url": "https://github.com/alpic-ai/alpic-plugin",
+          "blurb": "Turns any coding agent into a Skybridge expert"
+        }
+      ],
+      "announced_on": "2026-09-16",
+      "disciplines": [
+        "protocol"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -306,6 +603,43 @@
       "name": "Stas Bichenko",
       "role": "CEO",
       "company": "Recombine",
+      "company_url": "https://recombine.ai",
+      "note": null,
+      "location": {
+        "city": "London",
+        "country": "GB"
+      },
+      "links": {
+        "x": "https://x.com/sbichenko",
+        "linkedin": "https://www.linkedin.com/in/stas-bichenko/"
+      },
+      "projects": [
+        {
+          "name": "Recombine platform",
+          "url": "https://recombine.ai/",
+          "blurb": "Self-hosted voice and text agents, in your own cloud"
+        },
+        {
+          "name": "Banking & financial services",
+          "url": "https://recombine.ai/cases/banking.html",
+          "blurb": "Pre-collection, KYC and support agents for banks"
+        },
+        {
+          "name": "Mobility & marketplaces",
+          "url": "https://recombine.ai/cases/mobility.html",
+          "blurb": "Driver onboarding and partner operations agents"
+        },
+        {
+          "name": "Telecom",
+          "url": "https://recombine.ai/cases/telecom.html",
+          "blurb": "Upsell, churn-prevention and outage-support agents"
+        }
+      ],
+      "announced_on": "2026-09-22",
+      "disciplines": [
+        "eval",
+        "agentic"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -320,6 +654,33 @@
       "name": "Jocelyn D'Arcy",
       "role": "CEO",
       "company": "Poindexter Labs",
+      "company_url": "https://www.poindexterlabs.ai",
+      "note": null,
+      "location": {
+        "city": "London",
+        "country": "GB"
+      },
+      "links": {
+        "x": "https://x.com/Jocelyn_K_DArcy",
+        "linkedin": "https://www.linkedin.com/in/jocelyndarcy"
+      },
+      "projects": [
+        {
+          "name": "syncronus",
+          "url": "https://www.poindexterlabs.ai/syncronus",
+          "blurb": "Secure workflow for experts to evaluate and train models"
+        },
+        {
+          "name": "Data creation",
+          "url": "https://www.poindexterlabs.ai/data-creation",
+          "blurb": "Prompts, solutions and atomic rubrics for frontier reasoning"
+        }
+      ],
+      "announced_on": "2026-09-25",
+      "disciplines": [
+        "eval",
+        "prompt"
+      ],
       "event_ids": [
         "agenteng-london-2026"
       ],
@@ -769,6 +1130,247 @@
       "source_ids": [
         "sf-harness-engineering-2026-linghua-jin"
       ]
+    }
+  ],
+  "faqs": [
+    {
+      "id": "faq-0",
+      "question": "What is Agent Engineering?",
+      "answer": "Agent Engineering is the discipline of designing, building, evaluating, and operating AI agents. It focuses on the systems, abstractions, and engineering decisions that shape agent behaviour.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-0"
+      ]
+    },
+    {
+      "id": "faq-1",
+      "question": "Who should attend this conference?",
+      "answer": "This conference is for AI/ML engineers, software engineers, agent framework builders, tooling & infrastructure teams, startup founders, product builders working with LLMs, and researchers translating ideas into systems.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-1"
+      ]
+    },
+    {
+      "id": "faq-2",
+      "question": "When and where is the conference?",
+      "answer": "The first Agent Engineering Conference takes place in London on 16 October 2026 at Everyman, Canary Wharf, London. It is a one-day, single-track conference of ten 30-minute technical talks, with limited seats.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-2"
+      ]
+    },
+    {
+      "id": "faq-3",
+      "question": "How do I get tickets?",
+      "answer": "Get your ticket on Luma. Early bird is sold out. Regular is £149 until 8 October 2026, and late bird is £199 from 9 October 2026. There is a lightweight approval step to keep the room technical and high signal, usually cleared within a few hours and always within 24 hours. You are only charged once you are in. A ticket covers the full day: ten technical sessions on a single track, and the talk recordings afterwards. The Founders Edition is invitation only, held for the early access list. Those invitations have been sent by email.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-3"
+      ]
+    },
+    {
+      "id": "faq-4",
+      "question": "Can I book seats for a team?",
+      "answer": "Yes. For three or more seats, email events@agentengineering.world and we will help you register the group.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-4"
+      ]
+    },
+    {
+      "id": "faq-5",
+      "question": "Why is there an approval step?",
+      "answer": "This is a single track. Everyone sits in the same room for the whole day, so the people beside you are a large part of what a ticket buys. There is a lightweight approval step to keep the room technical and high signal, and it is aimed at people who build, evaluate and operate agent systems. That is what keeps the questions in each session worth hearing and the breaks worth staying for. It is quick: most registrations clear well inside 24 hours. Nothing is charged until you are in, so there is no risk in registering.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-5"
+      ]
+    },
+    {
+      "id": "faq-6",
+      "question": "How do I get an invoice?",
+      "answer": "After payment, open luma.com/settings/payment, choose Download Invoice, and add your company name, billing address, and tax details. Save the PDF for finance. You are only charged once a registration is approved.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-6"
+      ]
+    },
+    {
+      "id": "faq-7",
+      "question": "What food is provided?",
+      "answer": "Tea, pastries and lunch. Dietary needs can be raised on the day.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-7"
+      ]
+    },
+    {
+      "id": "faq-8",
+      "question": "Is the venue accessible?",
+      "answer": "Access follows Everyman Canary Wharf. Please check the cinema's accessibility information at https://www.everymancinema.com/venues-list/x0vpb-everyman-canary-wharf/, or email events@agentengineering.world.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-8"
+      ]
+    },
+    {
+      "id": "faq-9",
+      "question": "How does Q&A work during talks?",
+      "answer": "Five minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-9"
+      ]
+    },
+    {
+      "id": "faq-10",
+      "question": "Is there networking after the conference?",
+      "answer": "The programme closes at 16:30 and informal networking continues at the venue or at a separate side event.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-10"
+      ]
+    },
+    {
+      "id": "faq-11",
+      "question": "Can I get a refund or pass my ticket to someone else?",
+      "answer": "Tickets are not refundable, and they cannot be transferred without our approval first. If something comes up and you can no longer attend, contact us before the event and we will where possible move your place to a replacement attendee. Because the audience is curated, that person goes through the same lightweight approval, so please do not pass a ticket on until we confirm the transfer. If we cancel the conference, ticket holders are offered a refund. Full detail is in the event terms at https://agentengineering.world/terms",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-11"
+      ]
+    },
+    {
+      "id": "faq-12",
+      "question": "Is there a code of conduct?",
+      "answer": "Yes, and it applies to everyone taking part: attendees, speakers, partners, volunteers and organisers. It covers the venue, any social gathering connected to the conference, and our online channels, before and during the event as well as afterwards. Harassment, discrimination and intimidation are not tolerated. If you experience or witness something, you can report it on the day or afterwards to conduct@super-agentic.ai, and reports are handled confidentially with no retaliation against anyone raising a concern in good faith. Read it in full at https://agentengineering.world/code-of-conduct, alongside the event terms at https://agentengineering.world/terms",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-12"
+      ]
+    },
+    {
+      "id": "faq-13",
+      "question": "Who is speaking?",
+      "answer": "The lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Sergey Ignatov, Director of Engineering at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-13"
+      ]
+    },
+    {
+      "id": "faq-14",
+      "question": "Can I still apply to speak?",
+      "answer": "Speaker applications are closed for this edition. The remaining talks are invited by the programme team. Confirmed names appear at https://agentengineering.world/speakers as they are announced.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-14"
+      ]
+    },
+    {
+      "id": "faq-15",
+      "question": "Is there a call for papers on Sessionize?",
+      "answer": "This edition does not have a call for papers on Sessionize or elsewhere. The lineup is invited by the programme team and published at https://agentengineering.world/speakers as each speaker is confirmed.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-15"
+      ]
+    },
+    {
+      "id": "faq-16",
+      "question": "What topics will be covered?",
+      "answer": "The conference focuses on deep technical sessions across Prompt Engineering, Context Engineering, Harness Engineering, Eval Engineering, Memory Engineering, Inference Engineering, Loop Engineering, Protocol Engineering, Graph Engineering, Search Engineering, Agentic Engineering, and Code Engineering, plus program themes like Agent Optimization, Agent Experience (AX), and the Future of Coding.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-16"
+      ]
+    },
+    {
+      "id": "faq-17",
+      "question": "How is this different from other AI conferences?",
+      "answer": "The conference covers the engineering discipline behind AI agents. It is one track of ten technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-17"
+      ]
+    },
+    {
+      "id": "faq-18",
+      "question": "Are there sponsorship opportunities?",
+      "answer": "We are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/sponsorships",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-18"
+      ]
+    },
+    {
+      "id": "faq-19",
+      "question": "Will talks be recorded?",
+      "answer": "Yes. Talks are recorded and shared with ticket holders after the day.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-19"
+      ]
+    }
+  ],
+  "sponsors": [
+    {
+      "id": "arize-ai",
+      "name": "Arize AI",
+      "url": "https://arize.com",
+      "city": "San Francisco",
+      "blurb": "AI observability and evaluation for agents in production."
+    },
+    {
+      "id": "cocoindex",
+      "name": "CocoIndex",
+      "url": "https://cocoindex.io",
+      "city": "San Francisco",
+      "blurb": "Open-source data indexing that keeps agent context fresh."
+    }
+  ],
+  "support_options": [
+    {
+      "id": "refreshments",
+      "title": "Refreshments",
+      "blurb": "Help with arrival tea and pastries or lunch. A warm, practical way to be present without a trade-show package."
+    },
+    {
+      "id": "after-party",
+      "title": "After-party / drinks",
+      "blurb": "Support an evening gathering after the talks, if we run one. Ideal for hallway conversations and informal recognition."
+    },
+    {
+      "id": "recording",
+      "title": "Recording support",
+      "blurb": "Help with filming, editing, or publishing the talks. Credit on the released recordings and related posts."
+    }
+  ],
+  "themes": [
+    {
+      "id": "agent-optimization",
+      "title": "Agent Optimization",
+      "command": "optimize",
+      "description": "Automatically optimize agents across all layers: prompts, RAG, protocols, memory, and context."
+    },
+    {
+      "id": "agent-experience",
+      "title": "Agent Experience (AX)",
+      "command": "design-ax",
+      "description": "Designing machine-readable interfaces, environments, and feedback loops that shape Agent Experience."
+    },
+    {
+      "id": "agentic-coding",
+      "title": "Agentic Coding",
+      "command": "future-code",
+      "description": "How software development evolves as agents become first-class contributors to the SDLC."
+    },
+    {
+      "id": "agentic-business-models",
+      "title": "Agentic Business Models",
+      "command": "business-models",
+      "description": "Defining the business models for agentic AI. Does SaaS still work, or is FDE the only way forward? Explore and share business models."
     }
   ],
   "sources": [
@@ -1256,6 +1858,76 @@
       "kind": "faq"
     },
     {
+      "id": "code-of-conduct",
+      "url": "https://agentengineering.world/code-of-conduct",
+      "text": "Yes, and it applies to everyone taking part: attendees, speakers, partners, volunteers and organisers. It covers the venue, any social gathering connected to the conference, and our online channels, before and during the event as well as afterwards. Harassment, discrimination and intimidation are not tolerated. If you experience or witness something, you can report it on the day or afterwards to conduct@super-agentic.ai, and reports are handled confidentially with no retaliation against anyone raising a concern in good faith. Read it in full at https://agentengineering.world/code-of-conduct, alongside the event terms at https://agentengineering.world/terms",
+      "event_id": "agenteng-london-2026",
+      "kind": "conduct"
+    },
+    {
+      "id": "theme-agent-optimization",
+      "url": "https://agentengineering.world/#program",
+      "text": "Agent Optimization\nAutomatically optimize agents across all layers: prompts, RAG, protocols, memory, and context.",
+      "event_id": "agenteng-london-2026",
+      "kind": "theme"
+    },
+    {
+      "id": "theme-agent-experience",
+      "url": "https://agentengineering.world/#program",
+      "text": "Agent Experience (AX)\nDesigning machine-readable interfaces, environments, and feedback loops that shape Agent Experience.",
+      "event_id": "agenteng-london-2026",
+      "kind": "theme"
+    },
+    {
+      "id": "theme-agentic-coding",
+      "url": "https://agentengineering.world/#program",
+      "text": "Agentic Coding\nHow software development evolves as agents become first-class contributors to the SDLC.",
+      "event_id": "agenteng-london-2026",
+      "kind": "theme"
+    },
+    {
+      "id": "theme-agentic-business-models",
+      "url": "https://agentengineering.world/#program",
+      "text": "Agentic Business Models\nDefining the business models for agentic AI. Does SaaS still work, or is FDE the only way forward? Explore and share business models.",
+      "event_id": "agenteng-london-2026",
+      "kind": "theme"
+    },
+    {
+      "id": "sponsor-arize-ai",
+      "url": "https://agentengineering.world/san-francisco",
+      "text": "Arize AI. AI observability and evaluation for agents in production.",
+      "event_id": null,
+      "kind": "sponsor"
+    },
+    {
+      "id": "sponsor-cocoindex",
+      "url": "https://agentengineering.world/san-francisco",
+      "text": "CocoIndex. Open-source data indexing that keeps agent context fresh.",
+      "event_id": null,
+      "kind": "sponsor"
+    },
+    {
+      "id": "support-refreshments",
+      "url": "https://agentengineering.world/sponsorships",
+      "text": "Refreshments\nHelp with arrival tea and pastries or lunch. A warm, practical way to be present without a trade-show package.",
+      "event_id": "agenteng-london-2026",
+      "kind": "sponsorship"
+    },
+    {
+      "id": "support-after-party",
+      "url": "https://agentengineering.world/sponsorships",
+      "text": "After-party / drinks\nSupport an evening gathering after the talks, if we run one. Ideal for hallway conversations and informal recognition.",
+      "event_id": "agenteng-london-2026",
+      "kind": "sponsorship"
+    },
+    {
+      "id": "support-recording",
+      "url": "https://agentengineering.world/sponsorships",
+      "text": "Recording support\nHelp with filming, editing, or publishing the talks. Credit on the released recordings and related posts.",
+      "event_id": "agenteng-london-2026",
+      "kind": "sponsorship"
+    },
+    {
       "id": "hq",
       "url": "https://agentengineering.world/agent-engineering-hq",
       "text": "Agent Engineering HQ organises practitioner events on building, evaluating and operating production AI agents, with communities in San Francisco and London.",
@@ -1268,6 +1940,13 @@
       "text": "Public organiser contact: events@agentengineering.world",
       "event_id": null,
       "kind": "document"
+    },
+    {
+      "id": "sponsor-contact",
+      "url": "https://agentengineering.world/sponsorships",
+      "text": "Sponsorship enquiry: events@agentengineering.world",
+      "event_id": null,
+      "kind": "sponsorship"
     }
   ]
 }

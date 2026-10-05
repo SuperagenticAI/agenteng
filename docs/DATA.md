@@ -1,6 +1,6 @@
 # 📖 Data and attribution
 
-The bundled catalogue contains public Agent Engineering HQ event information: event titles, venues, published dates, speaker listings, agenda entries, ticket terms and links to registration or recordings. It includes no attendee/member exports, private contact list or proposal submissions.
+The bundled catalogue contains public Agent Engineering HQ event information: event titles, venues, published dates, speaker listings with links and talk abstracts, agenda entries, FAQ answers, sponsors and support options, program themes, code of conduct summary, ticket terms and links to registration or recordings. It includes no attendee/member exports, private contact list or proposal submissions.
 
 The software license covers this project's source code and original documentation. It does not grant rights to third-party biographies, talk abstracts, names, logos, photographs or recordings. Such material remains attributed to its public source and subject to any rights held by its owner. Linked videos are not downloaded or redistributed by this project.
 

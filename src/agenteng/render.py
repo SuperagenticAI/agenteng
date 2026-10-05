@@ -144,29 +144,247 @@ def render_event_detail(console: Console, result: Result) -> None:
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
+def _speaker_body(speaker: dict, *, full: bool = False) -> Text:
+    body = Text()
+    role = speaker.get("role") or ""
+    company = speaker.get("company") or ""
+    note = speaker.get("note") or ""
+    meta = " · ".join(p for p in (role, company) if p)
+    if meta:
+        body.append(meta + "\n", style="ae.accent")
+    if note:
+        body.append(display_text(note) + "\n", style="ae.meta")
+    location = speaker.get("location") or {}
+    if location:
+        place = ", ".join(p for p in (location.get("city"), location.get("country")) if p)
+        if place:
+            body.append(place + "\n", style="ae.meta")
+    talk = speaker.get("talk_title")
+    if talk:
+        body.append("Talk: ", style="ae.meta")
+        body.append(display_text(talk) + "\n")
+    disciplines = speaker.get("disciplines") or []
+    if disciplines:
+        body.append("Disciplines: " + ", ".join(disciplines) + "\n", style="ae.meta")
+    if full:
+        abstract = speaker.get("abstract")
+        if abstract:
+            body.append("\n")
+            body.append(display_text(abstract) + "\n")
+        links = speaker.get("links") or {}
+        for label, key in (("X", "x"), ("GitHub", "github"), ("LinkedIn", "linkedin"), ("Web", "website")):
+            if links.get(key):
+                body.append(f"{label}: ", style="ae.meta")
+                body.append(str(links[key]) + "\n", style=BLUE)
+        if speaker.get("company_url"):
+            body.append("Company: ", style="ae.meta")
+            body.append(str(speaker["company_url"]) + "\n", style=BLUE)
+        for project in speaker.get("projects") or []:
+            body.append(f"Project: {project.get('name')}", style="ae.accent")
+            if project.get("blurb"):
+                body.append(f" - {display_text(project['blurb'])}")
+            body.append("\n")
+            if project.get("url"):
+                body.append(str(project["url"]) + "\n", style=BLUE)
+    events = speaker.get("event_ids") or []
+    if events:
+        body.append("Events: " + ", ".join(events) + "\n", style="ae.meta")
+    if speaker.get("id"):
+        body.append(f"id: {speaker['id']}", style="ae.meta")
+    return body
+
+
 def render_speakers(console: Console, result: Result) -> None:
     speakers = result.data if isinstance(result.data, list) else []
     if not speakers:
         console.print(f"[ae.meta]{display_text(result.answer)}[/]")
         return
     for speaker in speakers:
-        body = Text()
-        role = speaker.get("role") or ""
-        company = speaker.get("company") or ""
-        meta = " · ".join(p for p in (role, company) if p)
-        if meta:
-            body.append(meta + "\n", style="ae.accent")
-        talk = speaker.get("talk_title")
-        if talk:
-            body.append("Talk: ", style="ae.meta")
-            body.append(display_text(talk) + "\n")
-        events = speaker.get("event_ids") or []
-        if events:
-            body.append("Events: " + ", ".join(events), style="ae.meta")
         console.print(
-            _panel(speaker.get("name") or speaker.get("id") or "Speaker", body, border=VIOLET)
+            _panel(
+                speaker.get("name") or speaker.get("id") or "Speaker",
+                _speaker_body(speaker, full=len(speakers) == 1),
+                border=VIOLET,
+            )
         )
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+
+
+def render_speaker(console: Console, result: Result) -> None:
+    speaker = result.data if isinstance(result.data, dict) else {}
+    if not speaker:
+        console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+        return
+    console.print(
+        _panel(
+            speaker.get("name") or speaker.get("id") or "Speaker",
+            _speaker_body(speaker, full=True),
+            border=VIOLET,
+        )
+    )
+    talk = speaker.get("talk")
+    if talk and talk.get("start"):
+        console.print(_panel("Session", _talk_body(talk), border=BLUE))
+    console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+
+
+def _talk_body(talk: dict) -> Text:
+    body = Text()
+    when = ""
+    start = _parse_dt(talk.get("start"))
+    end = _parse_dt(talk.get("end"))
+    if start and end:
+        when = f"{start.strftime('%H:%M')}-{end.strftime('%H:%M')}"
+    elif start:
+        when = start.strftime("%H:%M")
+    if when:
+        body.append(when + "  ·  ", style="ae.accent")
+    body.append((talk.get("kind") or "talk") + "\n", style="ae.meta")
+    if talk.get("speaker_name"):
+        meta = " · ".join(
+            p
+            for p in (
+                talk.get("speaker_name"),
+                talk.get("speaker_role"),
+                talk.get("speaker_company"),
+            )
+            if p
+        )
+        body.append(meta + "\n", style="ae.accent")
+    abstract = talk.get("abstract")
+    if abstract:
+        body.append(display_text(abstract) + "\n")
+    disciplines = talk.get("disciplines") or talk.get("topics") or []
+    if disciplines:
+        body.append(", ".join(disciplines) + "\n", style="ae.meta")
+    if talk.get("id"):
+        body.append(f"id: {talk['id']}", style="ae.meta")
+    return body
+
+
+def render_talks(console: Console, result: Result) -> None:
+    talks = result.data if isinstance(result.data, list) else []
+    if not talks:
+        console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+        return
+    for talk in talks:
+        console.print(
+            _panel(display_text(talk.get("title")) or "Talk", _talk_body(talk), border=VIOLET)
+        )
+    console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+
+
+def render_talk(console: Console, result: Result) -> None:
+    talk = result.data if isinstance(result.data, dict) else {}
+    if not talk:
+        console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+        return
+    console.print(
+        _panel(display_text(talk.get("title") or talk.get("talk_title")) or "Talk", _talk_body(talk), border=VIOLET)
+    )
+    console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+
+
+def render_faq(console: Console, result: Result) -> None:
+    rows = result.data if isinstance(result.data, list) else []
+    if not rows:
+        console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+        return
+    for row in rows:
+        body = Text(display_text(row.get("answer") or ""))
+        console.print(_panel(display_text(row.get("question")) or "FAQ", body, border=BLUE))
+    console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+
+
+def render_venue(console: Console, result: Result) -> None:
+    data = result.data if isinstance(result.data, dict) else {}
+    body = Text()
+    if data.get("venue"):
+        body.append(display_text(data["venue"]) + "\n")
+    if data.get("city"):
+        body.append(f"{data['city']}  ·  track: {data.get('track') or 'single'}\n", style="ae.accent")
+    if data.get("venue_tour_url"):
+        body.append("Tour: ", style="ae.meta")
+        body.append(str(data["venue_tour_url"]) + "\n", style=BLUE)
+    if data.get("accessibility"):
+        body.append("\n" + display_text(data["accessibility"]))
+    console.print(_panel("Venue", body, border=BLUE))
+    console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+
+
+def render_sponsors(console: Console, result: Result) -> None:
+    data = result.data if isinstance(result.data, dict) else {}
+    console.print(Text("Sponsors and support", style="ae.title"))
+    for row in data.get("sponsors") or []:
+        body = Text()
+        if row.get("city"):
+            body.append(row["city"] + "\n", style="ae.accent")
+        if row.get("blurb"):
+            body.append(display_text(row["blurb"]) + "\n")
+        if row.get("url"):
+            body.append(str(row["url"]), style=BLUE)
+        console.print(_panel(row.get("name") or "Sponsor", body, border=MAGENTA))
+    for row in data.get("support_options") or []:
+        body = Text(display_text(row.get("blurb") or ""))
+        console.print(_panel(row.get("title") or "Support", body, border=VIOLET))
+    if data.get("sponsor_email"):
+        console.print(f"[ae.meta]Sponsorship contact:[/] {data['sponsor_email']}")
+    if data.get("note"):
+        console.print(f"[ae.meta]{display_text(data['note'])}[/]")
+    console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+
+
+def render_conduct(console: Console, result: Result) -> None:
+    data = result.data if isinstance(result.data, dict) else {}
+    body = Text(display_text(data.get("summary") or result.answer))
+    body.append("\n")
+    if data.get("url"):
+        body.append("\nRead: ", style="ae.meta")
+        body.append(str(data["url"]) + "\n", style=BLUE)
+    if data.get("report_email"):
+        body.append("Report: ", style="ae.meta")
+        body.append(str(data["report_email"]) + "\n", style=BLUE)
+    if data.get("terms_url"):
+        body.append("Terms: ", style="ae.meta")
+        body.append(str(data["terms_url"]), style=BLUE)
+    console.print(_panel("Code of conduct", body, border=MAGENTA))
+
+
+def render_themes(console: Console, result: Result) -> None:
+    rows = result.data if isinstance(result.data, list) else []
+    if not rows:
+        console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+        return
+    for row in rows:
+        body = Text()
+        if row.get("command"):
+            body.append(f"ae theme hint: {row['command']}\n", style="ae.accent")
+        body.append(display_text(row.get("description") or ""))
+        console.print(_panel(row.get("title") or "Theme", body, border=BLUE))
+    console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+
+
+def render_live(console: Console, result: Result, *, title: str) -> None:
+    data = result.data if isinstance(result.data, dict) else {}
+    session = data.get("session")
+    if not session:
+        console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+        nxt = data.get("next")
+        if nxt:
+            console.print(_panel("Next up", _talk_body(nxt), border=BLUE))
+        return
+    console.print(_panel(title, _talk_body(session), border=MAGENTA))
+    console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+
+
+def render_bookmarks(console: Console, result: Result) -> None:
+    data = result.data
+    if isinstance(data, dict) and "session_ids" in data:
+        console.print(f"[ae.ok]{display_text(result.answer)}[/]")
+        if data.get("path"):
+            console.print(f"[ae.meta]Stored at {data['path']}[/]")
+        return
+    render_talks(console, result)
 
 
 def render_agenda(console: Console, result: Result, *, title: str = "Agenda") -> None:
@@ -515,6 +733,19 @@ def render_result(result: Result, operation: str, console: Console | None = None
         "events": render_events,
         "event": render_event_detail,
         "speakers": render_speakers,
+        "speaker": render_speaker,
+        "talks": render_talks,
+        "talk": render_talk,
+        "faq": render_faq,
+        "venue": render_venue,
+        "sponsors": render_sponsors,
+        "conduct": render_conduct,
+        "themes": render_themes,
+        "now": lambda c, r: render_live(c, r, title="Now"),
+        "next": lambda c, r: render_live(c, r, title="Next"),
+        "save": render_bookmarks,
+        "unsave": render_bookmarks,
+        "my_agenda": render_bookmarks,
         "agenda": render_agenda,
         "plan": lambda c, r: render_agenda(c, r, title="Plan"),
         "tickets": render_tickets,

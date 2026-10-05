@@ -6,6 +6,8 @@
 
 - Human-readable Rich cards and tables on a TTY, with `--json` / `AGENTENG_OUTPUT=json` / piped stdout keeping the shared Result JSON contract for agents.
 - Interactive `ae` / `agenteng` menu (questionary) for browsing events, search, tools, proposals and agent connection.
+- Catalogue parity with the website: full talk abstracts, speaker links/projects/location/disciplines, FAQ, venue tour, sponsors/support options, program themes and code of conduct summary.
+- Agent- and developer-facing commands: `speaker`, `talk`/`talks`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`/`next`, local `save`/`unsave`/`my-agenda`, and `agenda --format ics`.
 
 ## 0.0.4
 

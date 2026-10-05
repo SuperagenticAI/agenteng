@@ -20,6 +20,14 @@ OPERATIONS = [
     ("events", {"upcoming": True}),
     ("event", {"event_id": "agenteng-london-2026"}),
     ("speakers", {"event_id": "agenteng-london-2026"}),
+    ("speaker", {"speaker_id": "samuel-colvin"}),
+    ("talks", {"event_id": "agenteng-london-2026"}),
+    ("talk", {"speaker_id": "samuel-colvin"}),
+    ("faq", {"query": "tickets"}),
+    ("venue", {"event_id": "agenteng-london-2026"}),
+    ("sponsors", {}),
+    ("conduct", {}),
+    ("themes", {}),
     ("agenda", {"event_id": "agenteng-london-2026"}),
     ("tickets", {"event_id": "agenteng-london-2026"}),
     ("recordings", {}),
@@ -34,8 +42,8 @@ OPERATIONS = [
 
 
 def test_display_text_strips_em_dash():
-    assert "—" not in display_text("AgentEng — Conference")
-    assert " - " in display_text("AgentEng — Conference")
+    assert "\N{EM DASH}" not in display_text("AgentEng \N{EM DASH} Conference")
+    assert " - " in display_text("AgentEng \N{EM DASH} Conference")
 
 
 def test_friendly_date_and_event_label():

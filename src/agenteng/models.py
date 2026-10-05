@@ -19,11 +19,36 @@ class Source(Model):
     kind: str = "document"
 
 
+class SpeakerLinks(Model):
+    x: HttpUrl | None = None
+    linkedin: HttpUrl | None = None
+    github: HttpUrl | None = None
+    website: HttpUrl | None = None
+
+
+class SpeakerLocation(Model):
+    city: str | None = None
+    country: str
+
+
+class SpeakerProject(Model):
+    name: str
+    url: HttpUrl
+    blurb: str = ""
+
+
 class Speaker(Model):
     id: str
     name: str
     role: str = ""
     company: str = ""
+    company_url: HttpUrl | None = None
+    note: str | None = None
+    location: SpeakerLocation | None = None
+    links: SpeakerLinks | None = None
+    projects: list[SpeakerProject] = Field(default_factory=list)
+    announced_on: str | None = None
+    disciplines: list[str] = Field(default_factory=list)
     event_ids: list[str]
     talk_title: str | None = None
     abstract: str | None = None
@@ -59,6 +84,8 @@ class Event(Model):
     date: str
     date_precision: Literal["day", "month"] = "day"
     venue: str
+    venue_tour_url: HttpUrl | None = None
+    track: str | None = None
     start: datetime | None = None
     end: datetime | None = None
     cancelled: bool = False
@@ -103,6 +130,35 @@ class Event(Model):
         return self
 
 
+class FAQ(Model):
+    id: str
+    question: str
+    answer: str
+    event_id: str | None = None
+    source_ids: list[str] = Field(default_factory=list)
+
+
+class Sponsor(Model):
+    id: str
+    name: str
+    url: HttpUrl
+    city: str
+    blurb: str = ""
+
+
+class SupportOption(Model):
+    id: str
+    title: str
+    blurb: str
+
+
+class Theme(Model):
+    id: str
+    title: str
+    command: str
+    description: str
+
+
 class Catalogue(Model):
     schema_version: Literal[1] = 1
     version: str
@@ -112,21 +168,37 @@ class Catalogue(Model):
     events: list[Event]
     speakers: list[Speaker]
     sessions: list[Session]
+    faqs: list[FAQ] = Field(default_factory=list)
+    sponsors: list[Sponsor] = Field(default_factory=list)
+    support_options: list[SupportOption] = Field(default_factory=list)
+    themes: list[Theme] = Field(default_factory=list)
     sources: list[Source]
 
     @model_validator(mode="after")
     def validate_references(self):
         if self.published_at.utcoffset() is None:
             raise ValueError("Publication time requires a timezone")
-        for records in [self.events, self.speakers, self.sessions, self.sources]:
+        for records in [
+            self.events,
+            self.speakers,
+            self.sessions,
+            self.faqs,
+            self.sponsors,
+            self.support_options,
+            self.themes,
+            self.sources,
+        ]:
             if len({r.id for r in records}) != len(records):
                 raise ValueError("Duplicate record IDs")
         events, speakers, sources = (
             {r.id for r in rows} for rows in [self.events, self.speakers, self.sources]
         )
-        for row in [*self.events, *self.speakers, *self.sessions]:
+        for row in [*self.events, *self.speakers, *self.sessions, *self.faqs]:
             if not row.source_ids or not set(row.source_ids) <= sources:
                 raise ValueError(f"Missing evidence for {row.id}")
+        for row in self.faqs:
+            if row.event_id is not None and row.event_id not in events:
+                raise ValueError("FAQ references an unknown event")
         for row in self.speakers:
             if not set(row.event_ids) <= events:
                 raise ValueError("Unknown speaker event")
@@ -158,6 +230,19 @@ class Request(Model):
         "event",
         "agenda",
         "speakers",
+        "speaker",
+        "talks",
+        "talk",
+        "faq",
+        "venue",
+        "sponsors",
+        "conduct",
+        "themes",
+        "now",
+        "next",
+        "save",
+        "unsave",
+        "my_agenda",
         "tickets",
         "recordings",
         "search",
@@ -177,6 +262,8 @@ class Request(Model):
         "proposal_withdraw",
     ]
     event_id: str | None = Field(default=None, max_length=128)
+    speaker_id: str | None = Field(default=None, max_length=128)
+    session_id: str | None = Field(default=None, max_length=128)
     city: str | None = Field(default=None, max_length=100)
     query: str = Field(default="", max_length=4000)
     topic: str | None = Field(default=None, max_length=200)
@@ -215,11 +302,22 @@ class Request(Model):
         ):
             raise ValueError("Directory filters only apply to tools")
         if self.operation in TOOL_OPERATIONS and (
-            self.event_id or self.city or self.upcoming or self.past or self.topic or self.interests
+            self.event_id
+            or self.city
+            or self.upcoming
+            or self.past
+            or self.topic
+            or self.interests
+            or self.speaker_id
+            or self.session_id
         ):
             raise ValueError("Event filters do not apply to the tool directory")
         if self.operation in {"disciplines", "tool"} and self.query:
             raise ValueError("Directory search only applies to tools")
+        if self.speaker_id and self.operation not in {"speaker", "talk", "talks", "save", "unsave", "speakers"}:
+            raise ValueError("speaker_id only applies to speaker, talk, talks, speakers or save")
+        if self.session_id and self.operation not in {"talk", "save", "unsave", "agenda", "plan"}:
+            raise ValueError("session_id only applies to talk, save, unsave, agenda or plan")
         draft_operations = DRAFT_OPERATIONS | {"proposal_prepare", "proposal_submit"}
         if self.operation in draft_operations and self.draft is None:
             raise ValueError("This proposal operation requires a draft")
@@ -241,14 +339,20 @@ class Request(Model):
             raise ValueError("Proposal context belongs inside the draft")
         if self.upcoming and self.past:
             raise ValueError("Choose upcoming or past, not both")
-        if self.operation in {"event", "agenda", "tickets", "plan"} and not self.event_id:
+        if self.operation in {"event", "agenda", "tickets", "plan", "venue"} and not self.event_id:
             raise ValueError(f"{self.operation} requires event_id")
+        if self.operation == "speaker" and not self.speaker_id:
+            raise ValueError("speaker requires speaker_id")
+        if self.operation == "talk" and not self.session_id and not self.speaker_id and not self.query.strip():
+            raise ValueError("talk requires session_id, speaker_id or query")
+        if self.operation in {"save", "unsave"} and not self.session_id and not self.speaker_id:
+            raise ValueError(f"{self.operation} requires session_id or speaker_id")
         if self.operation in {"ask", "search"} and not self.query.strip():
             raise ValueError(f"{self.operation} requires query")
         if self.engine not in {"lookup", "auto"} and self.operation != "ask":
             raise ValueError("Model engines only apply to ask")
-        if self.format == "ics" and self.operation != "plan":
-            raise ValueError("ICS output is only supported for plan")
+        if self.format == "ics" and self.operation not in {"plan", "agenda", "my_agenda"}:
+            raise ValueError("ICS output is only supported for plan, agenda or my_agenda")
         return self
 
 

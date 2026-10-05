@@ -58,8 +58,8 @@ def agent_card(service):
             )
         )
     return AgentCard(
-        name="Agent Engineering HQ — AgentEng Conference",
-        description="AgentEng, the Agent Engineering Conference, and Agent Engineering HQ technical events in London and San Francisco. Discover published dates, speakers, agendas, registration links, proposal drafting and a tool directory across twelve agent-engineering disciplines. Anonymous requests use catalogue lookup with no model calls. London 2026 has an invited programme and no public CFP.",
+        name="Agent Engineering HQ: AgentEng Conference",
+        description="AgentEng, the Agent Engineering Conference, and Agent Engineering HQ technical events in London and San Francisco. Discover published dates, speakers, full talk abstracts, agendas, FAQ, venue, sponsors, code of conduct, registration links, proposal drafting and a tool directory across twelve agent-engineering disciplines. Anonymous requests use catalogue lookup with no model calls. London 2026 has an invited programme and no public CFP.",
         version="1.0",
         provider=AgentProvider(
             organization="Agent Engineering HQ", url="https://agentengineering.world"

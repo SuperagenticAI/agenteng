@@ -9,10 +9,11 @@ import threading
 from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
+from . import bookmarks as bookmark_store
 from .calendar import calendar
 from .catalogue import load_catalogue
 from .config import Settings
-from .models import Catalogue, Event, Request, Result
+from .models import Catalogue, Event, Request, Result, Session, Speaker
 from .participation import CITIES, DRAFT_OPERATIONS, PRIVATE_OPERATIONS, Participation
 from .tool_directory import TOOL_OPERATIONS, ToolDirectory, load_tool_directory
 
@@ -123,6 +124,65 @@ class Service:
             and (not request.upcoming or self.state(e) == "upcoming")
             and (not request.past or self.state(e) == "past")
         ]
+
+    def speaker_map(self) -> dict[str, Speaker]:
+        return {s.id: s for s in self.catalogue.speakers}
+
+    def session_map(self) -> dict[str, Session]:
+        return {s.id: s for s in self.catalogue.sessions}
+
+    def talk_payload(self, session: Session) -> dict:
+        speaker = self.speaker_map().get(session.speaker_id) if session.speaker_id else None
+        payload = session.model_dump(mode="json")
+        if speaker:
+            payload.update(
+                {
+                    "speaker_name": speaker.name,
+                    "speaker_role": speaker.role,
+                    "speaker_company": speaker.company,
+                    "abstract": speaker.abstract,
+                    "talk_title": speaker.talk_title or session.title,
+                    "disciplines": list(speaker.disciplines),
+                    "speaker": speaker.model_dump(mode="json"),
+                }
+            )
+        else:
+            payload.setdefault("abstract", None)
+            payload.setdefault("talk_title", session.title)
+            payload.setdefault("disciplines", [])
+        return payload
+
+    def resolve_session_id(self, request: Request) -> str | None:
+        if request.session_id:
+            return request.session_id
+        if request.speaker_id:
+            match = next(
+                (
+                    s
+                    for s in self.catalogue.sessions
+                    if s.speaker_id == request.speaker_id and s.kind == "talk"
+                ),
+                None,
+            )
+            return match.id if match else None
+        return None
+
+    def default_live_event_id(self, request: Request) -> str | None:
+        if request.event_id:
+            return request.event_id
+        scoped = self.matching_events(request)
+        live = [e for e in scoped if self.state(e) in {"upcoming", "ongoing"} and e.start and e.end]
+        if len(live) == 1:
+            return live[0].id
+        day = [
+            e
+            for e in scoped
+            if e.date_precision == "day" and e.start and e.end and self.state(e) != "cancelled"
+        ]
+        if len(day) == 1:
+            return day[0].id
+        london = next((e for e in day if e.id == "agenteng-london-2026"), None)
+        return london.id if london else (day[0].id if day else None)
 
     def lookup(self, request: Request) -> Result:
         if request.operation in TOOL_OPERATIONS:
@@ -360,17 +420,345 @@ class Service:
                 status="ok" if rows else "not_found",
             )
         if request.operation == "speakers":
-            rows = [s for s in self.catalogue.speakers if ids.intersection(s.event_ids)][
-                : request.limit
-            ]
+            rows = [s for s in self.catalogue.speakers if ids.intersection(s.event_ids)]
+            if request.speaker_id:
+                rows = [s for s in rows if s.id == request.speaker_id]
+            wanted = terms(request.query)
+            if wanted:
+                rows = [
+                    s
+                    for s in rows
+                    if wanted
+                    & terms(
+                        " ".join(
+                            [
+                                s.id,
+                                s.name,
+                                s.role,
+                                s.company,
+                                s.note or "",
+                                s.talk_title or "",
+                                s.abstract or "",
+                                " ".join(s.disciplines),
+                            ]
+                        )
+                    )
+                ]
+            rows = rows[: request.limit]
             return self.result(
                 f"{len(rows)} published speaker(s).",
                 [s.model_dump(mode="json") for s in rows],
                 [i for s in rows for i in s.source_ids],
                 status="ok" if rows else "not_found",
             )
+        if request.operation == "speaker":
+            speaker = self.speaker_map().get(request.speaker_id or "")
+            if not speaker:
+                return self.result(
+                    "Unknown speaker_id. Use speakers to list published speaker IDs.",
+                    status="not_found",
+                )
+            if ids and not ids.intersection(speaker.event_ids):
+                return self.result(
+                    "Speaker is not linked to the requested event filters.",
+                    status="not_found",
+                )
+            talk = next(
+                (
+                    self.talk_payload(s)
+                    for s in self.catalogue.sessions
+                    if s.speaker_id == speaker.id and s.kind == "talk"
+                ),
+                None,
+            )
+            data = speaker.model_dump(mode="json")
+            data["talk"] = talk
+            return self.result(
+                f"{speaker.name}: {speaker.talk_title or 'talk not announced'}.",
+                data,
+                speaker.source_ids,
+            )
+        if request.operation in {"talks", "talk"}:
+            rows = [
+                s
+                for s in self.catalogue.sessions
+                if s.event_id in ids and (s.kind == "talk" or s.speaker_id)
+            ]
+            if request.session_id:
+                rows = [s for s in rows if s.id == request.session_id]
+            if request.speaker_id:
+                rows = [s for s in rows if s.speaker_id == request.speaker_id]
+            wanted = terms(request.query or request.topic or "")
+            if wanted:
+                rows = [
+                    s
+                    for s in rows
+                    if wanted
+                    & terms(
+                        " ".join(
+                            [
+                                s.title,
+                                " ".join(s.topics),
+                                " ".join(self.sources[i].text for i in s.source_ids),
+                                (
+                                    self.speaker_map()[s.speaker_id].abstract
+                                    if s.speaker_id and s.speaker_id in self.speaker_map()
+                                    else ""
+                                )
+                                or "",
+                                (
+                                    self.speaker_map()[s.speaker_id].name
+                                    if s.speaker_id and s.speaker_id in self.speaker_map()
+                                    else ""
+                                ),
+                            ]
+                        )
+                    )
+                ]
+            if request.operation == "talk":
+                if not rows:
+                    return self.result("No published talk matched.", status="not_found")
+                session = rows[0]
+                return self.result(
+                    f"Talk: {session.title}.",
+                    self.talk_payload(session),
+                    session.source_ids,
+                )
+            rows = rows[: request.limit]
+            return self.result(
+                f"{len(rows)} published talk(s).",
+                [self.talk_payload(s) for s in rows],
+                [i for s in rows for i in s.source_ids],
+                status="ok" if rows else "not_found",
+            )
+        if request.operation == "faq":
+            rows = list(self.catalogue.faqs)
+            if request.event_id:
+                rows = [f for f in rows if f.event_id in {None, request.event_id}]
+            wanted = terms(request.query)
+            if wanted:
+                rows = [
+                    f for f in rows if wanted & terms(f.question + " " + f.answer)
+                ]
+            rows = rows[: request.limit]
+            return self.result(
+                f"{len(rows)} FAQ entr{'y' if len(rows) == 1 else 'ies'}.",
+                [f.model_dump(mode="json") for f in rows],
+                [i for f in rows for i in f.source_ids],
+                status="ok" if rows else "not_found",
+            )
+        if request.operation == "venue":
+            event = self.events.get(request.event_id or "")
+            if not event:
+                return self.result("Unknown event_id.", status="not_found")
+            accessibility = next(
+                (
+                    f
+                    for f in self.catalogue.faqs
+                    if "accessible" in f.question.casefold()
+                    and f.event_id in {None, event.id}
+                ),
+                None,
+            )
+            data = {
+                "event_id": event.id,
+                "venue": event.venue,
+                "city": event.city,
+                "timezone": event.timezone,
+                "track": event.track or "single",
+                "venue_tour_url": str(event.venue_tour_url) if event.venue_tour_url else None,
+                "accessibility": accessibility.answer if accessibility else None,
+                "start": event.start.isoformat() if event.start else None,
+                "end": event.end.isoformat() if event.end else None,
+            }
+            source_ids = list(event.source_ids)
+            if accessibility:
+                source_ids.extend(accessibility.source_ids)
+            return self.result(
+                f"Venue for {event.title}: {event.venue}.",
+                data,
+                source_ids,
+            )
+        if request.operation == "sponsors":
+            sponsors = list(self.catalogue.sponsors)
+            if request.city:
+                sponsors = [
+                    s for s in sponsors if s.city.casefold() == request.city.casefold()
+                ]
+            contact = self.sources.get("sponsor-contact") or self.sources.get("contact")
+            data = {
+                "sponsors": [s.model_dump(mode="json") for s in sponsors],
+                "support_options": [
+                    s.model_dump(mode="json") for s in self.catalogue.support_options
+                ],
+                "sponsor_email": None,
+                "note": (
+                    "London 2026 lists practical support options rather than founding or title packages. "
+                    "San Francisco events list published partners."
+                ),
+            }
+            if contact:
+                match = re.search(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}", contact.text)
+                if match:
+                    data["sponsor_email"] = match.group()
+            source_ids = [
+                s.id for s in self.catalogue.sources if s.kind in {"sponsor", "sponsorship"}
+            ]
+            return self.result(
+                f"{len(sponsors)} published sponsor(s); {len(self.catalogue.support_options)} support option(s).",
+                data,
+                source_ids or ([contact.id] if contact else []),
+                status="ok" if sponsors or self.catalogue.support_options else "not_found",
+            )
+        if request.operation == "conduct":
+            conduct = self.sources.get("code-of-conduct")
+            faq = next(
+                (
+                    f
+                    for f in self.catalogue.faqs
+                    if "code of conduct" in f.question.casefold()
+                ),
+                None,
+            )
+            if not conduct and not faq:
+                return self.result(
+                    "No published code of conduct summary in this catalogue.",
+                    status="not_found",
+                )
+            data = {
+                "url": "https://agentengineering.world/code-of-conduct",
+                "report_email": "conduct@super-agentic.ai",
+                "summary": (conduct.text if conduct else faq.answer),
+                "terms_url": "https://agentengineering.world/terms",
+            }
+            return self.result(
+                "Code of conduct applies to attendees, speakers, partners, volunteers and organisers.",
+                data,
+                [conduct.id] if conduct else faq.source_ids,
+            )
+        if request.operation == "themes":
+            rows = list(self.catalogue.themes)[: request.limit]
+            source_ids = [
+                s.id for s in self.catalogue.sources if s.kind == "theme"
+            ]
+            return self.result(
+                f"{len(rows)} program theme(s).",
+                [t.model_dump(mode="json") for t in rows],
+                source_ids,
+                status="ok" if rows else "not_found",
+            )
+        if request.operation in {"now", "next"}:
+            event_id = self.default_live_event_id(request)
+            if not event_id:
+                return self.result(
+                    "Choose an event_id with a published timed agenda.",
+                    status="unavailable",
+                )
+            event = self.events[event_id]
+            now = self.clock().astimezone(ZoneInfo(event.timezone))
+            timed = [
+                s
+                for s in self.catalogue.sessions
+                if s.event_id == event_id and s.start and s.end
+            ]
+            timed.sort(key=lambda s: s.start)
+            current = next((s for s in timed if s.start <= now < s.end), None)
+            upcoming = next((s for s in timed if s.start > now), None)
+            if request.operation == "now":
+                if current:
+                    return self.result(
+                        f"Now: {current.title}.",
+                        {
+                            "event_id": event_id,
+                            "as_of": now.isoformat(),
+                            "session": self.talk_payload(current),
+                        },
+                        current.source_ids,
+                    )
+                return self.result(
+                    "Nothing is on right now in the published agenda.",
+                    {
+                        "event_id": event_id,
+                        "as_of": now.isoformat(),
+                        "session": None,
+                        "next": self.talk_payload(upcoming) if upcoming else None,
+                    },
+                    event.source_ids,
+                    status="not_found",
+                )
+            if upcoming:
+                return self.result(
+                    f"Next: {upcoming.title}.",
+                    {
+                        "event_id": event_id,
+                        "as_of": now.isoformat(),
+                        "session": self.talk_payload(upcoming),
+                    },
+                    upcoming.source_ids,
+                )
+            return self.result(
+                "No later sessions remain in the published agenda.",
+                {"event_id": event_id, "as_of": now.isoformat(), "session": None},
+                event.source_ids,
+                status="not_found",
+            )
+        if request.operation in {"save", "unsave", "my_agenda"}:
+            if request.operation in {"save", "unsave"}:
+                session_id = self.resolve_session_id(request)
+                if not session_id or session_id not in self.session_map():
+                    return self.result(
+                        "Unknown session. Pass session_id or speaker_id for a published talk.",
+                        status="not_found",
+                    )
+                saved = (
+                    bookmark_store.add_bookmark(session_id)
+                    if request.operation == "save"
+                    else bookmark_store.remove_bookmark(session_id)
+                )
+                action = "Saved" if request.operation == "save" else "Removed"
+                return self.result(
+                    f"{action} {session_id}. {len(saved)} bookmark(s) on this machine.",
+                    {
+                        "session_id": session_id,
+                        "session_ids": saved,
+                        "path": str(bookmark_store.bookmarks_path()),
+                    },
+                    self.session_map()[session_id].source_ids,
+                )
+            saved_ids = bookmark_store.load_bookmarks()
+            rows = [self.session_map()[i] for i in saved_ids if i in self.session_map()]
+            if request.event_id:
+                rows = [s for s in rows if s.event_id == request.event_id]
+            artifact = None
+            if request.format == "ics" and rows:
+                by_event: dict[str, list] = {}
+                for session in rows:
+                    by_event.setdefault(session.event_id, []).append(session)
+                # Export the first event group that has timed sessions.
+                artifact = None
+                for event_id, sessions in by_event.items():
+                    timed = [s for s in sessions if s.start and s.end]
+                    if timed:
+                        artifact = calendar(self.events[event_id], timed, self.clock())
+                        break
+                if artifact is None:
+                    return self.result(
+                        "Bookmarked sessions have no published times; calendar export unavailable.",
+                        [self.talk_payload(s) for s in rows],
+                        [i for s in rows for i in s.source_ids],
+                        status="unavailable",
+                    )
+            return self.result(
+                f"{len(rows)} bookmarked session(s) on this machine.",
+                [self.talk_payload(s) for s in rows],
+                [i for s in rows for i in s.source_ids],
+                artifact=artifact,
+                status="ok" if rows else "not_found",
+            )
         if request.operation in {"agenda", "plan"}:
             rows = [s for s in self.catalogue.sessions if s.event_id in ids]
+            if request.session_id:
+                rows = [s for s in rows if s.id == request.session_id]
             wanted = terms(" ".join([request.topic or "", *request.interests]))
             if wanted:
                 rows = [

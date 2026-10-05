@@ -158,6 +158,43 @@ def tool(ctx, tool_id):
     dispatch(ctx, dict(operation="tool", tool_id=tool_id))
 
 
+
+def local_service(ctx):
+    """Build a local Service for ID resolution helpers."""
+    from dataclasses import replace
+
+    settings = Settings.from_env()
+    if ctx.obj.get("catalogue"):
+        settings = replace(settings, catalogue_path=ctx.obj["catalogue"])
+    return Service(settings)
+
+
+def resolve_talk(ctx, identifier: str, event_id: str | None = None):
+    """Resolve a session or speaker identifier to a talk session row."""
+    if ctx.obj.get("remote"):
+        result = dispatch(
+            ctx,
+            dict(operation="talks", event_id=event_id, query=identifier),
+            quiet=True,
+        )
+        rows = result.data if isinstance(result.data, list) else []
+    else:
+        service = local_service(ctx)
+        result = service.lookup(
+            Request(operation="talks", event_id=event_id, query=identifier)
+        )
+        rows = result.data if isinstance(result.data, list) else []
+    exact = [
+        row
+        for row in rows
+        if row.get("id") == identifier or row.get("speaker_id") == identifier
+    ]
+    if exact:
+        return exact[0]
+    if len(rows) == 1:
+        return rows[0]
+    return None
+
 def write_private(path, text):
     """Never replace an existing file or follow a destination symlink."""
     fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
@@ -188,24 +225,169 @@ def event(ctx, event_id):
 @main.command()
 @click.argument("event_id", required=False)
 @click.option("--topic")
+@click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
+@click.option("--output", type=click.Path(dir_okay=False), help="Write an .ics calendar when --format ics.")
 @click.pass_context
-def agenda(ctx, event_id, topic):
-    """Read an event's public agenda."""
+def agenda(ctx, event_id, topic, output_format, output):
+    """Read an event's public agenda; optionally export .ics."""
     from .interactive import require_event_id
 
     dispatch(
         ctx,
-        dict(operation="agenda", event_id=require_event_id(ctx, event_id), topic=topic),
+        dict(
+            operation="agenda",
+            event_id=require_event_id(ctx, event_id),
+            topic=topic,
+            format=output_format,
+        ),
+        output,
     )
 
 
 @main.command()
 @click.option("--event", "event_id")
 @click.option("--city")
+@click.option("--search", "query", default="", help="Match name, company, talk title or abstract.")
 @click.pass_context
-def speakers(ctx, event_id, city):
-    """List published speakers."""
-    dispatch(ctx, dict(operation="speakers", event_id=event_id, city=city))
+def speakers(ctx, event_id, city, query):
+    """List published speakers with roles, companies, talks and abstracts."""
+    dispatch(ctx, dict(operation="speakers", event_id=event_id, city=city, query=query))
+
+
+@main.command("speaker")
+@click.argument("speaker_id")
+@click.option("--event", "event_id")
+@click.pass_context
+def speaker_detail(ctx, speaker_id, event_id):
+    """Read one speaker: bio fields, links, projects, disciplines and full abstract."""
+    dispatch(ctx, dict(operation="speaker", speaker_id=speaker_id, event_id=event_id))
+
+
+@main.command()
+@click.option("--event", "event_id")
+@click.option("--search", "query", default="", help="Match talk title, abstract or speaker.")
+@click.option("--speaker", "speaker_id")
+@click.pass_context
+def talks(ctx, event_id, query, speaker_id):
+    """List published talks with full abstracts."""
+    dispatch(
+        ctx,
+        dict(operation="talks", event_id=event_id, query=query, speaker_id=speaker_id),
+    )
+
+
+@main.command("talk")
+@click.argument("identifier", required=False)
+@click.option("--event", "event_id")
+@click.option("--search", "query", default="")
+@click.pass_context
+def talk_detail(ctx, identifier, event_id, query):
+    """Read one talk by session ID, speaker ID, or --search text."""
+    payload = dict(operation="talk", event_id=event_id, query=query)
+    if identifier:
+        row = resolve_talk(ctx, identifier, event_id)
+        if row:
+            payload["session_id"] = row["id"]
+            payload["query"] = ""
+        elif not query:
+            payload["query"] = identifier
+    dispatch(ctx, payload)
+
+
+@main.command()
+@click.option("--event", "event_id")
+@click.option("--search", "query", default="", help="Match FAQ question or answer text.")
+@click.pass_context
+def faq(ctx, event_id, query):
+    """Read published FAQ answers from the conference website."""
+    dispatch(ctx, dict(operation="faq", event_id=event_id, query=query))
+
+
+@main.command()
+@click.argument("event_id", required=False)
+@click.pass_context
+def venue(ctx, event_id):
+    """Read venue address, tour link, track and accessibility notes."""
+    from .interactive import require_event_id
+
+    dispatch(ctx, dict(operation="venue", event_id=require_event_id(ctx, event_id)))
+
+
+@main.command()
+@click.option("--city")
+@click.pass_context
+def sponsors(ctx, city):
+    """List published sponsors and London support options."""
+    dispatch(ctx, dict(operation="sponsors", city=city))
+
+
+@main.command()
+@click.pass_context
+def conduct(ctx):
+    """Read the published code of conduct summary and report contact."""
+    dispatch(ctx, dict(operation="conduct"))
+
+
+@main.command()
+@click.pass_context
+def themes(ctx):
+    """List published program themes from the website."""
+    dispatch(ctx, dict(operation="themes"))
+
+
+@main.command("now")
+@click.argument("event_id", required=False)
+@click.pass_context
+def now_cmd(ctx, event_id):
+    """Show what is on now from the published timed agenda."""
+    dispatch(ctx, dict(operation="now", event_id=event_id))
+
+
+@main.command("next")
+@click.argument("event_id", required=False)
+@click.pass_context
+def next_cmd(ctx, event_id):
+    """Show the next published session from the timed agenda."""
+    dispatch(ctx, dict(operation="next", event_id=event_id))
+
+
+@main.command("save")
+@click.argument("identifier")
+@click.pass_context
+def save_cmd(ctx, identifier):
+    """Bookmark a talk locally by session ID or speaker ID (this machine only)."""
+    row = resolve_talk(ctx, identifier)
+    if not row:
+        raise click.ClickException(
+            "Could not resolve a single talk. Pass a session ID or speaker ID from `ae talks`."
+        )
+    dispatch(ctx, dict(operation="save", session_id=row["id"]))
+
+
+@main.command("unsave")
+@click.argument("identifier")
+@click.pass_context
+def unsave_cmd(ctx, identifier):
+    """Remove a local talk bookmark by session ID or speaker ID."""
+    row = resolve_talk(ctx, identifier)
+    if row:
+        dispatch(ctx, dict(operation="unsave", session_id=row["id"]))
+    else:
+        dispatch(ctx, dict(operation="unsave", speaker_id=identifier))
+
+
+@main.command("my-agenda")
+@click.option("--event", "event_id")
+@click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
+@click.option("--output", type=click.Path(dir_okay=False))
+@click.pass_context
+def my_agenda(ctx, event_id, output_format, output):
+    """Show locally bookmarked talks; optional .ics export."""
+    dispatch(
+        ctx,
+        dict(operation="my_agenda", event_id=event_id, format=output_format),
+        output,
+    )
 
 
 @main.command()

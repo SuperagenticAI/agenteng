@@ -60,7 +60,12 @@ read('src/data/speakers.ts');
 read('src/data/tickets.ts');
 read('src/data/london-events.ts');
 read('src/data/contact.ts');
+read('src/data/venue.ts');
+read('src/data/disciplines.ts');
 const sfText = read('src/pages/SanFrancisco.tsx');
+const sponsorText = read('src/components/SponsorStrip.tsx');
+const tracksText = read('src/components/ProgramTracksSection.tsx');
+const sponsorsPage = read('src/pages/Sponsors.tsx');
 const roster = constant('roster');
 values.set('speakers', [...roster].sort((a,b) => b.announcedOn.localeCompare(a.announcedOn)));
 values.set('whoIsSpeakingAnswer', 'The lineup: ' + roster.map(
@@ -94,15 +99,24 @@ for (const required of ['DTSTART:20261016T070000Z','DTEND:20261016T153000Z',
   if (!londonICS.includes(required)) throw new Error('London calendar drift: '+required);
 }
 const calendarSource=source('london-calendar',site+'/agenteng-london-2026.ics',londonICS,london,'calendar');
+const venueTour = constant('VENUE_TOUR_URL');
 const events = [{id:london,title:'AgentEng London 2026',city:'London',timezone:'Europe/London',
   date:'2026-10-16',venue:'Everyman Canary Wharf, Crossrail Place, London E14 5AR',
+  venue_tour_url:venueTour,track:'single',
   start:'2026-10-16T08:00:00+01:00',end:'2026-10-16T16:30:00+01:00',
   registration_url:constant('LUMA_EVENT_URL'),offers,speaker_submission_status:'invited_only',source_ids:[londonSource,ticketSource,calendarSource,policySource]}];
+const speakerDisciplines = constant('SPEAKER_DISCIPLINES');
 const speakers = roster.map(s => {
   const abstract = s.talk ? [].concat(s.talk.abstract).join('\n\n') : null;
+  const projects = (s.projects || []).map(p => ({name:p.name,url:p.url,blurb:p.blurb || ''}));
+  const links = s.links ? Object.fromEntries(Object.entries(s.links).filter(([,v]) => v)) : null;
+  const location = s.location ? {city:s.location.city || null,country:s.location.country} : null;
+  const disciplines = speakerDisciplines[s.slug] || [];
   const id = source('speaker-'+s.slug,site+'/speakers#'+s.slug,
     `${s.name}, ${s.role} at ${s.company}. ${s.talk?.title ?? 'Talk not announced'}. ${abstract ?? ''}`,london,'speaker');
-  return {id:s.slug,name:s.name,role:s.role,company:s.company,event_ids:[london],
+  return {id:s.slug,name:s.name,role:s.role,company:s.company,
+    company_url:s.companyUrl || null,note:s.note || null,location,links,projects,
+    announced_on:s.announcedOn || null,disciplines,event_ids:[london],
     talk_title:s.talk?.title ?? null,abstract,source_ids:[id]};
 });
 const topics = text => [...new Set(['memory','evaluation','harness','context','security','voice','coding','mcp','acp','inference']
@@ -140,12 +154,62 @@ for (const e of [
     sessions.push({id:e.id+'-'+i,event_id:e.id,title:s.talk,kind:'talk',speaker_id:sid,topics:topics(s.talk),source_ids:[sr]});
   }
 }
-for (const [i,f] of constant('faqs').entries()) source('faq-'+i,site+'/#faq',f.question+'\n'+f.answer,london,'faq');
+const faqs = constant('faqs').map((f,i) => {
+  const sid = source('faq-'+i,site+'/#faq',f.question+'\n'+f.answer,london,'faq');
+  return {id:'faq-'+i,question:f.question,answer:f.answer,event_id:london,source_ids:[sid]};
+});
+const conductAnswer = faqs.find(f => /code of conduct/i.test(f.question))?.answer
+  || 'Read the code of conduct at https://agentengineering.world/code-of-conduct';
+const conductSource = source('code-of-conduct',site+'/code-of-conduct',conductAnswer,london,'conduct');
+const themes = [
+  {id:'agent-optimization',title:'Agent Optimization',command:'optimize',
+    description:'Automatically optimize agents across all layers: prompts, RAG, protocols, memory, and context.'},
+  {id:'agent-experience',title:'Agent Experience (AX)',command:'design-ax',
+    description:'Designing machine-readable interfaces, environments, and feedback loops that shape Agent Experience.'},
+  {id:'agentic-coding',title:'Agentic Coding',command:'future-code',
+    description:'How software development evolves as agents become first-class contributors to the SDLC.'},
+  {id:'agentic-business-models',title:'Agentic Business Models',command:'business-models',
+    description:'Defining the business models for agentic AI. Does SaaS still work, or is FDE the only way forward? Explore and share business models.'},
+];
+for (const theme of themes) {
+  if (!tracksText.includes(theme.title) || !tracksText.includes(theme.description)) {
+    throw new Error('Program theme drift: '+theme.id);
+  }
+  source('theme-'+theme.id,site+'/#program',theme.title+'\n'+theme.description,london,'theme');
+}
+const sponsors = [
+  {id:'arize-ai',name:'Arize AI',url:'https://arize.com',city:'San Francisco',
+    blurb:'AI observability and evaluation for agents in production.'},
+  {id:'cocoindex',name:'CocoIndex',url:'https://cocoindex.io',city:'San Francisco',
+    blurb:'Open-source data indexing that keeps agent context fresh.'},
+];
+for (const sponsor of sponsors) {
+  if (!sponsorText.includes(sponsor.name) || !sponsorText.includes(sponsor.url) || !sponsorText.includes(sponsor.blurb)) {
+    throw new Error('Sponsor drift: '+sponsor.id);
+  }
+  source('sponsor-'+sponsor.id,site+'/san-francisco',sponsor.name+'. '+sponsor.blurb,null,'sponsor');
+}
+const support_options = [
+  {id:'refreshments',title:'Refreshments',
+    blurb:'Help with arrival tea and pastries or lunch. A warm, practical way to be present without a trade-show package.'},
+  {id:'after-party',title:'After-party / drinks',
+    blurb:'Support an evening gathering after the talks, if we run one. Ideal for hallway conversations and informal recognition.'},
+  {id:'recording',title:'Recording support',
+    blurb:'Help with filming, editing, or publishing the talks. Credit on the released recordings and related posts.'},
+];
+for (const option of support_options) {
+  if (!sponsorsPage.includes(option.title) || !sponsorsPage.includes(option.blurb)) {
+    throw new Error('Support option drift: '+option.id);
+  }
+  source('support-'+option.id,site+'/sponsorships',option.title+'\n'+option.blurb,london,'sponsorship');
+}
 source('hq',site+'/agent-engineering-hq','Agent Engineering HQ organises practitioner events on building, evaluating and operating production AI agents, with communities in San Francisco and London.',null);
 source('contact',site+'/',`Public organiser contact: ${constant('ORGANISER_EMAIL')}`,null);
+source('sponsor-contact',site+'/sponsorships',`Sponsorship enquiry: ${constant('ORGANISER_EMAIL')}`,null,'sponsorship');
 const source_hash=hash.digest('hex');
 const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),published_at:new Date().toISOString(),
-  source_commit:execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),source_hash,events,speakers,sessions,sources};
+  source_commit:execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),source_hash,
+  events,speakers,sessions,faqs,sponsors,support_options,themes,sources};
 fs.mkdirSync(path.dirname(output),{recursive:true});
 fs.writeFileSync(output,JSON.stringify(catalogue,null,2)+'\n');
-console.log(`Exported ${events.length} events, ${speakers.length} speakers, ${sessions.length} sessions to ${output}`);
+console.log(`Exported ${events.length} events, ${speakers.length} speakers, ${sessions.length} sessions, ${faqs.length} faqs to ${output}`);

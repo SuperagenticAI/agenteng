@@ -101,7 +101,11 @@ def _event_submenu(ctx, event: dict) -> None:
             [
                 Choice("Overview", "overview"),
                 Choice("Speakers", "speakers"),
+                Choice("Talks and abstracts", "talks"),
                 Choice("Agenda", "agenda"),
+                Choice("What's on now / next", "live"),
+                Choice("Venue", "venue"),
+                Choice("FAQ", "faq"),
                 Choice("Tickets", "tickets"),
                 Choice("Recordings", "recordings"),
                 Choice("Open registration link", "register"),
@@ -114,8 +118,17 @@ def _event_submenu(ctx, event: dict) -> None:
             _show(ctx, dict(operation="event", event_id=event_id))
         elif action == "speakers":
             _show(ctx, dict(operation="speakers", event_id=event_id))
+        elif action == "talks":
+            _show(ctx, dict(operation="talks", event_id=event_id))
         elif action == "agenda":
             _show(ctx, dict(operation="agenda", event_id=event_id))
+        elif action == "live":
+            _show(ctx, dict(operation="now", event_id=event_id))
+            _show(ctx, dict(operation="next", event_id=event_id))
+        elif action == "venue":
+            _show(ctx, dict(operation="venue", event_id=event_id))
+        elif action == "faq":
+            _show(ctx, dict(operation="faq", event_id=event_id))
         elif action == "tickets":
             _show(ctx, dict(operation="tickets", event_id=event_id))
         elif action == "recordings":
@@ -236,6 +249,10 @@ def run_menu(ctx) -> None:
                 [
                     Choice("Browse events", "events"),
                     Choice("Search the catalogue", "search"),
+                    Choice("FAQ / code of conduct", "faq"),
+                    Choice("Sponsors and support", "sponsors"),
+                    Choice("Program themes", "themes"),
+                    Choice("My bookmarked agenda", "my_agenda"),
                     Choice("Browse the tool directory", "tools"),
                     Choice("Draft a talk or event idea", "draft"),
                     Choice("Connect a coding agent", "connect"),
@@ -263,6 +280,15 @@ def run_menu(ctx) -> None:
                 query = _text("Search query")
                 if query:
                     _show(ctx, dict(operation="search", query=query))
+            elif action == "faq":
+                _show(ctx, dict(operation="faq"))
+                _show(ctx, dict(operation="conduct"))
+            elif action == "sponsors":
+                _show(ctx, dict(operation="sponsors"))
+            elif action == "themes":
+                _show(ctx, dict(operation="themes"))
+            elif action == "my_agenda":
+                _show(ctx, dict(operation="my_agenda"))
             elif action == "tools":
                 _browse_tools(ctx)
             elif action == "draft":
