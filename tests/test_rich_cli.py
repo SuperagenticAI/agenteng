@@ -75,7 +75,7 @@ def test_discover_description_wraps_fully():
     render_result(result, "discover", console)
     text = console.export_text()
     # Strip box-drawing borders so wrapped lines join as words, not "technical | | events".
-    cleaned = re.sub(r"[^\w\s.,;:"'/-]+", " ", text)
+    cleaned = re.sub(r"[^\w\s.,;:'\/-]+", " ", text)
     collapsed = " ".join(cleaned.split())
     assert "technical events" in collapsed
     assert "and te " not in collapsed
