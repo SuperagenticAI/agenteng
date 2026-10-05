@@ -111,6 +111,48 @@ policy and redeploys on every push to `main`. Disable it so only the
 `push-new-tag` trigger deploys the service.
 See [Google's trigger setup guide](https://docs.cloud.google.com/build/docs/automating-builds/create-manage-triggers).
 
+### Disable the per-commit Cloud Run branch trigger
+
+GitHub Actions never deploys Cloud Run for this repository, and PyPI publishing
+is tag-only (`.github/workflows/publish.yml`). The Cloud Build triggers live in
+Google Cloud, not in this repository, so changing them needs console or `gcloud`
+access. They show up as GitHub check runs:
+
+| Check run name | When it runs | Keep? |
+| --- | --- | --- |
+| `push-new-tag (agenteng-510707)` | New `v*` tags | Yes (release deploy) |
+| `rmgpgab-agenteng-europe-west1-SuperagenticAI-agenteng--mappc (agenteng-510707)` | Every push to `main` | No (wizard branch trigger) |
+
+**Console**
+
+1. Open [Cloud Build Triggers](https://console.cloud.google.com/cloud-build/triggers?project=agenteng-510707) in `europe-west1`.
+2. Find the branch trigger whose check name starts with `rmgpgab-agenteng-`
+   (created by the Cloud Run source deploy wizard for branch `main`).
+3. **Disable** (or delete) it.
+4. Confirm the release trigger remains: event **Push new tag**, tag regex
+   `^v.*$`, config `cloudbuild.yaml`.
+5. On the release trigger, make sure `_PUBLIC_URL` is not overridden with an
+   empty value, so the `cloudbuild.yaml` default (`https://a2a.agentengineering.world`)
+   applies. See [Custom domain and operation](#custom-domain-and-operation).
+
+**gcloud** (after `gcloud auth login`):
+
+```bash
+# List triggers and find the branch (main) trigger name
+gcloud builds triggers list --region=europe-west1 --project=agenteng-510707
+
+# Disable it: export, set `disabled: true`, then import
+gcloud builds triggers export NAME --region=europe-west1 \
+  --project=agenteng-510707 --destination=trigger.yaml
+# edit trigger.yaml and add: disabled: true
+gcloud builds triggers import --region=europe-west1 \
+  --project=agenteng-510707 --source=trigger.yaml
+```
+
+After the branch trigger is disabled, an ordinary push to `main` must not create
+a Google Cloud Build check run; only a new `v*` tag should start
+`push-new-tag` with `cloudbuild.yaml`.
+
 The YAML already supplies these defaults. You only need substitutions if you
 change the names or region:
 

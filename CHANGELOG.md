@@ -6,6 +6,7 @@
 
 - Default the Cloud Build `_PUBLIC_URL` substitution to `https://a2a.agentengineering.world`, so tag deploys keep the custom domain instead of resetting `AGENTENG_PUBLIC_URL` to the generated `run.app` URL (which made the custom domain return `400 Invalid host header`). Forks can set `_PUBLIC_URL` empty or to another origin on their trigger.
 - Document that only the `push-new-tag` Cloud Build trigger should deploy; disable the Cloud Run wizard branch trigger.
+- Add console and `gcloud` steps for disabling the Cloud Run wizard branch trigger to the deployment guide.
 
 ## 0.0.5 - 2026-10-05
 
