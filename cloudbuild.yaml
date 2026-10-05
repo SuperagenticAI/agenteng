@@ -6,9 +6,11 @@ substitutions:
   _SERVICE: agenteng
   _REPOSITORY: cloud-run-source-deploy
   _RUNTIME_ACCOUNT: agenteng-runtime
-  # Leave empty for the generated run.app URL. Set a custom HTTPS origin only
-  # after its domain routing and certificate are ready.
-  _PUBLIC_URL: ''
+  # Public HTTPS origin advertised by the service and trusted for Host checks.
+  # Defaults to the production custom domain so tag deploys keep it. Forks
+  # override this on their trigger: set it empty for the generated run.app URL,
+  # or to another HTTPS origin whose routing and certificate are ready.
+  _PUBLIC_URL: 'https://a2a.agentengineering.world'
 steps:
   - id: verify-release
     name: python:3.12-slim

@@ -144,3 +144,10 @@ def test_failed_traffic_update_does_not_record_a_successful_url(deployment):
     assert result.returncode != 0
     assert calls[-1][:3] == ["run", "services", "update-traffic"]
     assert not url.exists()
+
+
+def test_cloudbuild_defaults_public_url_to_custom_domain():
+    """Tag deploys must keep the production origin unless a trigger overrides it."""
+    config = (SCRIPT.parents[1] / "cloudbuild.yaml").read_text()
+    assert "  _PUBLIC_URL: 'https://a2a.agentengineering.world'\n" in config
+    assert "DEPLOY_PUBLIC_URL=${_PUBLIC_URL}" in config
