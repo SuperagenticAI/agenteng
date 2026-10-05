@@ -219,15 +219,24 @@ This deployment keeps `AGENTENG_ENABLE_INTAKE=0`. Offline drafts can be prepared
 
 The process limit is 300 POST/DELETE requests per minute. For quotas across replicas or per caller, use the HTTPS gateway/load balancer. Both inference flags remain off in this public image. Optional inference requires a separate operator configuration with the extra installed, a provider and bearer credential. Per-request limits do not impose a daily monetary budget across replicas; keep it operator-only and configure provider/project spending limits before enabling it.
 
-Publish the installer on the main website after building and staging the release:
+Publish the installer on the main website after staging the release:
 
 ```sh
-uv build
 uv run python scripts/stage-release.py
-# Copy dist/website-public contents into the website's public/ directory and publish it.
+# Copy dist/website-public/install.sh (plus the staged guide and feeds) into
+# the website public/ directory and publish it.
 ```
 
-That publishes `/install.sh`, `/releases/0.0.1/agenteng-0.0.1-py3-none-any.whl` and its `SHA256SUMS`. Integrate the staged files into your website deployment pipeline. The service also serves the same installer, which downloads its versioned release from the main website. Test the three public URLs before announcing installation. The script uses HTTPS and verifies the wheel checksum before creating a user-owned Python environment; it needs Python 3.12+, curl, venv and pip. It refuses to replace an unrelated `agenteng` executable.
+That stages `/install.sh` plus discovery feeds. A website wheel mirror is not
+required: the installer installs the latest AgentEng from PyPI via `uv tool install`
+(with a pip virtualenv fallback). The Cloud Run service also serves the same
+script at `/install.sh`; `https://a2a.agentengineering.world/install.sh` is the
+advertised URL for now. The main site copy (`public/install.sh` in
+agent-engineering-summit) only becomes the advertised URL once GoDaddy Website
+Security excludes `/install.sh` from its bot check; until then curl receives an
+HTML challenge page with HTTP 200, which must never be piped to `sh`. Verify with
+`curl -fsSL <url> | head -1` (expect `#!/bin/sh`) before announcing installation. The installer needs a POSIX shell and network access; it bootstraps
+uv when missing and never uses sudo.
 
 Refresh `catalogue.json` from the website sources and rebuild whenever public event content changes. The exporter fails on known inline/calendar metadata drift, rather than silently reusing it. The API reports the source commit/hash, export time and staleness. Catalogue refresh is a build-time action; there is no polling job or private database connection in this release.
 

@@ -70,21 +70,25 @@ hide:
 
 ## 🚀 Installation and first run { #installation-and-first-run }
 
-Start with Python 3.12+ and [uv](https://docs.astral.sh/uv/). Install from the
-source checkout, including the optional local MCP server:
+Install the latest AgentEng from PyPI. The one-liner installs the CLI with the
+`server` extras (MCP + A2A). RLM stays optional and is not included.
+The installer is served at [a2a.agentengineering.world/install.sh](https://a2a.agentengineering.world/install.sh).
+It moves to agentengineering.world/install.sh once that host lets non-browser
+clients through its bot check.
 
 ```sh title="Install AgentEng"
-git clone https://github.com/SuperagenticAI/agenteng.git
-cd agenteng
-uv tool install '.[mcp]'
+curl -fsSL https://a2a.agentengineering.world/install.sh | sh
+# Or: uv tool install --upgrade 'agenteng[server]'
 agenteng discover
+agenteng events --upcoming
+agenteng connect cursor
 ```
 
 **Your first result:** published London and San Francisco events, with supporting
 source links. The CLI uses its bundled snapshot, so event lookup, tool browsing
 and local drafting work offline with **zero model calls** and no provider key.
 
-The package and command are both named `agenteng`. This source prepares the **0.0.3 alpha** release.
+The package and command are both named `agenteng`. This source tracks the **0.0.3 alpha** release.
 Run `agenteng --help` to explore commands, or `agenteng COMMAND --help` for options.
 Installing the CLI does not start or publish a hosted service.
 
