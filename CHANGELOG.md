@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Human-readable Rich cards and tables on a TTY, with `--json` / `AGENTENG_OUTPUT=json` / piped stdout keeping the shared Result JSON contract for agents.
+- Interactive `ae` / `agenteng` menu (questionary) for browsing events, search, tools, proposals and agent connection.
+
 ## 0.0.4
 
 ### Changed

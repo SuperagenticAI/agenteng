@@ -38,11 +38,16 @@ Pin a version with `AGENTENG_VERSION=0.0.4`, change extras with `AGENTENG_EXTRAS
 Then try (`ae` is a short alias for `agenteng`):
 
 ```sh
-ae --version
+ae                 # interactive menu (TTY)
 ae discover
 ae events --upcoming
+ae events --json   # same Result JSON agents, MCP and A2A use
 ae connect cursor
 ```
+
+On a terminal, commands print cards and tables. Agents should use `--json`, set
+`AGENTENG_OUTPUT=json`, or pipe the output; non-TTY stdout always returns the
+shared Result JSON contract.
 
 From a source checkout for development:
 
@@ -66,10 +71,11 @@ This source tracks the **0.0.4 alpha** release. The published package is on [PyP
 The CLI uses its bundled catalogue offline. Put global options before the command:
 
 ```sh
-agenteng --json events --city London
-agenteng --remote https://YOUR_HOST events --upcoming
-agenteng --catalogue ./catalogue.json speakers --city 'San Francisco'
-agenteng query '{"operation":"events","upcoming":true}'
+ae --json events --city London
+ae events --city London
+ae --remote https://YOUR_HOST events --upcoming
+ae --catalogue ./catalogue.json speakers --city 'San Francisco'
+ae query '{"operation":"events","upcoming":true}'
 ```
 
 Run `agenteng --help` or `agenteng COMMAND --help` for command options.
