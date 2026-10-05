@@ -72,24 +72,24 @@ hide:
 
 Install the latest AgentEng from PyPI. The one-liner installs the CLI with the
 `server` extras (MCP + A2A). RLM stays optional and is not included.
-The installer is served at [a2a.agentengineering.world/install.sh](https://a2a.agentengineering.world/install.sh).
-It moves to agentengineering.world/install.sh once that host lets non-browser
-clients through its bot check.
+The installer is served at [agentengineering.world/install.sh](https://agentengineering.world/install.sh)
+and mirrored at [a2a.agentengineering.world/install.sh](https://a2a.agentengineering.world/install.sh).
 
 ```sh title="Install AgentEng"
-curl -fsSL https://a2a.agentengineering.world/install.sh | sh
+curl -fsSL https://agentengineering.world/install.sh | sh
 # Or: uv tool install --upgrade 'agenteng[server]'
-agenteng discover
-agenteng events --upcoming
-agenteng connect cursor
+ae discover
+ae events --upcoming
+ae connect cursor
 ```
 
 **Your first result:** published London and San Francisco events, with supporting
 source links. The CLI uses its bundled snapshot, so event lookup, tool browsing
 and local drafting work offline with **zero model calls** and no provider key.
 
-The package and command are both named `agenteng`. This source tracks the **0.0.4 alpha** release.
-Run `agenteng --help` to explore commands, or `agenteng COMMAND --help` for options.
+The package is named `agenteng`. The CLI commands are `agenteng` and the short alias `ae`.
+This source tracks the **0.0.4 alpha** release.
+Run `ae --help` to explore commands, or `ae COMMAND --help` for options.
 Installing the CLI does not start or publish a hosted service.
 
 ## 📅 Explore events { #explore-events }

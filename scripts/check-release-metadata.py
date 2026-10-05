@@ -23,6 +23,8 @@ def release_metadata_errors(root: Path, tag: str | None = None) -> list[str]:
         errors.append(f"Release tag must exactly match v + project.version (expected v{version}).")
     if project.get("scripts", {}).get("agenteng") != "agenteng.cli:main":
         errors.append("Unexpected agenteng CLI entry point.")
+    if project.get("scripts", {}).get("ae") != "agenteng.cli:main":
+        errors.append("Unexpected ae CLI entry point.")
     module = ast.parse((root / "src/agenteng/__init__.py").read_text())
     versions = [
         node.value.value

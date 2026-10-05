@@ -26,9 +26,8 @@ The catalogue is a snapshot. It does not verify live ticket availability or regi
 Install the latest AgentEng from [PyPI](https://pypi.org/project/agenteng/) (CLI plus MCP and A2A extras; RLM stays optional and is not included):
 
 ```sh
-# One-liner (moves to agentengineering.world/install.sh once that host
-# lets non-browser clients through its bot check)
-curl -fsSL https://a2a.agentengineering.world/install.sh | sh
+# One-liner
+curl -fsSL https://agentengineering.world/install.sh | sh
 
 # Or install directly with uv
 uv tool install --upgrade 'agenteng[server]'
@@ -36,13 +35,13 @@ uv tool install --upgrade 'agenteng[server]'
 
 Pin a version with `AGENTENG_VERSION=0.0.4`, change extras with `AGENTENG_EXTRAS=mcp`, or re-run the installer to upgrade. The installer bootstraps [uv](https://docs.astral.sh/uv/) when needed, never uses sudo, and falls back to a user virtualenv with pip if uv tool install fails.
 
-Then try:
+Then try (`ae` is a short alias for `agenteng`):
 
 ```sh
-agenteng --version
-agenteng discover
-agenteng events --upcoming
-agenteng connect cursor
+ae --version
+ae discover
+ae events --upcoming
+ae connect cursor
 ```
 
 From a source checkout for development:

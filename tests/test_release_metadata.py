@@ -29,6 +29,13 @@ def release_root(tmp_path):
     return tmp_path
 
 
+def test_both_cli_scripts_declared():
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
+    scripts = project.get("scripts", {})
+    assert scripts.get("agenteng") == "agenteng.cli:main"
+    assert scripts.get("ae") == "agenteng.cli:main"
+
+
 def test_current_metadata_and_matching_tag(release_root):
     assert checker.release_metadata_errors(release_root) == []
     assert checker.release_metadata_errors(release_root, "v" + VERSION) == []
@@ -69,6 +76,7 @@ def test_mismatched_or_unsafe_tags_are_rejected(release_root, tag):
         ),
         ("pyproject.toml", 'name = "agenteng"', 'name = "wrong-package"'),
         ("pyproject.toml", 'agenteng = "agenteng.cli:main"', 'agenteng = "wrong:main"'),
+        ("pyproject.toml", 'ae = "agenteng.cli:main"', 'ae = "wrong:main"'),
         (
             "src/agenteng/data/install.sh",
             "Installing AgentEng from PyPI",
