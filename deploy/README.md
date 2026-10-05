@@ -106,8 +106,9 @@ checkout for Git ownership checks. Git is not added to the runtime container.
 Keep the repository connection and trigger regions identical. Select the YAML
 configuration: it performs validation, tests, image publication, deployment and
 live endpoint checks. The Cloud Run repository wizard's default branch trigger
-does not implement this release policy. If you previously created one, disable
-that branch deployment trigger so commits do not deploy the service.
+(named like `rmgpgab-agenteng-europe-west1-...`) does not implement this release
+policy and redeploys on every push to `main`. Disable it so only the
+`push-new-tag` trigger deploys the service.
 See [Google's trigger setup guide](https://docs.cloud.google.com/build/docs/automating-builds/create-manage-triggers).
 
 The YAML already supplies these defaults. You only need substitutions if you
@@ -119,7 +120,7 @@ change the names or region:
 | `_SERVICE` | `agenteng` |
 | `_REPOSITORY` | `cloud-run-source-deploy` |
 | `_RUNTIME_ACCOUNT` | `agenteng-runtime` (account ID, not its full email) |
-| `_PUBLIC_URL` | Empty; automatically use the generated `run.app` URL |
+| `_PUBLIC_URL` | `https://a2a.agentengineering.world`; set it empty to use the generated `run.app` URL, or to another HTTPS origin |
 
 For the already-published `v0.0.1` tag, add `_SERVICE=agenteng` in the trigger's
 substitution variables. That tag originally defaults to `agenteng-hq`; the trigger
@@ -182,18 +183,25 @@ changes. Never move a published tag or overwrite published package bytes.
 
 ## Custom domain and operation
 
-Production traffic for `https://a2a.agentengineering.world` is live. Keep HTTPS
-routing and its certificate in place, and keep the Cloud Build trigger
-substitution `_PUBLIC_URL` set to `https://a2a.agentengineering.world` so tag
-deploys continue to advertise that origin instead of reverting to the generated
-`run.app` URL. Google's built-in Cloud Run domain mapping is currently a preview
+Production traffic for `https://a2a.agentengineering.world` is live, and
+`cloudbuild.yaml` now uses it as the default `_PUBLIC_URL`. Tag deploys keep
+advertising that origin without any trigger substitution. Keep HTTPS routing and
+its certificate in place.
+
+Forks and other deployments override `_PUBLIC_URL` on their own trigger: set it
+to an empty value to fall back to the generated `run.app` URL (the deploy script
+then reads the service URL), or to another HTTPS origin once its routing and
+certificate are ready. A trigger substitution always wins over the YAML default.
+
+Only the `push-new-tag` trigger should deploy. Disable the wizard branch trigger
+(`rmgpgab-...`) so pushes to `main` do not redeploy the service. Google's built-in Cloud Run domain mapping is currently a preview
 feature and is not recommended for production; use its documented production
 hosting options, such as an external Application Load Balancer with a serverless
 backend. See
 [Cloud Run custom domains](https://docs.cloud.google.com/run/docs/mapping-custom-domains).
 The app trusts the configured hostname and loopback hosts; it does not trust
-every `run.app` hostname. Do not clear `_PUBLIC_URL` unless you intend to fall
-back to the generated URL.
+every `run.app` hostname. Do not clear `_PUBLIC_URL` on the production trigger
+unless you intend to fall back to the generated URL.
 
 For an additional manual check from an environment with the server dependencies:
 
@@ -204,11 +212,16 @@ uv run --frozen --extra server python scripts/check-hosted.py https://a2a.agente
 ### Troubleshooting: Invalid host header
 
 A `400` response with `Invalid host header` means `AGENTENG_PUBLIC_URL` does not
-match the request `Host`. Set the Cloud Run environment variable
-`AGENTENG_PUBLIC_URL` to `https://a2a.agentengineering.world`, and set the Cloud
-Build trigger substitution `_PUBLIC_URL` to the same value so the next tag deploy
-does not overwrite it back to the generated `run.app` URL. Redeploy (or rerun
-the release tag), then verify with the `check-hosted.py` command above. You
+match the request `Host`. The usual cause is a deploy that ran with an empty
+`_PUBLIC_URL` (an older `cloudbuild.yaml` default, an explicit empty trigger
+substitution, or the wizard branch trigger), which resets `AGENTENG_PUBLIC_URL`
+to the generated `run.app` URL.
+
+To fix it: make sure the trigger has no empty `_PUBLIC_URL` override (the YAML
+default is now `https://a2a.agentengineering.world`), disable the wizard branch
+trigger so only `push-new-tag` deploys, and rerun the release tag from a source
+that includes this default. As an immediate fix, set the Cloud Run environment
+variable `AGENTENG_PUBLIC_URL` to `https://a2a.agentengineering.world`. Then verify with the `check-hosted.py` command above. You
 should see HTTP 200 on `/health` and `/.well-known/agent-card.json`.
 
 Routes: A2A JSON-RPC `/` with `A2A-Version: 1.0`, discovery `/.well-known/agent-card.json`, MCP `/mcp/`, HTTP `/v1/query`, `/health`, `/catalogue.json` and `/install.sh`. The trailing slash on the MCP URL avoids a redirect. No streaming/push A2A capability is advertised. Public lookup has zero model calls; compute, HTTPS hosting and network traffic still have their usual hosting costs.
