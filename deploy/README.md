@@ -1,15 +1,190 @@
-The container can host the public catalogue, MCP and A2A service on Cloud Run. Select your Google Cloud project and HTTPS origin before deployment. The official public service is not yet published.
+# Cloud Run deployment through the Google Cloud UI
 
-```sh
-# Requires authenticated gcloud, billing and Cloud Build/Run/Artifact Registry APIs.
-# Use a unique release tag for each rebuild.
-gcloud builds submit --project YOUR_PROJECT --config deploy/cloudbuild.yaml \
-  --substitutions=_REGION=europe-west1,_TAG=v0.1.0
-```
+The repository contains the container, release checks and deployment pipeline for
+the public catalogue, MCP and A2A service. The official public service is not yet
+published. Complete the setup below in the Google Cloud console; no local
+`gcloud` installation or Google Cloud key in GitHub is required.
 
-The Artifact Registry `cloud-run-source-deploy` repository must exist in the selected region. The build account needs repository writer, Cloud Run deploy permissions and service account user on the runtime identity. Use a dedicated runtime service account with no data-store or model credentials for this public lookup service.
+A new matching version tag starts two independent pipelines: Cloud Build deploys
+the service, and GitHub Actions publishes `agenteng` to PyPI. Ordinary commits
+run GitHub CI and documentation publishing, without deploying Cloud Run or PyPI.
+Both release pipelines validate the tag against the package version and test the
+source before publication.
 
-Map `a2a.agentengineering.world` to the service using the project's supported HTTPS domain/load-balancer setup. The application checks this Host header, plus loopback hosts; an unconfigured `run.app` hostname is intentionally rejected. To test using the generated Cloud Run URL, temporarily set `AGENTENG_PUBLIC_URL` to that URL, then restore the custom domain before discovery verification.
+## 1. Push the deployment files
+
+Commit and push the reviewed changes to `SuperagenticAI/agenteng` before creating
+a release tag. The tagged commit must contain `Dockerfile`, `uv.lock`,
+`cloudbuild.yaml`, `deploy/deploy-cloud-run.sh`, `src/`, `scripts/` and
+`tests/`. Do not tag an older commit that lacks this configuration.
+
+## 2. Prepare the Google Cloud project
+
+Select the project at the top of the console and ensure billing is enabled.
+In **APIs & Services → Library**, enable Cloud Build, Cloud Run, Artifact Registry,
+Cloud Resource Manager, Identity and Access Management (IAM), and Secret Manager
+APIs. The GitHub connection stores its managed connection credentials in Secret
+Manager; see [Google's GitHub connection guide](https://docs.cloud.google.com/build/docs/automating-builds/github/connect-repo-github?generation=2nd-gen).
+
+In **Artifact Registry → Repositories → Create repository**, choose:
+
+| Setting | Value |
+| --- | --- |
+| Name | `cloud-run-source-deploy` |
+| Format | Docker |
+| Location type | Region |
+| Region | `europe-west1` |
+
+Use the same project and region throughout this guide. The repository holds
+version-tagged container images, separate from the Python files on PyPI.
+
+## 3. Create the build and runtime identities
+
+In **IAM & Admin → Service Accounts → Create service account**, create
+`agenteng-runtime`. Leave the project-role and user-access steps empty. The
+public runtime reads its bundled catalogue and needs no model or database roles.
+
+Create a second account, `agenteng-build`, with these project roles:
+
+| Console role | Role ID | Purpose |
+| --- | --- | --- |
+| Cloud Build Legacy Service Account | `roles/cloudbuild.builds.builder` | Build execution, source/artifact access and logs |
+| Cloud Run Admin | `roles/run.admin` | Create/update the service, public access and release traffic |
+
+The first role's name refers to its predefined permission bundle; select it for
+the dedicated build account. It is different from **Cloud Build Service Agent**,
+which belongs to Google's managed service identity. The build-role permissions
+are documented in [Google's Cloud Build account reference](https://docs.cloud.google.com/build/docs/cloud-build-service-account).
+
+Open **agenteng-runtime → Permissions → Grant access**. Add
+`agenteng-build@YOUR_PROJECT_ID.iam.gserviceaccount.com` with **Service Account
+User** (`roles/iam.serviceAccountUser`) on this runtime account. This allows the
+builder to deploy a revision using that identity. Use your actual project ID in
+the address. No downloaded service-account keys are needed.
+
+The person configuring the trigger also needs permission to use `agenteng-build`
+and manage Cloud Build triggers. If the account is unavailable in the trigger's
+selector, check the user's `iam.serviceAccounts.actAs` permission. See
+[user-managed build accounts](https://docs.cloud.google.com/build/docs/securing-builds/configure-user-specified-service-accounts).
+
+## 4. Connect GitHub and create a tag trigger
+
+Open **Cloud Build → Repositories**, select **2nd gen** and `europe-west1`, then
+create a GitHub connection. Authorize the Google Cloud Build GitHub app for
+`SuperagenticAI/agenteng` and link that repository. Organization authorization
+may require a GitHub organization owner. Use the console's prompts for the
+managed connection credentials.
+
+Open **Cloud Build → Triggers → Create trigger** and enter:
+
+| Setting | Value |
+| --- | --- |
+| Name | `agenteng-release` |
+| Region | `europe-west1` |
+| Event | **Push new tag** |
+| Source | Connected 2nd-generation GitHub repository |
+| Repository | `SuperagenticAI/agenteng` |
+| Tag regex | `^v.*$` |
+| Configuration type | **Cloud Build configuration file (yaml or json)** |
+| Configuration location | Repository |
+| Configuration file path | `cloudbuild.yaml` |
+| Service account | `agenteng-build@YOUR_PROJECT_ID.iam.gserviceaccount.com` |
+| Included / ignored files | Leave both empty |
+
+The root file layout follows [SuperQode's Cloud Build setup](https://github.com/SuperagenticAI/superqode/blob/main/cloudbuild.yaml):
+`cloudbuild.yaml` defines the build/deploy pipeline, and `Dockerfile` defines the
+container. Choose the **Cloud Build configuration file** option for this trigger.
+The YAML invokes `docker build -f Dockerfile .`, using the repository root as its
+build context. If a UI asks for the Dockerfile path, it is `Dockerfile`; the
+directory/context is `.`. Keep `CLOUD_LOGGING_ONLY` in the YAML for the
+user-managed build account.
+
+Keep the repository connection and trigger regions identical. Select the YAML
+configuration: it performs validation, tests, image publication, deployment and
+live endpoint checks. The Cloud Run repository wizard's default branch trigger
+does not implement this release policy. If you previously created one, disable
+that branch deployment trigger so commits do not deploy the service.
+See [Google's trigger setup guide](https://docs.cloud.google.com/build/docs/automating-builds/create-manage-triggers).
+
+The YAML already supplies these defaults. You only need substitutions if you
+change the names or region:
+
+| Substitution | Default |
+| --- | --- |
+| `_REGION` | `europe-west1` |
+| `_SERVICE` | `agenteng-hq` |
+| `_REPOSITORY` | `cloud-run-source-deploy` |
+| `_RUNTIME_ACCOUNT` | `agenteng-runtime` (account ID, not its full email) |
+| `_PUBLIC_URL` | Empty; automatically use the generated `run.app` URL |
+
+There is no `_TAG` setting. Cloud Build supplies `TAG_NAME` from the GitHub tag
+event. Missing or mismatched tags fail the release check before image deployment.
+
+## 5. Configure PyPI and publish the first tag
+
+In GitHub **Settings → Secrets and variables → Actions**, add `PYPI_API_TOKEN`
+with permission to publish the `agenteng` project. See the
+[release guide](../docs/RELEASING.md) for token setup and version updates.
+
+After all the setup above and the source changes are pushed, open GitHub
+**Releases → Draft a new release → Choose a tag**. Create `v0.1.0`, targeting the
+reviewed `main` commit, and publish the release. This is the version currently
+declared in the source. If that version already exists on PyPI, use a new version
+and update all release metadata before creating its matching tag.
+See [GitHub's release instructions](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository).
+
+Watch **GitHub → Actions → Publish** for PyPI and **Cloud Build → History** for the
+container deployment. They run independently; one succeeding does not imply the
+other succeeded. Publish one release at a time so an older in-flight deployment
+cannot finish after a newer one. Existing tags do not automatically fire a newly
+created trigger; use the trigger's **Run** action with the existing release tag
+when deploying an already-published release.
+
+## 6. Verify the service
+
+Cloud Build creates **Cloud Run → Services → agenteng-hq** automatically. The
+deployment sets the runtime account, public access, port `8080`, one CPU, 512 MiB
+memory, zero minimum instances, two maximum instances per revision, concurrency
+40 and a 60-second request timeout. It directs service traffic to the latest
+revision and keeps ordinary synthesis, RLM and private intake disabled.
+
+On the first deployment, a second revision sets `AGENTENG_PUBLIC_URL` to Google's
+generated HTTPS URL. Later releases reuse that URL. This preserves strict Host
+validation while making the default Cloud Run URL usable without manual edits.
+The final build step checks health, discovery pages, a real A2A query and MCP
+initialization/tool invocation. The build succeeds only when those checks pass.
+
+Click the service URL and inspect `/health` and `/.well-known/agent-card.json`.
+Use `<SERVICE_URL>/mcp/` for remote MCP clients; retain its trailing slash.
+
+If a build fails, open its failed step in **Cloud Build → History**:
+
+| Failed step | Check |
+| --- | --- |
+| `verify-release` | Tag/version agreement, dependency installation, lint or tests |
+| `push-image` | Registry name/region and build account permissions |
+| `deploy-service` | Runtime account exists, Service Account User grant, Cloud Run permissions |
+| `check-hosted-service` | Service URL, public access, custom-domain routing and application logs |
+
+A smoke-check failure happens after deployment and does not automatically roll
+back traffic. Inspect the service before announcing the release. Correct console
+configuration and rerun the same immutable tag, or release a new version for code
+changes. Never move a published tag or overwrite published package bytes.
+
+## Custom domain and operation
+
+Launch on the generated URL first. For production `a2a.agentengineering.world`,
+configure HTTPS routing and its certificate, then edit the trigger substitution
+`_PUBLIC_URL` to `https://a2a.agentengineering.world` and rerun the release tag.
+Google's built-in Cloud Run domain mapping is currently a preview feature and is
+not recommended for production; use its documented production hosting options,
+such as an external Application Load Balancer with a serverless backend. See
+[Cloud Run custom domains](https://docs.cloud.google.com/run/docs/mapping-custom-domains).
+Once configured, discovery and MCP URLs advertise that custom origin. The app
+trusts the configured hostname and loopback hosts; it does not trust every
+`run.app` hostname. Do not set `_PUBLIC_URL` before its HTTPS routing is ready.
+
+For an additional manual check from an environment with the server dependencies:
 
 ```sh
 uv run --frozen --extra server python scripts/check-hosted.py https://a2a.agentengineering.world

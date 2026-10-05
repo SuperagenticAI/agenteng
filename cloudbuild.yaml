@@ -1,0 +1,54 @@
+# Configure a Cloud Build GitHub trigger for "Push new tag", pattern ^v.*$.
+# TAG_NAME comes from that trigger; a branch build fails release validation.
+# Like SuperQode, keep this config and Dockerfile at the repository root.
+substitutions:
+  _REGION: europe-west1
+  _SERVICE: agenteng-hq
+  _REPOSITORY: cloud-run-source-deploy
+  _RUNTIME_ACCOUNT: agenteng-runtime
+  # Leave empty for the generated run.app URL. Set a custom HTTPS origin only
+  # after its domain routing and certificate are ready.
+  _PUBLIC_URL: ''
+steps:
+  - id: verify-release
+    name: python:3.12-slim
+    entrypoint: bash
+    env: ['RELEASE_TAG=${TAG_NAME}']
+    args:
+      - -ceu
+      - |
+        python scripts/check-release-metadata.py --tag "$$RELEASE_TAG"
+        python -m pip install --disable-pip-version-check uv==0.8.0
+        uv sync --frozen --all-extras
+        uv run --frozen ruff check src tests scripts
+        uv run --frozen ruff format --check src tests scripts
+        uv run --frozen pytest -q
+  - id: build-image
+    name: gcr.io/cloud-builders/docker
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${TAG_NAME}', '-f', 'Dockerfile', '.']
+  - id: push-image
+    name: gcr.io/cloud-builders/docker
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${TAG_NAME}']
+  - id: deploy-service
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args: ['deploy/deploy-cloud-run.sh']
+    env:
+      - DEPLOY_PROJECT=${PROJECT_ID}
+      - DEPLOY_REGION=${_REGION}
+      - DEPLOY_SERVICE=${_SERVICE}
+      - DEPLOY_IMAGE=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${TAG_NAME}
+      - DEPLOY_RUNTIME_ACCOUNT=${_RUNTIME_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com
+      - DEPLOY_PUBLIC_URL=${_PUBLIC_URL}
+  - id: check-hosted-service
+    name: python:3.12-slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - '.venv/bin/python scripts/check-hosted.py "$$(cat .cache/cloud-run-url)"'
+images:
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${TAG_NAME}'
+options:
+  # User-managed build accounts need a supported destination for their logs.
+  logging: CLOUD_LOGGING_ONLY
+timeout: 1200s

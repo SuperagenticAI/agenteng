@@ -53,7 +53,7 @@ include = [
   "/docs/stylesheets/extra.css", "/mkdocs.yml", "/requirements-docs.txt",
   "/README.md", "/CONTRIBUTING.md", "/CODE_OF_CONDUCT.md", "/SECURITY.md",
   "/CHANGELOG.md", "/LICENSE", "/NOTICE", "/pyproject.toml", "/uv.lock",
-  "/.env.example", "/.gitignore", "/.dockerignore", "/.gcloudignore", "/Dockerfile",
+  "/.env.example", "/.gitignore", "/.dockerignore", "/.gcloudignore", "/Dockerfile", "/cloudbuild.yaml",
   "/.editorconfig", "/.gitattributes",
 ]
 exclude = ["/.private", "/PLAN.md", "/RLM-DESIGN.md", "/docs/IMPLEMENTATION.md", "**/__pycache__", "**/*.pyc"]

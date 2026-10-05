@@ -125,6 +125,8 @@ Public operations are `disciplines`, `tools`, `tool`, `discover`, `events`, `eve
 
 The intended official host is `a2a.agentengineering.world`, once published. To self-host, set `AGENTENG_PUBLIC_URL` to your HTTPS origin and configure allowed origins. See [deployment](deploy/README.md), [architecture](docs/ARCHITECTURE.md) and the [HTTP MCP config](deploy/mcp-http.json).
 
+For Google Cloud Run, the [console setup guide](deploy/README.md) connects this repository through Cloud Build with **Push new tag**, regex `^v.*$` and configuration file `cloudbuild.yaml`. Version tags deploy the public server and separately trigger PyPI publishing; ordinary commits do not deploy either release.
+
 ## Optional model engines
 
 `lookup` and `auto` remain model-free. `standard` performs one provider request. `rlm` offers a persistent Monty sandbox with one model-visible `run_code` tool and scoped evidence reads. The root can make **one child OR leaf delegation total**, at **maximum depth 1**. Children cannot delegate. All calls share model-call, token-reservation and deadline limits.

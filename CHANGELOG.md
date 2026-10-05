@@ -8,6 +8,8 @@
 
 ### Added
 
+- Tag-triggered Cloud Build deployment with release validation, generated Cloud Run URL setup, dedicated runtime identity, live MCP/A2A checks and a console setup guide.
+
 - Minimal Markdown documentation with the official logo and favicon, MkDocs Material preview and GitHub Pages publishing.
 
 - Version-tag PyPI publishing and GitHub releases using verified CI artifacts, with release metadata validation and existing-tag retry support.

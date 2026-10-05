@@ -48,7 +48,16 @@ allowing a partially completed release to be retried; it does not overwrite a
 published version. Do not move an already-published tag. Use a new version for
 changed release bytes.
 
-The workflow does not deploy the server or publish website assets. The staged
+The PyPI workflow does not deploy the server or publish website assets. A separate
+Cloud Build GitHub trigger can deploy Cloud Run from the same version tag using
+`cloudbuild.yaml`. Configure **Push new tag**, regex `^v.*$` and that YAML
+file, following the [console setup guide](https://github.com/SuperagenticAI/agenteng/blob/main/deploy/README.md).
+Complete its repository connection, registry and service-account setup before
+tagging. Cloud Build validates/tests the source and checks the live MCP/A2A service;
+its result is independent of the PyPI Publish workflow. Ordinary commits do not
+invoke this deployment trigger.
+
+The staged
 installer, wheel, checksum and discovery feeds remain a separate website release.
 PyPI availability should only be announced after the Publish run succeeds. See
 [uv publishing documentation](https://docs.astral.sh/uv/guides/package/).
