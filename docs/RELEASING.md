@@ -1,6 +1,6 @@
 # 📦 Releases and documentation
 
-Release artifacts should contain only public source, documentation, event data and tool-directory metadata. Keep credentials, private notes, proposals, local environments and generated files out of Git. The installer source is versioned at `src/agenteng/data/install.sh`; generated release files live under ignored `dist/`.
+Release artifacts should contain only public source, documentation, event data and tool-directory metadata. Keep credentials, private notes, proposals, local environments and generated files out of Git. The installer source is versioned at `src/agenteng/data/install.sh` and always installs the latest AgentEng from PyPI (no hardcoded package version, no website wheel mirror). Generated release files live under ignored `dist/`.
 
 ## Tag-triggered PyPI publishing
 
@@ -20,9 +20,10 @@ authorized to access it. A token scoped only to `superqode` cannot publish anoth
 project. Never put the token in source, logs or an issue. This workflow uses token
 authentication, not PyPI Trusted Publishing/OIDC.
 
-Before tagging, update `pyproject.toml`, `src/agenteng/__init__.py`, the project
-version in `uv.lock`, installer `VERSION` and its default versioned release URL.
-Update the changelog and release-facing documentation. Check locally:
+Before tagging, update `pyproject.toml`, `src/agenteng/__init__.py` and the project
+version in `uv.lock`. The installer stays version-free and always pulls the latest
+PyPI release (override with `AGENTENG_VERSION` at install time). Update the changelog
+and release-facing documentation. Check locally:
 
 ```sh
 uv run --frozen python scripts/check-release-metadata.py --tag v0.0.3
@@ -57,9 +58,10 @@ tagging. Cloud Build validates/tests the source and checks the live MCP/A2A serv
 its result is independent of the PyPI Publish workflow. Ordinary commits do not
 invoke this deployment trigger.
 
-The staged
-installer, wheel, checksum and discovery feeds remain a separate website release.
-PyPI availability should only be announced after the Publish run succeeds. See
+The staged installer and discovery feeds remain a separate website release.
+Copy `dist/website-public/install.sh` (and the staged guide/feeds) into the
+conference site `public/` directory when ready to host the one-liner. PyPI
+availability should only be announced after the Publish run succeeds. See
 [uv publishing documentation](https://docs.astral.sh/uv/guides/package/).
 
 Before a release:
@@ -76,13 +78,33 @@ uv run --frozen python scripts/verify-release.py
 uv run --frozen python scripts/stage-release.py
 ```
 
-Keep `pyproject.toml`, `agenteng.__version__`, the changelog and installer `VERSION`/default release URL consistent. Test a build from the source archive so an ignored local file cannot be a hidden dependency. CI checks Python 3.12 and 3.13; remote CI and Linux container results must be assessed before publication.
+Keep `pyproject.toml`, `agenteng.__version__` and the changelog consistent. The
+installer must keep using `uv tool install` from PyPI and must not hardcode a
+package version or a website `/releases/` wheel URL. Test a build from the source
+archive so an ignored local file cannot be a hidden dependency. CI checks Python
+3.12 and 3.13; remote CI and Linux container results must be assessed before publication.
 
 The archive uses an explicit file allowlist, and the release check inspects both Git candidates and packaged files. Neither `.gitignore` nor a pattern scan can guarantee the absence of secrets; review the final diff and artifact contents as well. If a real secret was committed or published, removing the file does not revoke it: rotate the credential and address the exposed history.
 
-Publish the versioned wheel and `SHA256SUMS` together, then publish the installer on the official website. Checksums identify the released bytes but are not independent signatures. The installer must not point at a missing or unverified release. Package registry publication is a separate maintainer action; do not claim that `agenteng` is on PyPI before it is available.
+Publish the versioned wheel and `SHA256SUMS` to GitHub Releases / PyPI. Then stage
+and publish the installer on the official website:
 
-Staging also creates `agenteng-agent-guide.txt`, `agenteng-events.json` and `agenteng-tools.json` for the website. The feed is a dated snapshot, not live availability. Publish and link the guide only after verifying the referenced agent host; add its link to the website's existing `llms.txt` without replacing that file's established event/organizer facts. Rebuild the feeds whenever the public event catalogue or tool directory changes. No staging command edits or deploys the website.
+```sh
+uv run --frozen python scripts/stage-release.py
+# Copy dist/website-public/install.sh (plus the staged guide and feeds) into
+# the website public/ directory and publish it.
+```
+
+The installer installs from PyPI, so a website wheel mirror is not required.
+Package registry publication is a separate maintainer action; do not claim that
+`agenteng` is on PyPI before it is available.
+
+Staging also creates `agenteng-agent-guide.txt`, `agenteng-events.json` and
+`agenteng-tools.json` for the website. The feed is a dated snapshot, not live
+availability. Publish and link the guide only after verifying the referenced agent
+host; add its link to the website's existing `llms.txt` without replacing that
+file's established event/organizer facts. Rebuild the feeds whenever the public
+event catalogue or tool directory changes. No staging command edits or deploys the website.
 
 The intended GitHub repository is `SuperagenticAI/agenteng`; package and documentation links use that address. For GitHub publication, enable private vulnerability reporting, set branch protection requiring CI and review, and give release credentials only to approved maintainer workflows. Avoid workflows that execute untrusted pull-request code with write credentials. The provided CI workflow has read-only repository permissions and no deployment steps.
 

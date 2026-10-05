@@ -23,19 +23,35 @@ The catalogue is a snapshot. It does not verify live ticket availability or regi
 
 ## Getting started
 
-Python 3.12+ and [uv](https://docs.astral.sh/uv/) are required. Once the repository is published, clone it:
+Install the latest AgentEng from [PyPI](https://pypi.org/project/agenteng/) (CLI plus MCP and A2A extras; RLM stays optional and is not included):
+
+```sh
+# Preferred one-liner (hosting on agentengineering.world is pending;
+# until then the same script is live at a2a.agentengineering.world)
+curl -fsSL https://agentengineering.world/install.sh | sh
+
+# Or install directly with uv
+uv tool install --upgrade 'agenteng[server]'
+```
+
+Pin a version with `AGENTENG_VERSION=0.0.3`, change extras with `AGENTENG_EXTRAS=mcp`, or re-run the installer to upgrade. The installer bootstraps [uv](https://docs.astral.sh/uv/) when needed, never uses sudo, and falls back to a user virtualenv with pip if uv tool install fails.
+
+Then try:
+
+```sh
+agenteng --version
+agenteng discover
+agenteng events --upcoming
+agenteng connect cursor
+```
+
+From a source checkout for development:
 
 ```sh
 git clone https://github.com/SuperagenticAI/agenteng.git
 cd agenteng
-```
-
-From the source checkout:
-
-```sh
 uv sync --frozen
 uv run --frozen agenteng events --upcoming
-uv run --frozen agenteng discover
 uv run --frozen agenteng disciplines
 uv run --frozen agenteng tools --discipline memory
 uv run --frozen agenteng tool langgraph
@@ -46,9 +62,7 @@ uv run --frozen agenteng participate
 uv run --frozen agenteng plan agenteng-london-2026 --interest evaluation --format ics --output agenda.ics
 ```
 
-For an executable available outside the checkout, use `uv tool install .` or `uv tool install '.[mcp]'` for local MCP. With pip, use a virtual environment and `python -m pip install .` (or `'.[mcp]'`). The published installer requires Python 3.12+, curl, venv and pip on a POSIX system.
-
-This source prepares the **0.0.3 alpha** release. The published package is available on [PyPI](https://pypi.org/project/agenteng/), and source installs work today.
+This source tracks the **0.0.3 alpha** release. The published package is on [PyPI](https://pypi.org/project/agenteng/).
 
 The CLI uses its bundled catalogue offline. Put global options before the command:
 

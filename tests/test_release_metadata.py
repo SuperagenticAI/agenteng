@@ -67,10 +67,13 @@ def test_mismatched_or_unsafe_tags_are_rejected(release_root, tag):
             f'name = "agenteng"\nversion = "{VERSION}"',
             f'name = "agenteng"\nversion = "{OTHER_VERSION}"',
         ),
-        ("src/agenteng/data/install.sh", f"VERSION={VERSION}", f"VERSION={OTHER_VERSION}"),
-        ("src/agenteng/data/install.sh", f"releases/{VERSION}", f"releases/{OTHER_VERSION}"),
         ("pyproject.toml", 'name = "agenteng"', 'name = "wrong-package"'),
         ("pyproject.toml", 'agenteng = "agenteng.cli:main"', 'agenteng = "wrong:main"'),
+        (
+            "src/agenteng/data/install.sh",
+            "Installing AgentEng from PyPI",
+            "Installing SuperQode from PyPI",
+        ),
     ],
 )
 def test_version_identity_or_installer_drift_blocks_release(release_root, name, old, new):
@@ -80,13 +83,33 @@ def test_version_identity_or_installer_drift_blocks_release(release_root, name, 
     assert checker.release_metadata_errors(release_root, "v" + VERSION)
 
 
+def test_removing_uv_tool_install_blocks_release(release_root):
+    path = release_root / "src/agenteng/data/install.sh"
+    path.write_text(path.read_text().replace("uv tool install", "package install"))
+    errors = checker.release_metadata_errors(release_root)
+    assert any("uv tool install" in error for error in errors)
+
+
+def test_hardcoded_installer_version_blocks_release(release_root):
+    path = release_root / "src/agenteng/data/install.sh"
+    path.write_text("VERSION=0.0.3\n" + path.read_text())
+    errors = checker.release_metadata_errors(release_root)
+    assert any("hardcode VERSION" in error for error in errors)
+
+
+def test_website_wheel_mirror_blocks_release(release_root):
+    path = release_root / "src/agenteng/data/install.sh"
+    path.write_text(path.read_text() + "\n# https://agentengineering.world/releases/0.0.3/wheel\n")
+    errors = checker.release_metadata_errors(release_root)
+    assert any("releases mirror" in error for error in errors)
+
+
 @pytest.mark.parametrize("version", ["0.2.0rc1", "0.2.0a1", "0.2.0b1", "0.2.0.post1", "0.2.0.dev1"])
 def test_canonical_prereleases_and_postreleases(release_root, version):
     for name in [
         "pyproject.toml",
         "uv.lock",
         "src/agenteng/__init__.py",
-        "src/agenteng/data/install.sh",
     ]:
         path = release_root / name
         path.write_text(path.read_text().replace(VERSION, version))

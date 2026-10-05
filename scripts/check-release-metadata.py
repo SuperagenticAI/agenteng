@@ -39,11 +39,16 @@ def release_metadata_errors(root: Path, tag: str | None = None) -> list[str]:
     if [p.get("version") for p in lock["package"] if p["name"] == "agenteng"] != [version]:
         errors.append("uv.lock project version differs from project.version.")
     installer = (root / "src/agenteng/data/install.sh").read_text()
-    if re.findall(r"^VERSION=(\S+)$", installer, re.MULTILINE) != [version]:
-        errors.append("Installer VERSION differs from project.version.")
-    expected_url = "https://agentengineering.world/releases/" + version
-    if "RELEASE_BASE=${AGENTENG_RELEASE_BASE:-" + expected_url + "}" not in installer:
-        errors.append("Installer default release URL differs from project.version.")
+    if "uv tool install" not in installer:
+        errors.append("Installer must use uv tool install from PyPI.")
+    if "agenteng" not in installer:
+        errors.append("Installer must install the agenteng package.")
+    if re.search(r"^VERSION=", installer, re.MULTILINE):
+        errors.append("Installer must not hardcode VERSION; install latest from PyPI.")
+    if "agentengineering.world/releases/" in installer:
+        errors.append("Installer must not download wheels from the website releases mirror.")
+    if "SuperQode" in installer or "superqode" in installer:
+        errors.append("Installer must not mention SuperQode.")
     return errors
 
 
