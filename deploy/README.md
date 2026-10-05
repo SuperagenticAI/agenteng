@@ -112,10 +112,15 @@ change the names or region:
 | Substitution | Default |
 | --- | --- |
 | `_REGION` | `europe-west1` |
-| `_SERVICE` | `agenteng-hq` |
+| `_SERVICE` | `agenteng` |
 | `_REPOSITORY` | `cloud-run-source-deploy` |
 | `_RUNTIME_ACCOUNT` | `agenteng-runtime` (account ID, not its full email) |
 | `_PUBLIC_URL` | Empty; automatically use the generated `run.app` URL |
+
+For the already-published `v0.0.1` tag, add `_SERVICE=agenteng` in the trigger's
+substitution variables. That tag originally defaults to `agenteng-hq`; the trigger
+override selects `agenteng` without changing the immutable published source.
+The current source defaults to `agenteng` for future releases.
 
 There is no `_TAG` setting. Cloud Build supplies `TAG_NAME` from the GitHub tag
 event. Missing or mismatched tags fail the release check before image deployment.
@@ -142,7 +147,7 @@ when deploying an already-published release.
 
 ## 6. Verify the service
 
-Cloud Build creates **Cloud Run → Services → agenteng-hq** automatically. The
+Cloud Build creates **Cloud Run → Services → agenteng** automatically. The
 deployment sets the runtime account, public access, port `8080`, one CPU, 512 MiB
 memory, zero minimum instances, two maximum instances per revision, concurrency
 40 and a 60-second request timeout. It directs service traffic to the latest

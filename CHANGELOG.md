@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Reject invalid public URLs at startup with a clear configuration error, instead of failing requests in host-validation middleware.
+
+- Default the Cloud Run service name to `agenteng`; document the trigger override for the published `v0.0.1` tag.
+
 - Align the initial package and installer release to `0.0.1`; derive the HTTP API version from package metadata and show the expected tag in release-check failures.
 
 - Use `agenteng` as the Python package distribution name, matching the CLI and module.

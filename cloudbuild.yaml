@@ -3,7 +3,7 @@
 # Like SuperQode, keep this config and Dockerfile at the repository root.
 substitutions:
   _REGION: europe-west1
-  _SERVICE: agenteng-hq
+  _SERVICE: agenteng
   _REPOSITORY: cloud-run-source-deploy
   _RUNTIME_ACCOUNT: agenteng-runtime
   # Leave empty for the generated run.app URL. Set a custom HTTPS origin only

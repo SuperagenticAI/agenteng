@@ -10,7 +10,7 @@ import textwrap
 import pytest
 
 SCRIPT = Path(__file__).resolve().parents[1] / "deploy/deploy-cloud-run.sh"
-GENERATED_URL = "https://agenteng-hq-example-ew.a.run.app"
+GENERATED_URL = "https://agenteng-example-ew.a.run.app"
 
 
 @pytest.fixture
@@ -52,8 +52,8 @@ def deployment(tmp_path):
         "FAKE_URL": GENERATED_URL,
         "DEPLOY_PROJECT": "example-project",
         "DEPLOY_REGION": "europe-west1",
-        "DEPLOY_SERVICE": "agenteng-hq",
-        "DEPLOY_IMAGE": "europe-west1-docker.pkg.dev/example-project/cloud-run-source-deploy/agenteng-hq:v0.0.1",
+        "DEPLOY_SERVICE": "agenteng",
+        "DEPLOY_IMAGE": "europe-west1-docker.pkg.dev/example-project/cloud-run-source-deploy/agenteng:v0.0.1",
         "DEPLOY_RUNTIME_ACCOUNT": "agenteng-runtime@example-project.iam.gserviceaccount.com",
         "DEPLOY_PUBLIC_URL": "",
         "DEPLOY_URL_FILE": str(tmp_path / "deployed-url"),

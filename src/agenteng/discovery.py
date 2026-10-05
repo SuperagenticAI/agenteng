@@ -3,7 +3,8 @@
 from html import escape
 import json
 import shlex
-from urllib.parse import urlsplit
+
+from .config import validate_origin as validate_origin
 
 from .participation import CITIES, ORGANIZER
 
@@ -206,23 +207,6 @@ def llms_text(service):
         f"Snapshot published: {service.catalogue.published_at.isoformat()}. Confirm current details on {WEBSITE}.",
     ]
     return "\n".join(lines) + "\n"
-
-
-def validate_origin(url):
-    parsed = urlsplit(url)
-    if (
-        parsed.scheme not in {"http", "https"}
-        or not parsed.hostname
-        or parsed.username
-        or parsed.password
-        or parsed.query
-        or parsed.fragment
-        or parsed.path not in {"", "/"}
-    ):
-        raise ValueError("Use an HTTP(S) origin without credentials, path, query or fragment")
-    if parsed.scheme != "https" and parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
-        raise ValueError("Remote servers require HTTPS")
-    return url.rstrip("/")
 
 
 def connection(client, transport, url):

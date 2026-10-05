@@ -2,6 +2,29 @@
 
 import os
 from dataclasses import dataclass, field
+from urllib.parse import urlsplit
+
+
+def validate_origin(url: str) -> str:
+    """Validate the origin shared by discovery, HTTP host checks and MCP."""
+    parsed = urlsplit(url)
+    if (
+        not url
+        or any(character.isspace() for character in url)
+        or parsed.scheme not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+        or parsed.path not in {"", "/"}
+    ):
+        raise ValueError("Use an HTTP(S) origin without credentials, path, query or fragment")
+    # Accessing port rejects malformed or out-of-range ports before serving requests.
+    parsed.port
+    if parsed.scheme != "https" and parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
+        raise ValueError("Remote servers require HTTPS")
+    return url.rstrip("/")
 
 
 @dataclass(frozen=True)
@@ -26,6 +49,17 @@ class Settings:
     intake_privacy_notice: str = ""
     intake_retention_days: int = 90
     intake_capacity: int = 1000
+
+    def __post_init__(self):
+        try:
+            public_url = validate_origin(self.public_url)
+        except ValueError:
+            raise ValueError(
+                "Invalid AGENTENG_PUBLIC_URL: set its value to an HTTPS origin such as "
+                "https://a2a.agentengineering.world, without quotes, credentials or a path. "
+                "HTTP is allowed only for local development."
+            ) from None
+        object.__setattr__(self, "public_url", public_url)
 
     @classmethod
     def from_env(cls):
