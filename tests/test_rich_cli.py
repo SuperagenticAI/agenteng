@@ -66,11 +66,14 @@ def test_discover_description_wraps_fully():
     import asyncio
 
     console = make_console(record=True, width=88)
+    assert console.width == 88
     service = Service(Settings.from_env())
     result = asyncio.run(service.execute(Request(operation="discover")))
+    description = (result.data or {}).get("description") or ""
+    assert "technical events" in description
     render_result(result, "discover", console)
     text = console.export_text()
-    # Rich may wrap mid-phrase depending on panel chrome width; compare collapsed.
+    # Rich may wrap mid-phrase; compare whitespace-collapsed export text.
     collapsed = " ".join(text.split())
     assert "technical events" in collapsed
     assert "and te " not in collapsed
