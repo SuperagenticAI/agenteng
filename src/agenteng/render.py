@@ -144,7 +144,12 @@ def render_event_detail(console: Console, result: Result) -> None:
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
-def _speaker_body(speaker: dict, *, full: bool = False) -> Text:
+def _speaker_body(speaker: dict, *, full: bool = False, include_abstract: bool = True) -> Text:
+    """Build speaker card body.
+
+    When a Session card will show the talk abstract, pass include_abstract=False
+    so the abstract appears once.
+    """
     body = Text()
     role = speaker.get("role") or ""
     company = speaker.get("company") or ""
@@ -160,19 +165,26 @@ def _speaker_body(speaker: dict, *, full: bool = False) -> Text:
         if place:
             body.append(place + "\n", style="ae.meta")
     talk = speaker.get("talk_title")
-    if talk:
+    if talk and include_abstract:
+        # Title only here when there is no separate session card.
         body.append("Talk: ", style="ae.meta")
         body.append(display_text(talk) + "\n")
     disciplines = speaker.get("disciplines") or []
     if disciplines:
         body.append("Disciplines: " + ", ".join(disciplines) + "\n", style="ae.meta")
     if full:
-        abstract = speaker.get("abstract")
-        if abstract:
-            body.append("\n")
-            body.append(display_text(abstract) + "\n")
+        if include_abstract:
+            abstract = speaker.get("abstract")
+            if abstract:
+                body.append("\n")
+                body.append(display_text(abstract) + "\n")
         links = speaker.get("links") or {}
-        for label, key in (("X", "x"), ("GitHub", "github"), ("LinkedIn", "linkedin"), ("Web", "website")):
+        for label, key in (
+            ("X", "x"),
+            ("GitHub", "github"),
+            ("LinkedIn", "linkedin"),
+            ("Web", "website"),
+        ):
             if links.get(key):
                 body.append(f"{label}: ", style="ae.meta")
                 body.append(str(links[key]) + "\n", style=BLUE)
@@ -215,20 +227,22 @@ def render_speaker(console: Console, result: Result) -> None:
     if not speaker:
         console.print(f"[ae.meta]{display_text(result.answer)}[/]")
         return
+    talk = speaker.get("talk")
+    has_session = bool(talk and talk.get("start"))
     console.print(
         _panel(
             speaker.get("name") or speaker.get("id") or "Speaker",
-            _speaker_body(speaker, full=True),
+            _speaker_body(speaker, full=True, include_abstract=not has_session),
             border=VIOLET,
         )
     )
-    talk = speaker.get("talk")
-    if talk and talk.get("start"):
-        console.print(_panel("Session", _talk_body(talk), border=BLUE))
+    if has_session:
+        console.print(_panel("Session", _talk_body(talk, include_title=True), border=BLUE))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
-def _talk_body(talk: dict) -> Text:
+def _talk_body(talk: dict, *, include_title: bool = True) -> Text:
+    """Talk/session body. Long titles live in the body so panel headers stay short."""
     body = Text()
     when = ""
     start = _parse_dt(talk.get("start"))
@@ -240,6 +254,10 @@ def _talk_body(talk: dict) -> Text:
     if when:
         body.append(when + "  ·  ", style="ae.accent")
     body.append((talk.get("kind") or "talk") + "\n", style="ae.meta")
+    if include_title:
+        title = talk.get("title") or talk.get("talk_title")
+        if title:
+            body.append(display_text(title) + "\n")
     if talk.get("speaker_name"):
         meta = " · ".join(
             p
@@ -268,9 +286,8 @@ def render_talks(console: Console, result: Result) -> None:
         console.print(f"[ae.meta]{display_text(result.answer)}[/]")
         return
     for talk in talks:
-        console.print(
-            _panel(display_text(talk.get("title")) or "Talk", _talk_body(talk), border=VIOLET)
-        )
+        # Short panel header; full title wraps in the body.
+        console.print(_panel("Talk", _talk_body(talk, include_title=True), border=VIOLET))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
@@ -279,9 +296,7 @@ def render_talk(console: Console, result: Result) -> None:
     if not talk:
         console.print(f"[ae.meta]{display_text(result.answer)}[/]")
         return
-    console.print(
-        _panel(display_text(talk.get("title") or talk.get("talk_title")) or "Talk", _talk_body(talk), border=VIOLET)
-    )
+    console.print(_panel("Talk", _talk_body(talk, include_title=True), border=VIOLET))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 

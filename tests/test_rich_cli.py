@@ -219,3 +219,39 @@ def test_interactive_browse_event_overview(monkeypatch):
     assert "AgentEng London" in result.output
     assert "Fri 16 Oct 2026" in result.output or "16 Oct 2026" in result.output
     assert "Bye" in result.output
+
+
+def test_speaker_human_output_shows_abstract_once():
+    import asyncio
+
+    console = make_console(record=True, width=88)
+    service = Service(Settings.from_env())
+    result = asyncio.run(service.execute(Request(operation="speaker", speaker_id="samuel-colvin")))
+    render_result(result, "speaker", console)
+    text = console.export_text()
+    abstract_line = "For most of my career, my job was writing code."
+    assert text.count(abstract_line) == 1
+    assert "10:25-10:55" in text
+    assert "Software Development as Constrained Optimization" in text
+    assert "https://github.com/samuelcolvin" in text
+
+
+def test_talk_card_shows_full_title_in_body():
+    import asyncio
+
+    console = make_console(record=True, width=72)
+    service = Service(Settings.from_env())
+    result = asyncio.run(
+        service.execute(
+            Request(operation="talk", speaker_id="tobie-morgan-hitchcock")
+        )
+    )
+    render_result(result, "talk", console)
+    text = console.export_text()
+    full = "Memory Is Not a Bigger Context Window: Memory Engineering for Production Agents"
+    # Rich wraps long lines; compare on whitespace-collapsed text.
+    collapsed = " ".join(text.split())
+    assert full in collapsed
+    # Short panel header "Talk"; long title wraps in the body instead of truncating.
+    assert "Talk" in text.splitlines()[0]
+    assert "Production Ag" not in text.splitlines()[0]
