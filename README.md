@@ -48,7 +48,7 @@ uv run --frozen agenteng plan agenteng-london-2026 --interest evaluation --forma
 
 For an executable available outside the checkout, use `uv tool install .` or `uv tool install '.[mcp]'` for local MCP. With pip, use a virtual environment and `python -m pip install .` (or `'.[mcp]'`). The published installer requires Python 3.12+, curl, venv and pip on a POSIX system.
 
-This is an initial **0.0.1 alpha**. Public package/installer distribution and hosted endpoints have not yet been published. Source installs work today; registry and website installation instructions will be announced after verified publication.
+This source prepares the **0.0.2 alpha** release. The published package is available on [PyPI](https://pypi.org/project/agenteng/), and source installs work today.
 
 The CLI uses its bundled catalogue offline. Put global options before the command:
 

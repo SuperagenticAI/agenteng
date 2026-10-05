@@ -25,15 +25,15 @@ version in `uv.lock`, installer `VERSION` and its default versioned release URL.
 Update the changelog and release-facing documentation. Check locally:
 
 ```sh
-uv run --frozen python scripts/check-release-metadata.py --tag v0.0.1
+uv run --frozen python scripts/check-release-metadata.py --tag v0.0.2
 ```
 
 Commit and push the workflow and version changes first. Then tag the intended
 commit and push that tag:
 
 ```sh
-git tag -a v0.0.1 -m 'AgentEng 0.0.1'
-git push origin v0.0.1
+git tag -a v0.0.2 -m 'AgentEng 0.0.2'
+git push origin v0.0.2
 ```
 
 The tag must exactly match `v` plus the package version. Canonical tags such as

@@ -1,12 +1,16 @@
 # Changelog
 
-## Unreleased
+## 0.0.2
 
 ### Changed
 
 - Reject invalid public URLs at startup with a clear configuration error, instead of failing requests in host-validation middleware.
 
 - Default the Cloud Run service name to `agenteng`; document the trigger override for the published `v0.0.1` tag.
+
+## 0.0.1
+
+### Changed
 
 - Align the initial package and installer release to `0.0.1`; derive the HTTP API version from package metadata and show the expected tag in release-check failures.
 
@@ -34,4 +38,4 @@
 - Guided offline drafts, completeness checks and private-permission JSON/Markdown export.
 - Opt-in single-organizer SQLite intake pilot: participant credentials, confirmed previews, durable receipts, scoped status/history, withdrawal, retention and local organizer review.
 
-Public endpoints and package distribution have not been published. Hosted intake remains disabled by default and requires persistent private storage; the supplied Cloud Run configuration serves public discovery/drafting.
+Hosted intake remains disabled by default and requires persistent private storage; the supplied Cloud Run configuration serves public discovery/drafting.
