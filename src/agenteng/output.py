@@ -58,10 +58,12 @@ def make_console(*, record: bool = False, width: int | None = None) -> Console:
     # soft_wrap must stay False: True crops long Panel lines instead of wrapping.
     kwargs: dict = {"theme": THEME, "highlight": False, "soft_wrap": False}
     if record:
-        # Record into an isolated buffer so host COLUMNS/CI capture cannot change wrap.
+        # Record into an isolated buffer. Set width and height together so Rich
+        # does not treat a dumb TERM (common in CI) as a fixed 80x25 console.
         kwargs["record"] = True
         kwargs["force_terminal"] = True
         kwargs["width"] = width or 88
+        kwargs["height"] = 10_000
         kwargs["file"] = io.StringIO()
     elif width is not None:
         kwargs["width"] = width

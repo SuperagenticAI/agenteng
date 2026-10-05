@@ -64,6 +64,7 @@ def test_friendly_date_and_event_label():
 
 def test_discover_description_wraps_fully():
     import asyncio
+    import re
 
     console = make_console(record=True, width=88)
     assert console.width == 88
@@ -73,8 +74,9 @@ def test_discover_description_wraps_fully():
     assert "technical events" in description
     render_result(result, "discover", console)
     text = console.export_text()
-    # Rich may wrap mid-phrase; compare whitespace-collapsed export text.
-    collapsed = " ".join(text.split())
+    # Strip box-drawing borders so wrapped lines join as words, not "technical | | events".
+    cleaned = re.sub(r"[^\w\s.,;:"'/-]+", " ", text)
+    collapsed = " ".join(cleaned.split())
     assert "technical events" in collapsed
     assert "and te " not in collapsed
     assert "operating AI agents" in collapsed
