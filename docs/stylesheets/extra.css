@@ -1,9 +1,19 @@
 :root {
   --md-text-font: system-ui;
   --md-code-font: ui-monospace;
+  /* Logo gradient tokens from the event website's src/index.css. */
+  --agenteng-brand-cyan: 192 100% 45%;
+  --agenteng-brand-violet: 270 100% 55%;
+  --agenteng-brand-magenta: 320 100% 55%;
+  --agenteng-brand-gradient: linear-gradient(
+    135deg,
+    hsl(var(--agenteng-brand-cyan)),
+    hsl(var(--agenteng-brand-violet)),
+    hsl(var(--agenteng-brand-magenta))
+  );
 }
 
-/* Match SuperQode's violet accents, black chrome and lifted code panels. */
+/* Agent Engineering brand hues, with contrast-adjusted text in each scheme. */
 [data-md-color-scheme="default"] {
   color-scheme: light;
   --md-primary-fg-color: #ffffff;
@@ -11,55 +21,69 @@
   --md-primary-fg-color--dark: #f8fafc;
   --md-primary-bg-color: #111827;
   --md-primary-bg-color--light: #334155;
-  --md-accent-fg-color: #6d28d9;
-  --md-accent-fg-color--transparent: rgba(109, 40, 217, 0.12);
-  --md-typeset-a-color: #6d28d9;
+  --agenteng-cyan-ink: hsl(192 100% 28%);
+  --agenteng-violet-ink: hsl(270 100% 40%);
+  --agenteng-magenta-ink: hsl(320 100% 37%);
+  --agenteng-action-bg: hsl(192 100% 40%);
+  --md-accent-fg-color: var(--agenteng-cyan-ink);
+  --md-accent-bg-color: #ffffff;
+  --md-accent-bg-color--light: rgba(255, 255, 255, 0.7);
+  --md-accent-fg-color--transparent: hsl(var(--agenteng-brand-cyan) / 0.12);
+  --md-typeset-a-color: var(--agenteng-cyan-ink);
   --md-default-bg-color: #ffffff;
-  --md-code-bg-color: #f5f3ff;
+  --md-code-bg-color: #f0f7fa;
   --md-footer-bg-color: #111827;
   --md-footer-bg-color--dark: #020617;
   --agenteng-header-border: rgba(15, 23, 42, 0.1);
   --agenteng-heading-color: #111827;
   --agenteng-muted-color: #475569;
   --agenteng-surface-color: #f8fafc;
-  --agenteng-tagline-start: #244ece;
-  --agenteng-tagline-end: #982b9c;
+  --md-code-hl-keyword-color: var(--agenteng-violet-ink);
+  --md-code-hl-function-color: var(--agenteng-cyan-ink);
+  --md-code-hl-constant-color: var(--agenteng-magenta-ink);
+  --md-code-hl-operator-color: var(--agenteng-cyan-ink);
+  --md-code-hl-punctuation-color: var(--agenteng-cyan-ink);
+  --md-code-hl-variable-color: var(--agenteng-magenta-ink);
 }
 
 [data-md-color-scheme="slate"] {
   color-scheme: dark;
   --md-primary-fg-color: #000000;
-  --md-primary-fg-color--light: #14141a;
+  --md-primary-fg-color--light: #141414;
   --md-primary-fg-color--dark: #000000;
   --md-primary-bg-color: #ffffff;
-  --md-primary-bg-color--light: #dbeafe;
-  --md-accent-fg-color: #a78bfa;
-  --md-accent-fg-color--transparent: rgba(167, 139, 250, 0.14);
-  --md-typeset-a-color: #a78bfa;
-  --md-default-bg-color: #0a0a0c;
-  --md-code-bg-color: #14161f;
+  --md-primary-bg-color--light: #e5e5e5;
+  --agenteng-cyan-ink: hsl(192 100% 45%);
+  --agenteng-violet-ink: hsl(270 100% 70%);
+  --agenteng-magenta-ink: hsl(320 100% 60%);
+  --agenteng-action-bg: hsl(201.21 100% 50%);
+  --md-accent-fg-color: var(--agenteng-cyan-ink);
+  --md-accent-bg-color: #000000;
+  --md-accent-bg-color--light: rgba(0, 0, 0, 0.7);
+  --md-accent-fg-color--transparent: hsl(var(--agenteng-brand-cyan) / 0.14);
+  --md-typeset-a-color: var(--agenteng-cyan-ink);
+  --md-default-bg-color: #000000;
+  --md-code-bg-color: #101014;
   --md-code-fg-color: #e7e7ea;
   --md-footer-bg-color: #000000;
   --md-footer-bg-color--dark: #000000;
   --agenteng-header-border: rgba(255, 255, 255, 0.07);
   --agenteng-heading-color: #ffffff;
-  --agenteng-muted-color: #c9c7d8;
-  --agenteng-surface-color: #14161f;
-  --agenteng-tagline-start: #78c1ff;
-  --agenteng-tagline-end: #ef9bf3;
+  --agenteng-muted-color: #c4c4c4;
+  --agenteng-surface-color: #0a0a0a;
 
   --md-code-hl-comment-color: #969dad;
-  --md-code-hl-keyword-color: #c792ea;
+  --md-code-hl-keyword-color: var(--agenteng-violet-ink);
   --md-code-hl-string-color: #c3e88d;
   --md-code-hl-number-color: #f78c6c;
-  --md-code-hl-function-color: #82aaff;
-  --md-code-hl-constant-color: #ff5572;
+  --md-code-hl-function-color: var(--agenteng-action-bg);
+  --md-code-hl-constant-color: var(--agenteng-magenta-ink);
   --md-code-hl-name-color: #e7e7ea;
-  --md-code-hl-operator-color: #89ddff;
-  --md-code-hl-punctuation-color: #89ddff;
-  --md-code-hl-variable-color: #f07178;
+  --md-code-hl-operator-color: var(--agenteng-cyan-ink);
+  --md-code-hl-punctuation-color: var(--agenteng-cyan-ink);
+  --md-code-hl-variable-color: var(--agenteng-magenta-ink);
   --md-code-hl-special-color: #ffcb6b;
-  --md-code-hl-color: rgba(167, 139, 250, 0.18);
+  --md-code-hl-color: hsl(var(--agenteng-brand-cyan) / 0.18);
 }
 
 .md-header {
@@ -117,7 +141,7 @@
   width: clamp(136px, 20vw, 192px);
   height: auto;
   margin: 0 auto 1rem;
-  filter: drop-shadow(0 0 26px rgba(167, 139, 250, 0.18));
+  filter: drop-shadow(0 0 26px hsl(var(--agenteng-brand-cyan) / 0.18));
 }
 
 .md-typeset .agenteng-eyebrow {
@@ -154,7 +178,12 @@
 
 @supports (background-clip: text) or (-webkit-background-clip: text) {
   .md-typeset .agenteng-hero-tagline {
-    background: linear-gradient(100deg, var(--agenteng-tagline-start), var(--agenteng-tagline-end));
+    background: linear-gradient(
+      135deg,
+      var(--agenteng-cyan-ink),
+      var(--agenteng-violet-ink),
+      var(--agenteng-magenta-ink)
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -170,8 +199,9 @@
   text-wrap: pretty;
 }
 
-.md-typeset .agenteng-highlights,
-.md-typeset .agenteng-disciplines {
+/* Match Material's ul:not([hidden]) specificity so lists remain flex rows. */
+.md-typeset ul.agenteng-highlights:not([hidden]),
+.md-typeset ul.agenteng-disciplines:not([hidden]) {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -180,19 +210,47 @@
   list-style: none;
 }
 
-.md-typeset .agenteng-highlights {
+.md-typeset ul.agenteng-highlights:not([hidden]) {
   justify-content: center;
+  gap: 0.3rem;
+  margin: 0.65rem 0 0.9rem;
 }
 
-.md-typeset .agenteng-highlights li,
-.md-typeset .agenteng-disciplines li {
+.md-typeset ul.agenteng-highlights > li,
+.md-typeset ul.agenteng-disciplines > li {
+  --agenteng-chip-hue: var(--agenteng-brand-cyan);
+  --agenteng-chip-ink: var(--agenteng-cyan-ink);
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
   margin: 0;
   padding: 0.3rem 0.65rem;
-  border: 1px solid var(--agenteng-header-border);
+  border: 1px solid hsl(var(--agenteng-chip-hue) / 0.3);
   border-radius: 2rem;
-  background-color: var(--agenteng-surface-color);
-  color: var(--agenteng-muted-color);
+  background-color: hsl(var(--agenteng-chip-hue) / 0.08);
+  color: var(--agenteng-chip-ink);
   font-size: 0.68rem;
+}
+
+.md-typeset ul.agenteng-highlights > li:nth-child(3n + 2),
+.md-typeset ul.agenteng-disciplines > li:nth-child(3n + 2) {
+  --agenteng-chip-hue: var(--agenteng-brand-violet);
+  --agenteng-chip-ink: var(--agenteng-violet-ink);
+}
+
+.md-typeset ul.agenteng-highlights > li:nth-child(3n),
+.md-typeset ul.agenteng-disciplines > li:nth-child(3n) {
+  --agenteng-chip-hue: var(--agenteng-brand-magenta);
+  --agenteng-chip-ink: var(--agenteng-magenta-ink);
+}
+
+.md-typeset ul.agenteng-highlights > li {
+  padding: 0.15rem 0.5rem;
+  font-size: 0.62rem;
+  line-height: 1.5;
+  white-space: nowrap;
 }
 
 .agenteng-hero .md-button,
@@ -211,8 +269,10 @@
 
 .agenteng-hero .md-button--primary {
   border-color: transparent;
-  background: linear-gradient(110deg, #78c1ff, #c5a3ff, #ef9bf3);
-  color: #111827;
+  background:
+    linear-gradient(var(--agenteng-action-bg), var(--agenteng-action-bg)) padding-box,
+    var(--agenteng-brand-gradient) border-box;
+  color: #000000;
 }
 
 .agenteng-hero .md-button:hover,
@@ -222,7 +282,7 @@
 }
 
 .agenteng-hero .md-button--primary:hover {
-  color: #111827;
+  color: #000000;
   border-color: var(--agenteng-heading-color);
 }
 
