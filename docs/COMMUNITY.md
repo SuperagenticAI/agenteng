@@ -1,4 +1,4 @@
-# Participate in Agent Engineering HQ
+# 🤝 Join the conversation
 
 You can suggest a talk, an event topic, a workshop or a way to improve this project. Suggestions help organizers understand community interests; they do not create a commitment to run an event or accept a speaker.
 

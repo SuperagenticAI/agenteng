@@ -1,75 +1,198 @@
-![Agent Engineering HQ](assets/logo.png){ .agenteng-logo }
+---
+title: Agent Engineering HQ
+hide:
+  - navigation
+  - toc
+---
 
-# AgentEng
+<div class="agenteng-hero" markdown>
 
-Find Agent Engineering HQ conferences and events in **London and San Francisco**
-from your terminal or coding agent. AgentEng provides a CLI, one MCP tool and an
-A2A agent using the same public catalogue. Event lookup, tool browsing and local
-proposal drafts work offline, with no model calls or API key.
+<img src="assets/logo.png" alt="Agent Engineering HQ" class="agenteng-hero-logo" width="192" height="192" />
 
-## Install from source
+<p class="agenteng-eyebrow">Conferences · Community · Tools</p>
 
-Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
+# Agent Engineering HQ
 
-```sh
+<p class="agenteng-hero-tagline">The home of the agent engineering discipline.</p>
+
+<p class="agenteng-hero-description">Meet the people, explore the tools and find the events shaping agent engineering. Take <strong>AgentEng</strong> with you, from your terminal to the coding agent you already use.</p>
+
+<ul class="agenteng-highlights" aria-label="At a glance">
+  <li>📍 London + San Francisco</li>
+  <li>🧠 12 disciplines</li>
+  <li>💻 CLI · MCP · A2A</li>
+  <li>🔓 Open source</li>
+</ul>
+
+[🚀 Get started](#installation-and-first-run){ .md-button .md-button--primary }
+[🤖 Connect your agent](INTEGRATIONS.md){ .md-button }
+[🌍 Event website](https://agentengineering.world){ .md-button }
+
+</div>
+
+## 🧭 Find your starting point { #find-your-starting-point }
+
+<div class="grid cards agenteng-cards" markdown>
+
+-   **📅 Discover events**
+
+    ---
+
+    Find London and San Francisco events, speakers, sessions and official registration links.
+
+    [Explore events →](#explore-events)
+
+-   **🤖 Bring your coding agent**
+
+    ---
+
+    Connect through one MCP tool, A2A or HTTP. Use the same catalogue from your existing workspace.
+
+    [Connect an agent →](INTEGRATIONS.md)
+
+-   **🧰 Explore the tool directory**
+
+    ---
+
+    Browse 456 attributed tools, models and infrastructure listings across twelve disciplines.
+
+    [Browse the directory →](TOOLS.md)
+
+-   **💡 Shape a future event**
+
+    ---
+
+    Turn a talk, workshop or event idea into a local draft, then choose how to share it with the organizer.
+
+    [Prepare an idea →](PARTICIPATION.md)
+
+</div>
+
+## 🚀 Installation and first run { #installation-and-first-run }
+
+Start with Python 3.12+ and [uv](https://docs.astral.sh/uv/). Install from the
+source checkout, including the optional local MCP server:
+
+```sh title="Install AgentEng"
 git clone https://github.com/SuperagenticAI/agenteng.git
 cd agenteng
 uv tool install '.[mcp]'
-agenteng --help
+agenteng discover
 ```
 
-The Python package and executable are both named `agenteng`. This is a **0.1.0
-alpha**; registry/website installation and official hosted endpoints will be
-announced after verified publication.
+**Your first result:** published London and San Francisco events, with supporting
+source links. The CLI uses its bundled snapshot, so event lookup, tool browsing
+and local drafting work offline with **zero model calls** and no provider key.
 
-## Explore
+The package and command are both named `agenteng`. This is a **0.1.0 alpha**.
+Run `agenteng --help` to explore commands, or `agenteng COMMAND --help` for options.
+Installing the CLI does not start or publish a hosted service.
 
-```sh
-agenteng discover
+## 📅 Explore events { #explore-events }
+
+Find an event, then use its returned ID to explore the agenda, speakers or ticket
+terms. Put global options such as `--json` before the command.
+
+```sh title="Find your next event"
 agenteng events --city London --upcoming
 agenteng events --city 'San Francisco'
 agenteng ask 'When is the next London conference?'
-agenteng disciplines
-agenteng tools --discipline memory
-agenteng tool langgraph
 agenteng --json events
 ```
 
-Event results include source links and snapshot freshness. Follow the official
-registration page for current details. The [tool directory](TOOLS.md) lists
-attributed tools across twelve disciplines without popularity rankings.
-
-## Connect your agent
-
-For clients supporting local MCP, add the installed executable to their MCP
-configuration:
-
-```json
-{"mcpServers":{"agenteng":{"command":"agenteng","args":["mcp"]}}}
+```sh title="Explore a published programme"
+agenteng speakers --city London
+agenteng agenda agenteng-london-2026 --topic memory
+agenteng tickets agenteng-london-2026
 ```
 
+The catalogue is a dated snapshot. Follow the event's official registration link
+for current availability and details. See [data and attribution](DATA.md).
+
+## 🧠 Twelve disciplines, one directory { #the-twelve-disciplines }
+
+Explore the tooling around the whole discipline, from prompts and memory to
+protocols and inference. Listings include names, categories and source links;
+they are not popularity rankings or tutorials.
+
+<ul class="agenteng-disciplines" aria-label="Agent engineering disciplines">
+  <li>✍️ Prompt</li>
+  <li>🧩 Context</li>
+  <li>⚙️ Harness</li>
+  <li>📏 Eval</li>
+  <li>🧠 Memory</li>
+  <li>⚡ Inference</li>
+  <li>🔄 Loop</li>
+  <li>🤖 Agentic</li>
+  <li>💻 Code</li>
+  <li>🔌 Protocol</li>
+  <li>🕸️ Graph</li>
+  <li>🔎 Search</li>
+</ul>
+
+```sh title="Find tools for your work"
+agenteng disciplines
+agenteng tools --discipline memory
+agenteng tools --discipline inference --kind runtime
+agenteng tools --search 'Gemini CLI'
+agenteng tool langgraph
+```
+
+[Explore filters, pagination and source attribution →](TOOLS.md)
+
+## 🤖 Use AgentEng inside your agent { #connect-your-agent }
+
+Add the installed executable to a client's local MCP configuration:
+
+```json title="Local MCP configuration"
+{
+  "mcpServers": {
+    "agenteng": {
+      "command": "agenteng",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+Try asking: **“Find the next London conference”**, **“List memory tools”** or
+**“Help me draft a workshop idea for San Francisco.”**
+
 Run `agenteng connect codex`, `agenteng connect claude-code` or
-`agenteng connect cursor` for client-specific instructions. See
-[MCP, A2A and HTTP connections](INTEGRATIONS.md) for remote configuration and
-typed request examples. Installing the CLI does not start or publish a server.
+`agenteng connect cursor` for client-specific setup instructions.
+[The connection guide](INTEGRATIONS.md) also covers hosted MCP, A2A and HTTP.
 
-## Share an idea
+## 💡 Have an idea? Start with a draft { #share-an-idea }
 
-```sh
+A practical workshop, a talk you want to give, a topic the community should
+explore: start small and shape the idea before sharing it.
+
+```sh title="Prepare a future-event idea"
 agenteng engage --city London --output draft.json
 agenteng proposal preview draft.json
 agenteng proposal export draft.json --format markdown --output draft.md
 agenteng participate
 ```
 
-These commands prepare a local idea and show organizer contact details; they do
-not send it. See [participation](PARTICIPATION.md) for the optional private intake
-pilot. Receipt of an idea does not guarantee a response, acceptance or an event.
-London 2026 has an invited programme and no public CFP.
+These commands create local drafts and show organizer contact details; they do
+not send a proposal. Ideas go to **one organizing group: Agent Engineering HQ**.
+Sharing an idea does not guarantee a response, acceptance or an event. London
+2026 has an invited programme and no public CFP.
 
-Optional model synthesis and RLM are disabled by default. RLM permits maximum
-depth one and one child or leaf delegation. See [architecture](ARCHITECTURE.md).
+[Drafting and the optional intake pilot →](PARTICIPATION.md)
+[Community participation →](COMMUNITY.md)
 
-Visit the [event website](https://agentengineering.world), report a
-[software issue](https://github.com/SuperagenticAI/agenteng/issues), or read the
-[contribution guide](https://github.com/SuperagenticAI/agenteng/blob/main/CONTRIBUTING.md).
+## 🔓 Built in the open { #built-in-the-open }
+
+Improve the code, suggest a source-backed tool correction or help make the docs
+clearer. AgentEng shares one typed interface across CLI, MCP and A2A. Optional
+model synthesis and RLM are disabled by default; RLM is bounded to depth one and
+one child or leaf delegation.
+
+<div class="agenteng-footer-links" markdown>
+
+[⭐ View on GitHub](https://github.com/SuperagenticAI/agenteng){ .md-button }
+[🤝 Contribute](https://github.com/SuperagenticAI/agenteng/blob/main/CONTRIBUTING.md){ .md-button }
+[🏗️ Architecture](ARCHITECTURE.md){ .md-button }
+
+</div>

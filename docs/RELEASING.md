@@ -1,4 +1,4 @@
-# Releases
+# 📦 Releases and documentation
 
 Release artifacts should contain only public source, documentation, event data and tool-directory metadata. Keep credentials, private notes, proposals, local environments and generated files out of Git. The installer source is versioned at `src/agenteng/data/install.sh`; generated release files live under ignored `dist/`.
 

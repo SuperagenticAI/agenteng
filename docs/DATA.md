@@ -1,4 +1,4 @@
-# Event data and attribution
+# 📖 Data and attribution
 
 The bundled catalogue contains public Agent Engineering HQ event information: event titles, venues, published dates, speaker listings, agenda entries, ticket terms and links to registration or recordings. It includes no attendee/member exports, private contact list or proposal submissions.
 

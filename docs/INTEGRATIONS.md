@@ -1,4 +1,13 @@
-# Use AgentEng from an agent or editor
+# 🤖 Connect your agent
+
+Bring Agent Engineering HQ into the workspace you already use. Start with local
+MCP, then use the same requests over hosted MCP, A2A or HTTP when a service is running.
+
+| Your starting point | Next step |
+| --- | --- |
+| A coding agent or editor | [Set up local MCP](#local-mcp) |
+| A running remote AgentEng service | [Connect over HTTP or use the stdio bridge](#hosted-mcp-and-a-stdio-bridge) |
+| An A2A client or your own integration | [Use typed questions and requests](#useful-questions-and-requests) |
 
 AgentEng is the Agent Engineering Conference and event guide from Agent Engineering HQ. This service covers **London and San Francisco only**, including their published historical events. `discover` highlights the next published event in each city, or the most recent event when there is no upcoming one. Event names, dates, speakers and registration links come from the public website catalogue.
 
@@ -34,7 +43,17 @@ Codex uses shared MCP configuration for its CLI and IDE integration. See the [of
 Cursor can use this entry in `.cursor/mcp.json`. A generic `mcpServers` client can use the command and arguments in its own supported configuration location:
 
 ```json
-{"mcpServers":{"agenteng":{"type":"stdio","command":"agenteng","args":["mcp"]}}}
+{
+  "mcpServers": {
+    "agenteng": {
+      "type": "stdio",
+      "command": "agenteng",
+      "args": [
+        "mcp"
+      ]
+    }
+  }
+}
 ```
 
 See [Cursor's MCP documentation](https://prod.cursor.com/docs/mcp). Configuration formats differ between clients; `agenteng connect CLIENT` prints the corresponding shape. These instructions do not install a plugin, register a marketplace listing or authenticate anyone.
@@ -52,7 +71,18 @@ agenteng connect cursor --transport http --url https://a2a.agentengineering.worl
 The HTTP MCP endpoint is `/mcp/` and uses Streamable HTTP. For clients that need a local command, the same installed CLI can bridge to a hosted service:
 
 ```json
-{"mcpServers":{"agenteng":{"command":"agenteng","args":["--remote","https://a2a.agentengineering.world","mcp"]}}}
+{
+  "mcpServers": {
+    "agenteng": {
+      "command": "agenteng",
+      "args": [
+        "--remote",
+        "https://a2a.agentengineering.world",
+        "mcp"
+      ]
+    }
+  }
+}
 ```
 
 This bridge requires network access and relays requests to that origin; it does not silently fall back to a local snapshot. Remote tools conservatively advertise possible writes. The hosted server still controls intake availability and authorization.
@@ -73,7 +103,14 @@ An LLM client can use the same typed operations through MCP, or translate them t
 Use the same single MCP tool for `disciplines`, `tools` and `tool`:
 
 ```json
-{"request":{"operation":"tools","discipline":"memory","limit":20,"offset":0}}
+{
+  "request": {
+    "operation": "tools",
+    "discipline": "memory",
+    "limit": 20,
+    "offset": 0
+  }
+}
 ```
 
 A2A data parts and HTTP bodies use the inner object. Continue with `next_offset` and unchanged filters. Plain “List memory tools” questions route to directory browsing. Names, aliases, categories and links are bundled offline; no model call or third-party installation is needed. See [full directory usage and attribution](TOOLS.md).

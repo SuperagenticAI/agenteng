@@ -1,4 +1,4 @@
-# Agent-engineering tool directory
+# 🧰 Explore the tool directory
 
 Browse tools, models and infrastructure through the CLI, the existing single MCP tool, A2A or HTTP. Listing, searching and reading details work offline without a provider key or model calls.
 
@@ -33,7 +33,14 @@ Tags describe discovery categories, not delivered AgentEng adapters or vendor in
 Call the existing MCP tool named `agenteng` with:
 
 ```json
-{"request":{"operation":"tools","discipline":"memory","limit":20,"offset":0}}
+{
+  "request": {
+    "operation": "tools",
+    "discipline": "memory",
+    "limit": 20,
+    "offset": 0
+  }
+}
 ```
 
 Other requests are `{"operation":"disciplines"}` and `{"operation":"tool","tool_id":"langgraph"}`. A2A JSON data parts and `POST /v1/query` use the inner request object unchanged. The A2A card advertises the `agenteng-tools` skill. Plain questions such as “List inference tools” route deterministically; typed requests provide exact control over filters and pagination. Event search remains separate. See [connection instructions](INTEGRATIONS.md).

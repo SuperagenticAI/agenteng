@@ -1,4 +1,8 @@
-# Drafts and private participation
+# 💡 Shape a future event
+
+Have a talk, workshop or event idea? Start with a local draft, preview it and
+choose how to share it. [Offline drafting](#offline-drafts) works immediately;
+the [private intake pilot](#optional-private-pilot) requires organizer setup and access.
 
 AgentEng helps people propose talks, workshops, future-event topics and feedback for **Agent Engineering HQ** in **London or San Francisco**. Every private submission belongs to this one organizing group. Open-source deployments use their own separate private store.
 
