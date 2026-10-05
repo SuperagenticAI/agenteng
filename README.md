@@ -123,7 +123,7 @@ MCP call example:
 
 Public operations are `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `tickets`, `recordings`, `search`, `plan`, `ask` and `participate`. Draft operations are `proposal_draft`, `proposal_preview` and `proposal_export`. Begin with `discover` for featured London/San Francisco events and interfaces, or `events` for published IDs. The same request can be an A2A JSON data part or an HTTP body; plain A2A text uses question routing or public-source search. Responses include supporting sources and snapshot metadata. A2A returns immediate messages and advertises no streaming or push notifications.
 
-The intended official host is `a2a.agentengineering.world`, once published. To self-host, set `AGENTENG_PUBLIC_URL` to your HTTPS origin and configure allowed origins. See [deployment](deploy/README.md), [architecture](docs/ARCHITECTURE.md) and the [HTTP MCP config](deploy/mcp-http.json).
+The official host is live at `https://a2a.agentengineering.world` (health, agent card, catalogue, A2A JSON-RPC and MCP `/mcp/`). To self-host, set `AGENTENG_PUBLIC_URL` to your HTTPS origin and configure allowed origins. See [deployment](deploy/README.md), [architecture](docs/ARCHITECTURE.md) and the [HTTP MCP config](deploy/mcp-http.json).
 
 For Google Cloud Run, the [console setup guide](deploy/README.md) connects this repository through Cloud Build with **Push new tag**, regex `^v.*$` and configuration file `cloudbuild.yaml`. Version tags deploy the public server and separately trigger PyPI publishing; ordinary commits do not deploy either release.
 

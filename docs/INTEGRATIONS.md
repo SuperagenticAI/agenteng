@@ -11,7 +11,7 @@ MCP, then use the same requests over hosted MCP, A2A or HTTP when a service is r
 
 AgentEng is the Agent Engineering Conference and event guide from Agent Engineering HQ. This service covers **London and San Francisco only**, including their published historical events. `discover` highlights the next published event in each city, or the most recent event when there is no upcoming one. Event names, dates, speakers and registration links come from the public website catalogue.
 
-The official hosted origin is intended to be `https://a2a.agentengineering.world`; it is not published by installing this package. Use a running self-hosted origin for HTTP connections until the official deployment is available. Local lookup and proposal drafting work offline and require no provider key.
+The official hosted origin is live at `https://a2a.agentengineering.world`. Installing this package does not start that service. Local lookup and proposal drafting work offline and require no provider key.
 
 ## Local MCP
 
@@ -60,7 +60,7 @@ See [Cursor's MCP documentation](https://prod.cursor.com/docs/mcp). Configuratio
 
 ## Hosted MCP and a stdio bridge
 
-When a service is running, replace the example origin with that host:
+Use the official host below, or replace the origin with your own self-hosted service:
 
 ```sh
 agenteng connect codex --transport http --url https://a2a.agentengineering.world
