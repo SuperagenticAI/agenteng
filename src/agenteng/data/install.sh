@@ -28,7 +28,7 @@ AGENTENG_VERBOSE="${AGENTENG_INSTALL_VERBOSE:-0}"
 A2A_HOST="https://a2a.agentengineering.world"
 
 # ---------------------------------------------------------------------------
-# Presentation (Agent Engineering brand: cyan -> violet -> magenta)
+# Presentation (Agent Engineering brand: blue -> violet -> magenta)
 # ---------------------------------------------------------------------------
 
 ESC=$(printf '\033')
@@ -51,10 +51,9 @@ case "${COLORTERM:-}" in
     truecolor|24bit) TRUECOLOR=1 ;;
 esac
 
-# Brand hues from docs/stylesheets/extra.css and the conference site:
-# cyan hsl(192 100% 45%) #00b8e6, violet hsl(270 100% 55%) #8c1aff,
-# magenta hsl(320 100% 55%) #ff1ab3. Truecolor gets those exact values;
-# everyone else gets the closest 256-colour cube entries.
+# Brand hues from docs/assets/logo.png and docs/stylesheets/extra.css:
+# blue #357bff, violet #8c1aff (hsl 270 100% 55%), magenta tip #e020b8
+# matching the square Agent Engineering lockup. 256-colour fallbacks below.
 if [ "$FANCY" = "1" ]; then
     C_RESET="${ESC}[0m"
     C_BOLD="${ESC}[1m"
@@ -63,19 +62,19 @@ if [ "$FANCY" = "1" ]; then
     C_TRACK="${ESC}[38;5;238m"
     C_GREEN="${ESC}[38;5;42m"
     if [ "$TRUECOLOR" = "1" ]; then
-        C_G1="${ESC}[38;2;0;184;230m"
-        C_G2="${ESC}[38;2;70;105;242m"
+        C_G1="${ESC}[38;2;53;123;255m"
+        C_G2="${ESC}[38;2;75;88;239m"
         C_G3="${ESC}[38;2;140;26;255m"
-        C_G4="${ESC}[38;2;197;26;217m"
-        C_G5="${ESC}[38;2;255;26;179m"
-        C_G6="${ESC}[38;2;51;214;255m"
+        C_G4="${ESC}[38;2;155;45;205m"
+        C_G5="${ESC}[38;2;224;32;184m"
+        C_G6="${ESC}[38;2;53;123;255m"
     else
-        C_G1="${ESC}[38;5;38m"
-        C_G2="${ESC}[38;5;69m"
+        C_G1="${ESC}[38;5;69m"
+        C_G2="${ESC}[38;5;63m"
         C_G3="${ESC}[38;5;93m"
-        C_G4="${ESC}[38;5;165m"
-        C_G5="${ESC}[38;5;199m"
-        C_G6="${ESC}[38;5;45m"
+        C_G4="${ESC}[38;5;129m"
+        C_G5="${ESC}[38;5;163m"
+        C_G6="${ESC}[38;5;69m"
     fi
 else
     C_RESET=""
@@ -305,45 +304,190 @@ banner() {
     fi
     printf '\n'
     if [ "$UTF8" = "1" ]; then
-        printf '      %s◆%s  %s◆%s\n' "$C_G1" "$C_RESET" "$C_G6" "$C_RESET"
-        printf '  %s╭──────────╮%s %s◆%s\n' "$C_G1" "$C_RESET" "$C_G5" "$C_RESET"
-        printf '  %s│%s %s●%s %s●%s %s●%s    %s│%s\n' \
-            "$C_G1" "$C_RESET" "$C_G2" "$C_RESET" "$C_G3" "$C_RESET" \
-            "$C_G5" "$C_RESET" "$C_G3" "$C_RESET"
-        printf '  %s│%s  %s❯%s %s▁▁▁%s   %s│%s\n' \
-            "$C_G2" "$C_RESET" "$C_G3" "$C_RESET" "$C_G4" "$C_RESET" \
-            "$C_G4" "$C_RESET"
-        printf '  %s╰──────────╯%s\n\n' "$C_G3" "$C_RESET"
+        printf '  %s┌%s──%s┐%s  %sAgentEng%s\n' \
+            "$C_G1" "$C_G3" "$C_G5" "$C_RESET" "$C_BOLD$C_G3" "$C_RESET"
+        printf '  %s│%s%sAE%s%s│%s  %sCLI · MCP · A2A%s\n' \
+            "$C_G1" "$C_RESET" "$C_G3" "$C_RESET" "$C_G5" "$C_RESET" \
+            "$C_TEXT" "$C_RESET"
+        printf '  %s└%s──%s┘%s  %sAgent Engineering HQ%s\n\n' \
+            "$C_G1" "$C_G3" "$C_G5" "$C_RESET" "$C_DIM" "$C_RESET"
+    else
+        printf '  %s%s[ AE ] AgentEng%s\n' "$C_BOLD" "$C_G3" "$C_RESET"
+        printf '  %sCLI, MCP and A2A for Agent Engineering HQ.%s\n\n' \
+            "$C_TEXT" "$C_RESET"
     fi
-    printf '  %s%sAgentEng%s\n' "$C_BOLD" "$C_G3" "$C_RESET"
-    printf '  %sCLI, MCP and A2A for Agent Engineering HQ.%s\n' \
-        "$C_TEXT" "$C_RESET"
-    printf '  %sLondon and San Francisco events, tools and agents.%s\n\n' \
-        "$C_DIM" "$C_RESET"
+}
+
+# Horizontal rule of $1 box-drawing dashes, gradient blue -> violet -> magenta.
+logo_hrule() {
+    lh_n=$1
+    lh_ch="─"
+    if [ "$UTF8" != "1" ]; then
+        lh_ch="-"
+    fi
+    lh_i=0
+    while [ "$lh_i" -lt "$lh_n" ]; do
+        lh_seg=$(( lh_i * 5 / lh_n ))
+        case $lh_seg in
+            0) lh_c=$C_G1 ;;
+            1) lh_c=$C_G2 ;;
+            2) lh_c=$C_G3 ;;
+            3) lh_c=$C_G4 ;;
+            *) lh_c=$C_G5 ;;
+        esac
+        printf '%s%s' "$lh_c" "$lh_ch"
+        lh_i=$(( lh_i + 1 ))
+    done
+    printf '%s' "$C_RESET"
+}
+
+logo_word_agent() {
+    printf '%sA%sG%sE%sN%sT%s' \
+        "$C_G1" "$C_G2" "$C_G3" "$C_G4" "$C_G5" "$C_RESET"
+}
+
+logo_word_engineering() {
+    printf '%sE%sN%sG%sI%sN%sE%sE%sR%sI%sN%sG%s' \
+        "$C_G1" "$C_G1" "$C_G2" "$C_G2" "$C_G3" "$C_G3" \
+        "$C_G4" "$C_G4" "$C_G5" "$C_G5" "$C_G5" "$C_RESET"
+}
+
+# One static or animation frame of the square Agent Engineering lockup.
+# Always prints exactly 10 lines so cursor-up redraw stays aligned.
+# Frame 1: outer box. 2: inner top. 3: inner sides+bottom. 4: AGENT. 5: ENGINEERING.
+logo_frame() {
+    lf=$1
+    if [ "$UTF8" != "1" ]; then
+        printf '  +----------------------------+\n'
+        printf '  |  +----------------------+  |\n'
+        printf '  |  |                      |  |\n'
+        printf '  |                            |\n'
+        if [ "$lf" -ge 4 ]; then
+            printf '  |           AGENT            |\n'
+        else
+            printf '  |                            |\n'
+        fi
+        if [ "$lf" -ge 5 ]; then
+            printf '  |        ENGINEERING         |\n'
+        else
+            printf '  |                            |\n'
+        fi
+        printf '  |                            |\n'
+        printf '  |  |                      |  |\n'
+        printf '  |  +----------------------+  |\n'
+        printf '  +----------------------------+\n'
+        return
+    fi
+
+    # 1 outer top
+    if [ "$lf" -ge 1 ]; then
+        printf '  %s┌%s%s┐%s\n' "$C_G1" "$(logo_hrule 28)" "$C_G5" "$C_RESET"
+    else
+        printf '\n'
+    fi
+
+    # 2 inner top
+    if [ "$lf" -ge 2 ]; then
+        printf '  %s│%s  %s┌%s' "$C_G1" "$C_RESET" "$C_G1" "$C_RESET"
+        logo_hrule 22
+        printf '%s┐%s  %s│%s\n' "$C_G5" "$C_RESET" "$C_G5" "$C_RESET"
+    else
+        printf '  %s│%s                            %s│%s\n' \
+            "$C_G1" "$C_RESET" "$C_G5" "$C_RESET"
+    fi
+
+    # 3 inner upper verticals
+    if [ "$lf" -ge 3 ]; then
+        printf '  %s│%s  %s│%s                      %s│%s  %s│%s\n' \
+            "$C_G1" "$C_RESET" "$C_G1" "$C_RESET" \
+            "$C_G5" "$C_RESET" "$C_G5" "$C_RESET"
+    else
+        printf '  %s│%s                            %s│%s\n' \
+            "$C_G1" "$C_RESET" "$C_G5" "$C_RESET"
+    fi
+
+    # 4 gap (broken inner verticals, as in the square logo)
+    printf '  %s│%s                            %s│%s\n' \
+        "$C_G1" "$C_RESET" "$C_G5" "$C_RESET"
+
+    # 5 AGENT (centered in 28 cols: 11 + 5 + 12)
+    if [ "$lf" -ge 4 ]; then
+        printf '  %s│%s           ' "$C_G1" "$C_RESET"
+        logo_word_agent
+        printf '            %s│%s\n' "$C_G5" "$C_RESET"
+    else
+        printf '  %s│%s                            %s│%s\n' \
+            "$C_G1" "$C_RESET" "$C_G5" "$C_RESET"
+    fi
+
+    # 6 ENGINEERING (8 + 11 + 9)
+    if [ "$lf" -ge 5 ]; then
+        printf '  %s│%s        ' "$C_G1" "$C_RESET"
+        logo_word_engineering
+        printf '         %s│%s\n' "$C_G5" "$C_RESET"
+    else
+        printf '  %s│%s                            %s│%s\n' \
+            "$C_G1" "$C_RESET" "$C_G5" "$C_RESET"
+    fi
+
+    # 7 gap
+    printf '  %s│%s                            %s│%s\n' \
+        "$C_G1" "$C_RESET" "$C_G5" "$C_RESET"
+
+    # 8-9 inner lower verticals + bottom
+    if [ "$lf" -ge 3 ]; then
+        printf '  %s│%s  %s│%s                      %s│%s  %s│%s\n' \
+            "$C_G1" "$C_RESET" "$C_G1" "$C_RESET" \
+            "$C_G5" "$C_RESET" "$C_G5" "$C_RESET"
+        printf '  %s│%s  %s└%s' "$C_G1" "$C_RESET" "$C_G1" "$C_RESET"
+        logo_hrule 22
+        printf '%s┘%s  %s│%s\n' "$C_G5" "$C_RESET" "$C_G5" "$C_RESET"
+    else
+        printf '  %s│%s                            %s│%s\n' \
+            "$C_G1" "$C_RESET" "$C_G5" "$C_RESET"
+        printf '  %s│%s                            %s│%s\n' \
+            "$C_G1" "$C_RESET" "$C_G5" "$C_RESET"
+    fi
+
+    # 10 outer bottom
+    if [ "$lf" -ge 1 ]; then
+        printf '  %s└%s%s┘%s\n' "$C_G1" "$(logo_hrule 28)" "$C_G5" "$C_RESET"
+    else
+        printf '\n'
+    fi
 }
 
 logo() {
     if [ "$FANCY" != "1" ]; then
         return
     fi
-    if [ "$UTF8" != "1" ] || [ "$COLUMNS_AVAILABLE" -lt 78 ]; then
+    if [ "$COLUMNS_AVAILABLE" -lt 40 ]; then
         printf '\n  %s%sAgentEng%s\n\n' "$C_BOLD" "$C_G3" "$C_RESET"
         return
     fi
     printf '\n'
-    printf '%s' "$C_G1"
-    printf '%s\n' '  █████╗  ██████╗ ███████╗███╗   ██╗████████╗███████╗███╗   ██╗ ██████╗ '
-    printf '%s' "$C_G2"
-    printf '%s\n' ' ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝██╔════╝████╗  ██║██╔════╝ '
-    printf '%s' "$C_G3"
-    printf '%s\n' ' ███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║██║  ███╗'
-    printf '%s' "$C_G4"
-    printf '%s\n' ' ██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║██║   ██║'
-    printf '%s' "$C_G5"
-    printf '%s\n' ' ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║   ███████╗██║ ╚████║╚██████╔╝'
-    printf '%s' "$C_G6"
-    printf '%s\n' ' ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝ ╚═════╝ '
-    printf '%s\n' "$C_RESET"
+    # Animate only when fractional sleep works (~0.3s x 5 frames ~= 1.5s).
+    # Otherwise print the final lockup in one shot.
+    if [ -t 1 ] && [ "$TICK" = "0.1" ]; then
+        printf '%s[?25l' "$ESC"
+        CURSOR_HIDDEN=1
+        lf=1
+        while [ "$lf" -le 5 ]; do
+            if [ "$lf" -gt 1 ]; then
+                printf '%s[10A' "$ESC"
+            fi
+            logo_frame "$lf"
+            lf=$(( lf + 1 ))
+            sleep "$TICK"
+            sleep "$TICK"
+            sleep "$TICK"
+        done
+        printf '%s[?25h' "$ESC"
+        CURSOR_HIDDEN=0
+    else
+        logo_frame 5
+    fi
+    printf '\n'
 }
 
 # ---------------------------------------------------------------------------
@@ -449,6 +593,12 @@ install_with_pip() {
     "$venv_dir/bin/python" -m pip install --upgrade pip
     "$venv_dir/bin/python" -m pip install "$package_spec"
     ln -sf "$venv_dir/bin/agenteng" "$bin_dir/agenteng"
+    if [ -x "$venv_dir/bin/ae" ]; then
+        ln -sf "$venv_dir/bin/ae" "$bin_dir/ae"
+    else
+        # Older wheels only ship agenteng; expose the ae alias anyway.
+        ln -sf "$venv_dir/bin/agenteng" "$bin_dir/ae"
+    fi
     printf '%s\n' "$bin_dir" >"${WORK_DIR}/pip_bin_dir"
     printf '%s\n' "$bin_dir/agenteng" >"${WORK_DIR}/agenteng_bin"
 }
@@ -537,6 +687,13 @@ if [ ! -x "$agenteng_bin" ]; then
     exit 1
 fi
 
+# Prefer the package ae entry point; otherwise symlink ae -> agenteng so the
+# short command is always on PATH after this installer runs.
+ae_bin="${tool_bin}/ae"
+if [ ! -x "$ae_bin" ]; then
+    ln -sf "$agenteng_bin" "$ae_bin"
+fi
+
 agenteng_version="$("$agenteng_bin" --version)"
 
 logo
@@ -548,11 +705,11 @@ if [ "$FANCY" = "1" ]; then
     printf '  %sBuilt for coding agents exploring Agent Engineering HQ.%s\n\n' \
         "$C_DIM" "$C_RESET"
     printf '  %sNext steps for agents%s\n' "$C_BOLD" "$C_RESET"
-    printf '  %s%s%s agenteng discover\n' "$C_G1" "$GL_DOT" "$C_RESET"
-    printf '  %s%s%s agenteng events --upcoming\n' "$C_G2" "$GL_DOT" "$C_RESET"
-    printf '  %s%s%s agenteng connect cursor\n' "$C_G3" "$GL_DOT" "$C_RESET"
-    printf '  %s%s%s agenteng connect claude-code\n' "$C_G4" "$GL_DOT" "$C_RESET"
-    printf '  %s%s%s agenteng connect codex\n\n' "$C_G5" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s ae discover\n' "$C_G1" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s ae events --upcoming\n' "$C_G2" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s ae connect cursor\n' "$C_G3" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s ae connect claude-code\n' "$C_G4" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s ae connect codex\n\n' "$C_G5" "$GL_DOT" "$C_RESET"
     printf '  %sHosted MCP / A2A%s\n' "$C_BOLD" "$C_RESET"
     printf '  %s%s%s %s\n' "$C_G1" "$GL_DOT" "$C_RESET" "$A2A_HOST"
     printf '  %s%s%s %s/.well-known/agent-card.json\n' "$C_G3" "$GL_DOT" "$C_RESET" "$A2A_HOST"
@@ -562,18 +719,18 @@ if [ "$FANCY" = "1" ]; then
         printf '  %sUninstall with: %s tool uninstall agenteng%s\n\n' \
             "$C_DIM" "$uv_bin" "$C_RESET"
     else
-        printf '  %sUninstall by removing %s and the agenteng symlink.%s\n\n' \
+        printf '  %sUninstall by removing %s and the agenteng/ae symlinks.%s\n\n' \
             "$C_DIM" "${AGENTENG_INSTALL_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/agenteng}" "$C_RESET"
     fi
 else
     say "$agenteng_version"
     say "AgentEng is installed."
     say "Next steps for agents:"
-    say "  agenteng discover"
-    say "  agenteng events --upcoming"
-    say "  agenteng connect cursor"
-    say "  agenteng connect claude-code"
-    say "  agenteng connect codex"
+    say "  ae discover"
+    say "  ae events --upcoming"
+    say "  ae connect cursor"
+    say "  ae connect claude-code"
+    say "  ae connect codex"
     say "Hosted MCP / A2A: ${A2A_HOST}"
     say "Agent card: ${A2A_HOST}/.well-known/agent-card.json"
     say "MCP: ${A2A_HOST}/mcp/"
@@ -581,7 +738,7 @@ else
     if [ "$INSTALL_METHOD" = "uv" ]; then
         say "Uninstall with: ${uv_bin} tool uninstall agenteng"
     else
-        say "Uninstall by removing the AgentEng venv and the agenteng symlink."
+        say "Uninstall by removing the AgentEng venv and the agenteng/ae symlinks."
     fi
 fi
 
@@ -589,11 +746,11 @@ case ":${PATH}:" in
     *":${tool_bin}:"*) ;;
     *)
         if [ "$FANCY" = "1" ]; then
-            printf '  %sRestart your shell if '"'"'agenteng'"'"' is not found; %s must be on PATH.%s\n\n' \
+            printf '  %sRestart your shell if '"'"'ae'"'"' is not found; %s must be on PATH.%s\n\n' \
                 "$C_G6" "$tool_bin" "$C_RESET"
         else
             printf '%s\n' \
-                "Restart your shell if 'agenteng' is not found; ${tool_bin} must be on PATH."
+                "Restart your shell if 'ae' is not found; ${tool_bin} must be on PATH."
         fi
         ;;
 esac

@@ -26,6 +26,7 @@ Changelog = "https://github.com/SuperagenticAI/agenteng/blob/main/CHANGELOG.md"
 
 [project.scripts]
 agenteng = "agenteng.cli:main"
+ae = "agenteng.cli:main"
 
 [project.optional-dependencies]
 mcp = ["mcp==1.27.1"]

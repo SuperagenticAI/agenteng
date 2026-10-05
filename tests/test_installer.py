@@ -14,7 +14,7 @@ def _write_executable(path: Path, content: str) -> None:
     path.chmod(0o755)
 
 
-def _fake_uv_environment(tmp_path: Path) -> tuple[dict[str, str], Path]:
+def _fake_uv_environment(tmp_path: Path) -> tuple[dict[str, str], Path, Path]:
     command_bin = tmp_path / "commands"
     tool_bin = tmp_path / "tools"
     command_bin.mkdir()
@@ -49,7 +49,7 @@ exit 2
         "NO_COLOR": "1",
         "TERM": "dumb",
     }
-    return env, uv_log
+    return env, uv_log, tool_bin
 
 
 def test_installer_is_valid_posix_shell():
@@ -67,10 +67,12 @@ def test_installer_is_valid_posix_shell():
     assert "agentengineering.world/releases/" not in text
     assert "AGENTENG_EXTRAS" in text
     assert "AGENTENG_VERSION" in text
+    assert "ae discover" in text
+    assert 'ln -sf "$agenteng_bin" "$ae_bin"' in text or "ae_bin=" in text
 
 
 def test_installer_uses_uv_tool_install_latest_with_server_extras(tmp_path: Path):
-    env, uv_log = _fake_uv_environment(tmp_path)
+    env, uv_log, tool_bin = _fake_uv_environment(tmp_path)
 
     result = subprocess.run(
         ["sh", str(INSTALLER)],
@@ -84,15 +86,17 @@ def test_installer_uses_uv_tool_install_latest_with_server_extras(tmp_path: Path
     assert result.returncode == 0, result.stderr
     assert "agenteng, version 0.test" in result.stdout
     assert "AgentEng is installed" in result.stdout
-    assert "agenteng discover" in result.stdout
+    assert "ae discover" in result.stdout
+    assert "ae events --upcoming" in result.stdout
     assert "a2a.agentengineering.world" in result.stdout
+    assert (tool_bin / "ae").is_symlink() or (tool_bin / "ae").is_file()
     uv_calls = uv_log.read_text(encoding="utf-8")
     assert ("tool install --no-config --upgrade --force --python 3.12 agenteng[server]") in uv_calls
     assert "tool dir --bin --no-config" in uv_calls
 
 
 def test_installer_supports_explicit_extras_and_version_pin(tmp_path: Path):
-    env, uv_log = _fake_uv_environment(tmp_path)
+    env, uv_log, _tool_bin = _fake_uv_environment(tmp_path)
     env["AGENTENG_EXTRAS"] = "mcp"
     env["AGENTENG_VERSION"] = "0.0.3"
 
@@ -112,7 +116,7 @@ def test_installer_supports_explicit_extras_and_version_pin(tmp_path: Path):
 
 
 def test_installer_rejects_malformed_options_before_running_uv(tmp_path: Path):
-    env, uv_log = _fake_uv_environment(tmp_path)
+    env, uv_log, _tool_bin = _fake_uv_environment(tmp_path)
     env["AGENTENG_EXTRAS"] = "mcp;unexpected"
 
     result = subprocess.run(
@@ -130,7 +134,7 @@ def test_installer_rejects_malformed_options_before_running_uv(tmp_path: Path):
 
 
 def test_installer_rejects_malformed_version(tmp_path: Path):
-    env, uv_log = _fake_uv_environment(tmp_path)
+    env, uv_log, _tool_bin = _fake_uv_environment(tmp_path)
     env["AGENTENG_VERSION"] = "0.0.3;rm"
 
     result = subprocess.run(
@@ -294,3 +298,4 @@ exit 0
     assert "falling back to a user virtualenv with pip" in result.stdout
     assert "agenteng, version 0.pip" in result.stdout
     assert (home_dir / "bin" / "agenteng").is_symlink()
+    assert (home_dir / "bin" / "ae").is_symlink()
