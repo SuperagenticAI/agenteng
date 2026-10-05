@@ -314,7 +314,14 @@ class Request(Model):
             raise ValueError("Event filters do not apply to the tool directory")
         if self.operation in {"disciplines", "tool"} and self.query:
             raise ValueError("Directory search only applies to tools")
-        if self.speaker_id and self.operation not in {"speaker", "talk", "talks", "save", "unsave", "speakers"}:
+        if self.speaker_id and self.operation not in {
+            "speaker",
+            "talk",
+            "talks",
+            "save",
+            "unsave",
+            "speakers",
+        }:
             raise ValueError("speaker_id only applies to speaker, talk, talks, speakers or save")
         if self.session_id and self.operation not in {"talk", "save", "unsave", "agenda", "plan"}:
             raise ValueError("session_id only applies to talk, save, unsave, agenda or plan")
@@ -343,7 +350,12 @@ class Request(Model):
             raise ValueError(f"{self.operation} requires event_id")
         if self.operation == "speaker" and not self.speaker_id:
             raise ValueError("speaker requires speaker_id")
-        if self.operation == "talk" and not self.session_id and not self.speaker_id and not self.query.strip():
+        if (
+            self.operation == "talk"
+            and not self.session_id
+            and not self.speaker_id
+            and not self.query.strip()
+        ):
             raise ValueError("talk requires session_id, speaker_id or query")
         if self.operation in {"save", "unsave"} and not self.session_id and not self.speaker_id:
             raise ValueError(f"{self.operation} requires session_id or speaker_id")

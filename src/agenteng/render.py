@@ -323,7 +323,9 @@ def render_venue(console: Console, result: Result) -> None:
     if data.get("venue"):
         body.append(display_text(data["venue"]) + "\n")
     if data.get("city"):
-        body.append(f"{data['city']}  ·  track: {data.get('track') or 'single'}\n", style="ae.accent")
+        body.append(
+            f"{data['city']}  ·  track: {data.get('track') or 'single'}\n", style="ae.accent"
+        )
     if data.get("venue_tour_url"):
         body.append("Tour: ", style="ae.meta")
         body.append(str(data["venue_tour_url"]) + "\n", style=BLUE)

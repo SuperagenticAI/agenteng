@@ -537,9 +537,7 @@ class Service:
                 rows = [f for f in rows if f.event_id in {None, request.event_id}]
             wanted = terms(request.query)
             if wanted:
-                rows = [
-                    f for f in rows if wanted & terms(f.question + " " + f.answer)
-                ]
+                rows = [f for f in rows if wanted & terms(f.question + " " + f.answer)]
             rows = rows[: request.limit]
             return self.result(
                 f"{len(rows)} FAQ entr{'y' if len(rows) == 1 else 'ies'}.",
@@ -555,8 +553,7 @@ class Service:
                 (
                     f
                     for f in self.catalogue.faqs
-                    if "accessible" in f.question.casefold()
-                    and f.event_id in {None, event.id}
+                    if "accessible" in f.question.casefold() and f.event_id in {None, event.id}
                 ),
                 None,
             )
@@ -582,9 +579,7 @@ class Service:
         if request.operation == "sponsors":
             sponsors = list(self.catalogue.sponsors)
             if request.city:
-                sponsors = [
-                    s for s in sponsors if s.city.casefold() == request.city.casefold()
-                ]
+                sponsors = [s for s in sponsors if s.city.casefold() == request.city.casefold()]
             contact = self.sources.get("sponsor-contact") or self.sources.get("contact")
             data = {
                 "sponsors": [s.model_dump(mode="json") for s in sponsors],
@@ -613,11 +608,7 @@ class Service:
         if request.operation == "conduct":
             conduct = self.sources.get("code-of-conduct")
             faq = next(
-                (
-                    f
-                    for f in self.catalogue.faqs
-                    if "code of conduct" in f.question.casefold()
-                ),
+                (f for f in self.catalogue.faqs if "code of conduct" in f.question.casefold()),
                 None,
             )
             if not conduct and not faq:
@@ -638,9 +629,7 @@ class Service:
             )
         if request.operation == "themes":
             rows = list(self.catalogue.themes)[: request.limit]
-            source_ids = [
-                s.id for s in self.catalogue.sources if s.kind == "theme"
-            ]
+            source_ids = [s.id for s in self.catalogue.sources if s.kind == "theme"]
             return self.result(
                 f"{len(rows)} program theme(s).",
                 [t.model_dump(mode="json") for t in rows],
@@ -657,9 +646,7 @@ class Service:
             event = self.events[event_id]
             now = self.clock().astimezone(ZoneInfo(event.timezone))
             timed = [
-                s
-                for s in self.catalogue.sessions
-                if s.event_id == event_id and s.start and s.end
+                s for s in self.catalogue.sessions if s.event_id == event_id and s.start and s.end
             ]
             timed.sort(key=lambda s: s.start)
             current = next((s for s in timed if s.start <= now < s.end), None)

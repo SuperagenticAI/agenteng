@@ -242,9 +242,7 @@ def test_talk_card_shows_full_title_in_body():
     console = make_console(record=True, width=72)
     service = Service(Settings.from_env())
     result = asyncio.run(
-        service.execute(
-            Request(operation="talk", speaker_id="tobie-morgan-hitchcock")
-        )
+        service.execute(Request(operation="talk", speaker_id="tobie-morgan-hitchcock"))
     )
     render_result(result, "talk", console)
     text = console.export_text()

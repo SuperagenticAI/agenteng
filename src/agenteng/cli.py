@@ -158,7 +158,6 @@ def tool(ctx, tool_id):
     dispatch(ctx, dict(operation="tool", tool_id=tool_id))
 
 
-
 def local_service(ctx):
     """Build a local Service for ID resolution helpers."""
     from dataclasses import replace
@@ -180,20 +179,17 @@ def resolve_talk(ctx, identifier: str, event_id: str | None = None):
         rows = result.data if isinstance(result.data, list) else []
     else:
         service = local_service(ctx)
-        result = service.lookup(
-            Request(operation="talks", event_id=event_id, query=identifier)
-        )
+        result = service.lookup(Request(operation="talks", event_id=event_id, query=identifier))
         rows = result.data if isinstance(result.data, list) else []
     exact = [
-        row
-        for row in rows
-        if row.get("id") == identifier or row.get("speaker_id") == identifier
+        row for row in rows if row.get("id") == identifier or row.get("speaker_id") == identifier
     ]
     if exact:
         return exact[0]
     if len(rows) == 1:
         return rows[0]
     return None
+
 
 def write_private(path, text):
     """Never replace an existing file or follow a destination symlink."""
@@ -226,7 +222,9 @@ def event(ctx, event_id):
 @click.argument("event_id", required=False)
 @click.option("--topic")
 @click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
-@click.option("--output", type=click.Path(dir_okay=False), help="Write an .ics calendar when --format ics.")
+@click.option(
+    "--output", type=click.Path(dir_okay=False), help="Write an .ics calendar when --format ics."
+)
 @click.pass_context
 def agenda(ctx, event_id, topic, output_format, output):
     """Read an event's public agenda; optionally export .ics."""
