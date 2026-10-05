@@ -55,9 +55,15 @@ def use_json(ctx) -> bool:
 
 def make_console(*, record: bool = False, width: int | None = None) -> Console:
     # soft_wrap must stay False: True crops long Panel lines instead of wrapping.
+    import io
+
     kwargs: dict = {"theme": THEME, "highlight": False, "soft_wrap": False}
     if record:
+        # Record into an isolated buffer so host COLUMNS/CI capture cannot change wrap.
         kwargs["record"] = True
         kwargs["force_terminal"] = True
         kwargs["width"] = width or 88
+        kwargs["file"] = io.StringIO()
+    elif width is not None:
+        kwargs["width"] = width
     return Console(**kwargs)

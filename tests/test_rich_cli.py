@@ -70,9 +70,11 @@ def test_discover_description_wraps_fully():
     result = asyncio.run(service.execute(Request(operation="discover")))
     render_result(result, "discover", console)
     text = console.export_text()
-    assert "technical events" in text
-    assert "and te" not in text or "and technical" in text
-    assert "operating AI agents" in text
+    # Rich may wrap mid-phrase depending on panel chrome width; compare collapsed.
+    collapsed = " ".join(text.split())
+    assert "technical events" in collapsed
+    assert "and te " not in collapsed
+    assert "operating AI agents" in collapsed
 
 
 def test_use_json_flag_and_env(monkeypatch):
