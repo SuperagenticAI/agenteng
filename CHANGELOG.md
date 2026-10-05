@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.4
+
+### Changed
+
+- Replace the wheel-mirror installer with a branded, SuperQode-style AgentEng installer: an animated purple and blue terminal intro, then `uv tool install` of the latest `agenteng` from PyPI with the `server` extra (MCP and A2A included). It bootstraps uv when missing, falls back to a user virtualenv with pip, never uses sudo, and upgrades on re-run. `AGENTENG_VERSION` and `AGENTENG_EXTRAS` override the defaults.
+- Advertise the one-line installer at `https://a2a.agentengineering.world/install.sh`, which serves the script as plain text, until the conference site allows non-browser access to `/install.sh`.
+- Release metadata checks now require the installer to stay version-free, install from PyPI and never download wheels from the website `/releases/` mirror.
+
+### Documentation
+
+- Mark the hosted A2A agent live at `https://a2a.agentengineering.world` and list its public endpoints.
+- Add "Invalid host header" troubleshooting to the deployment guide and explain why `_PUBLIC_URL` must stay set on the Cloud Build trigger.
+
 ## 0.0.3
 
 ### Fixed
