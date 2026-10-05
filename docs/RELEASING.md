@@ -56,7 +56,7 @@ file, following the [console setup guide](https://github.com/SuperagenticAI/agen
 Complete its repository connection, registry and service-account setup before
 tagging. Cloud Build validates/tests the source and checks the live MCP/A2A service;
 its result is independent of the PyPI Publish workflow. Ordinary commits do not
-invoke this deployment trigger.
+invoke this deployment trigger. Disable any Cloud Run wizard branch trigger (GitHub check name `rmgpgab-agenteng-...`) so pushes to `main` do not deploy; keep only the tag trigger (`push-new-tag` / `^v.*$`). See [deployment](https://github.com/SuperagenticAI/agenteng/blob/main/deploy/README.md).
 
 The staged installer and discovery feeds remain a separate website release.
 Copy `dist/website-public/install.sh` (and the staged guide/feeds) into the
