@@ -108,6 +108,7 @@ def test_gitignore_protects_local_files_but_keeps_installer_public():
         capture_output=True,
         text=True,
     )
+    assert result.returncode == 0, result.stderr
     assert result.stdout.splitlines() == names
     result = subprocess.run(
         ["git", "check-ignore", "--stdin"],
@@ -116,4 +117,5 @@ def test_gitignore_protects_local_files_but_keeps_installer_public():
         capture_output=True,
         text=True,
     )
+    assert result.returncode == 1, result.stderr
     assert not result.stdout

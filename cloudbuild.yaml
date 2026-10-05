@@ -18,6 +18,11 @@ steps:
       - -ceu
       - |
         python scripts/check-release-metadata.py --tag "$$RELEASE_TAG"
+        # The release tests exercise Git ignore rules. The slim Python image
+        # does not include Git; trust only this checkout when builders share it.
+        apt-get update
+        apt-get install -y --no-install-recommends git
+        git config --global --add safe.directory /workspace
         python -m pip install --disable-pip-version-check uv==0.8.0
         uv sync --frozen --all-extras
         uv run --frozen ruff check src tests scripts

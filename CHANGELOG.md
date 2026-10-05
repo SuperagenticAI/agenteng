@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.3
+
+### Fixed
+
+- Install Git in the Cloud Build verification image so the Git-ignore release test can run; trust only the shared `/workspace` checkout across builder containers.
+- Include Git error output when the ignore-rule test fails, instead of reporting only mismatched paths.
+
 ## 0.0.2
 
 ### Changed

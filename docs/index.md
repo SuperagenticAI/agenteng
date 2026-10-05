@@ -84,7 +84,7 @@ agenteng discover
 source links. The CLI uses its bundled snapshot, so event lookup, tool browsing
 and local drafting work offline with **zero model calls** and no provider key.
 
-The package and command are both named `agenteng`. This source prepares the **0.0.2 alpha** release.
+The package and command are both named `agenteng`. This source prepares the **0.0.3 alpha** release.
 Run `agenteng --help` to explore commands, or `agenteng COMMAND --help` for options.
 Installing the CLI does not start or publish a hosted service.
 

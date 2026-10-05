@@ -99,6 +99,10 @@ build context. If a UI asks for the Dockerfile path, it is `Dockerfile`; the
 directory/context is `.`. Keep `CLOUD_LOGGING_ONLY` in the YAML for the
 user-managed build account.
 
+The verification step installs Git because `python:3.12-slim` omits it and the
+release tests check Git ignore rules. It trusts only the shared `/workspace`
+checkout for Git ownership checks. Git is not added to the runtime container.
+
 Keep the repository connection and trigger regions identical. Select the YAML
 configuration: it performs validation, tests, image publication, deployment and
 live endpoint checks. The Cloud Run repository wizard's default branch trigger
