@@ -71,7 +71,13 @@ def _state_style(state: str) -> str:
 
 
 def _footer(console: Console, result: Result) -> None:
+    """Print supporting sources once each (by URL), preserving catalogue order."""
+    seen: set[str] = set()
     for source in result.sources:
+        key = str(source.url)
+        if key in seen:
+            continue
+        seen.add(key)
         console.print(f"[ae.meta]Source:[/] {source.url} [{source.id}]")
     if result.stale:
         console.print(

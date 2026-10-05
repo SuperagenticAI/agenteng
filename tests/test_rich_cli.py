@@ -255,3 +255,21 @@ def test_talk_card_shows_full_title_in_body():
     # Short panel header "Talk"; long title wraps in the body instead of truncating.
     assert "Talk" in text.splitlines()[0]
     assert "Production Ag" not in text.splitlines()[0]
+
+
+def test_footer_deduplicates_source_urls():
+    import asyncio
+
+    console = make_console(record=True, width=88)
+    service = Service(Settings.from_env())
+    result = asyncio.run(
+        service.execute(Request(operation="talks", event_id="agenteng-london-2026"))
+    )
+    assert len(result.sources) > 1
+    assert len({str(s.url) for s in result.sources}) == 1
+    # JSON/result still carries every source row.
+    assert len(result.sources) == len(result.data)
+    render_result(result, "talks", console)
+    text = console.export_text()
+    assert text.count("Source:") == 1
+    assert "https://agentengineering.world/agenda" in text
