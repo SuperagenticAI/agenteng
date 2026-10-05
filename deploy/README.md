@@ -1,9 +1,9 @@
 # Cloud Run deployment through the Google Cloud UI
 
 The repository contains the container, release checks and deployment pipeline for
-the public catalogue, MCP and A2A service. The official public service is not yet
-published. Complete the setup below in the Google Cloud console; no local
-`gcloud` installation or Google Cloud key in GitHub is required.
+the public catalogue, MCP and A2A service. The official public service is live at
+`https://a2a.agentengineering.world`. Complete the setup below in the Google Cloud
+console; no local `gcloud` installation or Google Cloud key in GitHub is required.
 
 A new matching version tag starts two independent pipelines: Cloud Build deploys
 the service, and GitHub Actions publishes `agenteng` to PyPI. Ordinary commits
@@ -182,22 +182,34 @@ changes. Never move a published tag or overwrite published package bytes.
 
 ## Custom domain and operation
 
-Launch on the generated URL first. For production `a2a.agentengineering.world`,
-configure HTTPS routing and its certificate, then edit the trigger substitution
-`_PUBLIC_URL` to `https://a2a.agentengineering.world` and rerun the release tag.
-Google's built-in Cloud Run domain mapping is currently a preview feature and is
-not recommended for production; use its documented production hosting options,
-such as an external Application Load Balancer with a serverless backend. See
+Production traffic for `https://a2a.agentengineering.world` is live. Keep HTTPS
+routing and its certificate in place, and keep the Cloud Build trigger
+substitution `_PUBLIC_URL` set to `https://a2a.agentengineering.world` so tag
+deploys continue to advertise that origin instead of reverting to the generated
+`run.app` URL. Google's built-in Cloud Run domain mapping is currently a preview
+feature and is not recommended for production; use its documented production
+hosting options, such as an external Application Load Balancer with a serverless
+backend. See
 [Cloud Run custom domains](https://docs.cloud.google.com/run/docs/mapping-custom-domains).
-Once configured, discovery and MCP URLs advertise that custom origin. The app
-trusts the configured hostname and loopback hosts; it does not trust every
-`run.app` hostname. Do not set `_PUBLIC_URL` before its HTTPS routing is ready.
+The app trusts the configured hostname and loopback hosts; it does not trust
+every `run.app` hostname. Do not clear `_PUBLIC_URL` unless you intend to fall
+back to the generated URL.
 
 For an additional manual check from an environment with the server dependencies:
 
 ```sh
 uv run --frozen --extra server python scripts/check-hosted.py https://a2a.agentengineering.world
 ```
+
+### Troubleshooting: Invalid host header
+
+A `400` response with `Invalid host header` means `AGENTENG_PUBLIC_URL` does not
+match the request `Host`. Set the Cloud Run environment variable
+`AGENTENG_PUBLIC_URL` to `https://a2a.agentengineering.world`, and set the Cloud
+Build trigger substitution `_PUBLIC_URL` to the same value so the next tag deploy
+does not overwrite it back to the generated `run.app` URL. Redeploy (or rerun
+the release tag), then verify with the `check-hosted.py` command above. You
+should see HTTP 200 on `/health` and `/.well-known/agent-card.json`.
 
 Routes: A2A JSON-RPC `/` with `A2A-Version: 1.0`, discovery `/.well-known/agent-card.json`, MCP `/mcp/`, HTTP `/v1/query`, `/health`, `/catalogue.json` and `/install.sh`. The trailing slash on the MCP URL avoids a redirect. No streaming/push A2A capability is advertised. Public lookup has zero model calls; compute, HTTPS hosting and network traffic still have their usual hosting costs.
 
