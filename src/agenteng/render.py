@@ -2,15 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 
-from rich.console import Console
+from rich import box
+from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
 from .models import Result
 from .output import BLUE, MAGENTA, VIOLET, display_text, make_console
+
+BOX = box.ROUNDED
 
 
 def _parse_dt(value: str | None) -> datetime | None:
@@ -22,12 +25,27 @@ def _parse_dt(value: str | None) -> datetime | None:
         return None
 
 
-def _fmt_date(event: dict) -> str:
+def friendly_date(event: dict) -> str:
+    """Human date like 'Fri 16 Oct 2026' or 'Oct 2026' for month precision."""
     precision = event.get("date_precision") or "day"
-    date = event.get("date") or ""
-    if precision == "month" and len(date) >= 7:
-        return date[:7]
-    return date
+    raw = event.get("date") or ""
+    try:
+        if precision == "month" and len(raw) >= 7:
+            parsed = date.fromisoformat(raw[:7] + "-01")
+            return parsed.strftime("%b %Y")
+        parsed = date.fromisoformat(raw[:10])
+    except ValueError:
+        return raw
+    return f"{parsed.strftime('%a')} {parsed.day} {parsed.strftime('%b %Y')}"
+
+
+def event_label(event: dict) -> str:
+    """Compact human label: title · city · date."""
+    title = display_text(event.get("title")) or event.get("id") or "Event"
+    city = event.get("city") or ""
+    when = friendly_date(event)
+    parts = [p for p in (title, city, when) if p]
+    return " · ".join(parts)
 
 
 def _fmt_money(amount: int, currency: str) -> str:
@@ -67,8 +85,43 @@ def _panel(title: str, body, *, border: str = BLUE) -> Panel:
         body,
         title=Text(display_text(title), style="ae.title"),
         border_style=border,
+        box=BOX,
         padding=(0, 1),
+        expand=True,
     )
+
+
+def _event_card(event: dict) -> Panel:
+    body = Text()
+    city = event.get("city") or ""
+    when = friendly_date(event)
+    body.append(f"{city}  ·  {when}\n", style="ae.accent")
+    if event.get("venue"):
+        body.append(display_text(event["venue"]) + "\n")
+    state = event.get("state") or ("cancelled" if event.get("cancelled") else "")
+    if state:
+        body.append("Status: ", style="ae.meta")
+        body.append(state + "\n", style=_state_style(state))
+    offer = _cheapest_offer(event.get("offers"))
+    if offer:
+        body.append("From ", style="ae.meta")
+        body.append(
+            _fmt_money(offer["amount"], offer.get("currency") or "GBP"),
+            style="ae.price",
+        )
+        body.append(f" ({offer.get('name')})\n", style="ae.meta")
+    elif event.get("offers"):
+        body.append("Tickets: sold out in this snapshot\n", style="ae.sold")
+    if event.get("registration_url"):
+        body.append("Register: ", style="ae.meta")
+        body.append(str(event["registration_url"]) + "\n", style=BLUE)
+    if event.get("recording_url"):
+        body.append("Recording: ", style="ae.meta")
+        body.append(str(event["recording_url"]) + "\n", style=BLUE)
+    eid = event.get("id")
+    if eid:
+        body.append(f"id: {eid}", style="ae.meta")
+    return _panel(display_text(event.get("title")) or "Event", body, border=BLUE)
 
 
 def render_events(console: Console, result: Result) -> None:
@@ -76,32 +129,9 @@ def render_events(console: Console, result: Result) -> None:
     if not events:
         console.print(f"[ae.meta]{display_text(result.answer)}[/]")
         return
-    table = Table(
-        title="Events",
-        title_style="ae.title",
-        border_style=VIOLET,
-        show_lines=False,
-        pad_edge=False,
-    )
-    table.add_column("Title", style="bold")
-    table.add_column("City")
-    table.add_column("Date")
-    table.add_column("Venue", overflow="fold")
-    table.add_column("Status")
-    table.add_column("From", justify="right")
+    console.print(Text("Events", style="ae.title"))
     for event in events:
-        offer = _cheapest_offer(event.get("offers"))
-        price = _fmt_money(offer["amount"], offer.get("currency") or "GBP") if offer else "-"
-        state = event.get("state") or ("cancelled" if event.get("cancelled") else "")
-        table.add_row(
-            display_text(event.get("title")),
-            event.get("city") or "",
-            _fmt_date(event),
-            display_text(event.get("venue")),
-            Text(state, style=_state_style(state)),
-            Text(price, style="ae.price" if offer else "ae.meta"),
-        )
-    console.print(table)
+        console.print(_event_card(event))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
@@ -110,32 +140,7 @@ def render_event_detail(console: Console, result: Result) -> None:
     if not events:
         console.print(f"[ae.meta]{display_text(result.answer)}[/]")
         return
-    event = events[0]
-    lines = Text()
-    lines.append(display_text(event.get("title")) + "\n", style="bold")
-    lines.append(f"{event.get('city') or ''}  ·  {_fmt_date(event)}\n", style="ae.accent")
-    if event.get("venue"):
-        lines.append(display_text(event["venue"]) + "\n")
-    state = event.get("state") or ""
-    if state:
-        lines.append("Status: ", style="ae.meta")
-        lines.append(state + "\n", style=_state_style(state))
-    if event.get("registration_url"):
-        lines.append("Register: ", style="ae.meta")
-        lines.append(str(event["registration_url"]) + "\n", style=BLUE)
-    if event.get("recording_url"):
-        lines.append("Recording: ", style="ae.meta")
-        lines.append(str(event["recording_url"]) + "\n", style=BLUE)
-    offer = _cheapest_offer(event.get("offers"))
-    if offer:
-        lines.append("Tickets from ", style="ae.meta")
-        lines.append(
-            _fmt_money(offer["amount"], offer.get("currency") or "GBP"),
-            style="ae.price",
-        )
-        lines.append(f" ({offer.get('name')})\n", style="ae.meta")
-    lines.append(f"\nid: {event.get('id')}", style="ae.meta")
-    console.print(_panel("Event", lines, border=BLUE))
+    console.print(_event_card(events[0]))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
@@ -173,12 +178,14 @@ def render_agenda(console: Console, result: Result, *, title: str = "Agenda") ->
         title=title,
         title_style="ae.title",
         border_style=BLUE,
+        box=BOX,
         show_header=True,
         pad_edge=False,
+        expand=True,
     )
-    table.add_column("When", style="ae.accent", no_wrap=True)
-    table.add_column("Session")
-    table.add_column("Kind", style="ae.meta")
+    table.add_column("When", style="ae.accent", no_wrap=True, width=11, min_width=11)
+    table.add_column("Session", overflow="fold", ratio=1)
+    table.add_column("Kind", style="ae.meta", no_wrap=True, width=8, min_width=6)
     for session in sessions:
         start = _parse_dt(session.get("start"))
         end = _parse_dt(session.get("end"))
@@ -189,9 +196,9 @@ def render_agenda(console: Console, result: Result, *, title: str = "Agenda") ->
         else:
             when = "TBA"
         topics = session.get("topics") or []
-        detail = display_text(session.get("title"))
+        detail = Text(display_text(session.get("title")))
         if topics:
-            detail += f"\n[ae.meta]{', '.join(topics)}[/]"
+            detail.append("\n" + ", ".join(topics), style="ae.meta")
         table.add_row(when, detail, session.get("kind") or "")
     console.print(table)
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
@@ -220,19 +227,28 @@ def render_tickets(console: Console, result: Result) -> None:
     def offer_table(rows: list[dict], heading: str) -> None:
         if not rows:
             return
-        table = Table(title=heading, title_style="ae.title", border_style=MAGENTA, pad_edge=False)
-        table.add_column("Offer")
-        table.add_column("Price", justify="right")
-        table.add_column("Valid")
-        table.add_column("Status")
+        table = Table(
+            title=heading,
+            title_style="ae.title",
+            border_style=MAGENTA,
+            box=BOX,
+            pad_edge=False,
+            expand=True,
+        )
+        table.add_column("Offer", overflow="fold")
+        table.add_column("Price", justify="right", no_wrap=True)
+        table.add_column("Valid", overflow="fold")
+        table.add_column("Status", no_wrap=True)
         for offer in rows:
             until = _parse_dt(offer.get("valid_until"))
             frm = _parse_dt(offer.get("valid_from"))
             valid = ""
             if frm:
-                valid = frm.date().isoformat()
+                valid = f"{frm.day} {frm.strftime('%b %Y')}"
             if until:
-                valid = (valid + " to " if valid else "until ") + until.date().isoformat()
+                valid = (valid + " to " if valid else "until ") + (
+                    f"{until.day} {until.strftime('%b %Y')}"
+                )
             sold = offer.get("sold_out")
             table.add_row(
                 offer.get("name") or "",
@@ -256,15 +272,14 @@ def render_recordings(console: Console, result: Result) -> None:
     if not rows:
         console.print(f"[ae.meta]{display_text(result.answer)}[/]")
         return
-    table = Table(title="Recordings", title_style="ae.title", border_style=VIOLET, pad_edge=False)
-    table.add_column("Title")
-    table.add_column("Event id", style="ae.meta")
-    table.add_column("URL", overflow="fold", style=BLUE)
+    console.print(Text("Recordings", style="ae.title"))
     for row in rows:
-        table.add_row(
-            display_text(row.get("title")), row.get("event_id") or "", str(row.get("url") or "")
-        )
-    console.print(table)
+        body = Text()
+        if row.get("event_id"):
+            body.append(f"Event: {row['event_id']}\n", style="ae.meta")
+        if row.get("url"):
+            body.append(str(row["url"]), style=BLUE)
+        console.print(_panel(display_text(row.get("title")) or "Recording", body, border=VIOLET))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
@@ -275,11 +290,9 @@ def render_search(console: Console, result: Result) -> None:
         return
     for row in rows:
         excerpt = display_text(row.get("excerpt") or "")
-        if len(excerpt) > 400:
-            excerpt = excerpt[:397] + "..."
-        body = Text()
-        body.append(excerpt + "\n")
+        body = Text(excerpt)
         if row.get("url"):
+            body.append("\n")
             body.append(str(row["url"]), style=BLUE)
         console.print(_panel(row.get("source_id") or "match", body, border=VIOLET))
 
@@ -291,12 +304,14 @@ def render_disciplines(console: Console, result: Result) -> None:
         title="Disciplines",
         title_style="ae.title",
         border_style=BLUE,
+        box=BOX,
         pad_edge=False,
+        expand=True,
     )
-    table.add_column("ID", style="ae.accent")
-    table.add_column("Name")
-    table.add_column("Listed", justify="right")
-    table.add_column("Total", justify="right")
+    table.add_column("ID", style="ae.accent", no_wrap=True)
+    table.add_column("Name", overflow="fold")
+    table.add_column("Listed", justify="right", no_wrap=True)
+    table.add_column("Total", justify="right", no_wrap=True)
     for row in items:
         table.add_row(
             row.get("id") or "",
@@ -323,19 +338,20 @@ def render_disciplines(console: Console, result: Result) -> None:
 def render_tools(console: Console, result: Result) -> None:
     data = result.data if isinstance(result.data, dict) else {}
     items = data.get("items") or []
-    table = Table(title="Tools", title_style="ae.title", border_style=VIOLET, pad_edge=False)
-    table.add_column("ID", style="ae.accent", no_wrap=True)
-    table.add_column("Name")
-    table.add_column("Kind", style="ae.meta")
-    table.add_column("Disciplines", overflow="fold")
+    console.print(Text("Tools", style="ae.title"))
     for row in items:
-        table.add_row(
-            row.get("id") or "",
-            row.get("name") or "",
-            row.get("kind") or "",
-            ", ".join(row.get("disciplines") or []),
-        )
-    console.print(table)
+        body = Text()
+        kind = row.get("kind") or ""
+        status = row.get("status") or ""
+        body.append(" · ".join(p for p in (kind, status) if p) + "\n", style="ae.accent")
+        disciplines = row.get("disciplines") or []
+        if disciplines:
+            body.append("Disciplines: " + ", ".join(disciplines) + "\n")
+        link = row.get("website_url") or row.get("repository_url") or row.get("docs_url")
+        if link:
+            body.append(str(link) + "\n", style=BLUE)
+        body.append(f"id: {row.get('id') or ''}", style="ae.meta")
+        console.print(_panel(row.get("name") or row.get("id") or "Tool", body, border=VIOLET))
     meta = Text()
     meta.append(display_text(result.answer) + "\n", style="ae.meta")
     if data.get("next_offset") is not None:
@@ -378,31 +394,35 @@ def render_tool(console: Console, result: Result) -> None:
 def render_discover(console: Console, result: Result) -> None:
     data = result.data if isinstance(result.data, dict) else {}
     title = display_text(data.get("conference_name") or data.get("name") or "AgentEng")
-    body = Text()
-    body.append(display_text(data.get("description") or result.answer) + "\n\n")
+    parts: list = []
+    description = display_text(data.get("description") or result.answer)
+    if description:
+        parts.append(Text(description))
+    meta = Text()
     cities = data.get("cities") or []
     if cities:
-        body.append("Cities: ", style="ae.meta")
-        body.append(", ".join(cities) + "\n", style="ae.accent")
+        meta.append("Cities: ", style="ae.meta")
+        meta.append(", ".join(cities) + "\n", style="ae.accent")
     if data.get("website"):
-        body.append("Website: ", style="ae.meta")
-        body.append(str(data["website"]) + "\n", style=BLUE)
+        meta.append("Website: ", style="ae.meta")
+        meta.append(str(data["website"]) + "\n", style=BLUE)
     tools = data.get("tool_directory") or {}
     if tools:
-        body.append(
+        meta.append(
             f"Tool directory: {tools.get('listing_count', '?')} listings "
             f"across {tools.get('disciplines', '?')} disciplines\n",
             style="ae.meta",
         )
     questions = data.get("suggested_questions") or []
     if questions:
-        body.append("\nTry asking:\n", style="ae.title")
+        meta.append("\nTry asking:\n", style="ae.title")
         for q in questions[:5]:
-            body.append(f"  · {q}\n", style="ae.meta")
-    console.print(_panel(title, body, border=BLUE))
+            meta.append(f"  > {q}\n", style="ae.meta")
+    if meta.plain.strip():
+        parts.append(meta)
+    console.print(_panel(title, Group(*parts), border=BLUE))
     events = data.get("events") or []
     if events:
-        # Reuse event table shape via a temporary Result-like path.
         fake = Result(
             answer=f"{len(events)} featured event(s).",
             data=events,
@@ -431,9 +451,9 @@ def render_proposal(console: Console, result: Result) -> None:
     data = result.data
     console.print(f"[ae.title]{display_text(result.answer)}[/]")
     if isinstance(data, dict) and data:
-        table = Table(show_header=False, box=None, pad_edge=False)
-        table.add_column("Key", style="ae.meta")
-        table.add_column("Value")
+        table = Table(show_header=False, box=None, pad_edge=False, expand=True)
+        table.add_column("Key", style="ae.meta", no_wrap=True)
+        table.add_column("Value", overflow="fold")
         for key, value in data.items():
             if key in {"draft"} and isinstance(value, dict):
                 continue

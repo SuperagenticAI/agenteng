@@ -38,6 +38,35 @@ def test_display_text_strips_em_dash():
     assert " - " in display_text("AgentEng — Conference")
 
 
+def test_friendly_date_and_event_label():
+    from agenteng.render import event_label, friendly_date
+
+    event = {
+        "id": "agenteng-london-2026",
+        "title": "AgentEng London 2026",
+        "city": "London",
+        "date": "2026-10-16",
+        "date_precision": "day",
+    }
+    assert friendly_date(event) == "Fri 16 Oct 2026"
+    assert event_label(event) == "AgentEng London 2026 · London · Fri 16 Oct 2026"
+    month = {**event, "date": "2026-07", "date_precision": "month", "title": "Meetup"}
+    assert friendly_date(month) == "Jul 2026"
+
+
+def test_discover_description_wraps_fully():
+    import asyncio
+
+    console = make_console(record=True, width=88)
+    service = Service(Settings.from_env())
+    result = asyncio.run(service.execute(Request(operation="discover")))
+    render_result(result, "discover", console)
+    text = console.export_text()
+    assert "technical events" in text
+    assert "and te" not in text or "and technical" in text
+    assert "operating AI agents" in text
+
+
 def test_use_json_flag_and_env(monkeypatch):
     class Obj:
         def __init__(self, as_json=False):
@@ -147,11 +176,19 @@ def test_interactive_menu_quit(monkeypatch):
 
 def test_interactive_browse_event_overview(monkeypatch):
     runner = CliRunner()
-    # Main menu -> events -> pick london -> overview -> back -> quit
+    london = {
+        "id": "agenteng-london-2026",
+        "title": "AgentEng London 2026",
+        "city": "London",
+        "date": "2026-10-16",
+        "date_precision": "day",
+        "state": "upcoming",
+    }
+    # Main menu -> events -> pick london dict -> overview -> back -> quit
     picks = iter(
         [
             "events",
-            "agenteng-london-2026",
+            london,
             "overview",
             "back",
             "quit",
@@ -171,5 +208,6 @@ def test_interactive_browse_event_overview(monkeypatch):
     ):
         result = runner.invoke(main, [])
     assert result.exit_code == 0, result.output
-    assert "AgentEng London 2026" in result.output
+    assert "AgentEng London" in result.output
+    assert "Fri 16 Oct 2026" in result.output or "16 Oct 2026" in result.output
     assert "Bye" in result.output

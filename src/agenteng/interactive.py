@@ -10,10 +10,15 @@ import webbrowser
 
 import click
 import questionary
+import questionary.prompts.common as qcommon
 from questionary import Choice, Style
 
 from .discovery import connection
-from .output import BLUE, MAGENTA, VIOLET, display_text, stdin_is_tty, stdout_is_tty
+from .output import BLUE, MAGENTA, VIOLET, stdin_is_tty, stdout_is_tty
+from .render import event_label
+
+# Prefer a plain ASCII pointer so every terminal font can render it.
+qcommon.DEFAULT_SELECTED_POINTER = ">"
 
 AE_STYLE = Style(
     [
@@ -37,7 +42,7 @@ def _select(message: str, choices: list[Choice | str], *, default=None):
             choices=choices,
             style=AE_STYLE,
             default=default,
-            instruction="(use arrow keys, enter to confirm, ctrl-c to quit)",
+            instruction="(arrows, enter, ctrl-c to quit)",
         ).ask()
     except KeyboardInterrupt:
         return None
@@ -63,15 +68,7 @@ def pick_event_id(ctx, *, prompt: str = "Pick an event") -> str | None:
     if not rows:
         click.echo("No events in the catalogue.", err=True)
         return None
-    choices = [
-        Choice(
-            title=f"{display_text(e.get('title'))}  ·  {e.get('city')}  ·  "
-            f"{e.get('date')}  [{e.get('state') or ''}]",
-            value=e.get("id"),
-        )
-        for e in rows
-        if e.get("id")
-    ]
+    choices = [Choice(title=event_label(e), value=e.get("id")) for e in rows if e.get("id")]
     return _select(prompt, choices)
 
 
@@ -95,10 +92,12 @@ def _show(ctx, payload: dict) -> None:
     dispatch(ctx, payload)
 
 
-def _event_submenu(ctx, event_id: str) -> None:
+def _event_submenu(ctx, event: dict) -> None:
+    event_id = event.get("id") or ""
+    header = event_label(event)
     while True:
         action = _select(
-            f"Event: {event_id}",
+            header,
             [
                 Choice("Overview", "overview"),
                 Choice("Speakers", "speakers"),
@@ -252,9 +251,14 @@ def run_menu(ctx) -> None:
             return
         try:
             if action == "events":
-                event_id = pick_event_id(ctx)
-                if event_id:
-                    _event_submenu(ctx, event_id)
+                rows = list_events(ctx)
+                if not rows:
+                    click.echo("No events in the catalogue.", err=True)
+                    continue
+                choices = [Choice(title=event_label(e), value=e) for e in rows if e.get("id")]
+                picked = _select("Pick an event", choices)
+                if picked:
+                    _event_submenu(ctx, picked)
             elif action == "search":
                 query = _text("Search query")
                 if query:

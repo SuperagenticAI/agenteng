@@ -54,7 +54,8 @@ def use_json(ctx) -> bool:
 
 
 def make_console(*, record: bool = False, width: int | None = None) -> Console:
-    kwargs: dict = {"theme": THEME, "highlight": False, "soft_wrap": True}
+    # soft_wrap must stay False: True crops long Panel lines instead of wrapping.
+    kwargs: dict = {"theme": THEME, "highlight": False, "soft_wrap": False}
     if record:
         kwargs["record"] = True
         kwargs["force_terminal"] = True
