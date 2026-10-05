@@ -230,9 +230,12 @@ uv run python scripts/stage-release.py
 That stages `/install.sh` plus discovery feeds. A website wheel mirror is not
 required: the installer installs the latest AgentEng from PyPI via `uv tool install`
 (with a pip virtualenv fallback). The Cloud Run service also serves the same
-script at `/install.sh`. Test `https://agentengineering.world/install.sh` (once
-hosted) and `https://a2a.agentengineering.world/install.sh` before announcing
-installation. The installer needs a POSIX shell and network access; it bootstraps
+script at `/install.sh`; `https://a2a.agentengineering.world/install.sh` is the
+advertised URL for now. The main site copy (`public/install.sh` in
+agent-engineering-summit) only becomes the advertised URL once GoDaddy Website
+Security excludes `/install.sh` from its bot check; until then curl receives an
+HTML challenge page with HTTP 200, which must never be piped to `sh`. Verify with
+`curl -fsSL <url> | head -1` (expect `#!/bin/sh`) before announcing installation. The installer needs a POSIX shell and network access; it bootstraps
 uv when missing and never uses sudo.
 
 Refresh `catalogue.json` from the website sources and rebuild whenever public event content changes. The exporter fails on known inline/calendar metadata drift, rather than silently reusing it. The API reports the source commit/hash, export time and staleness. Catalogue refresh is a build-time action; there is no polling job or private database connection in this release.
