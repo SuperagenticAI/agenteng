@@ -38,11 +38,16 @@ Pin a version with `AGENTENG_VERSION=0.0.4`, change extras with `AGENTENG_EXTRAS
 Then try (`ae` is a short alias for `agenteng`):
 
 ```sh
-ae --version
+ae                 # interactive menu (TTY)
 ae discover
 ae events --upcoming
+ae events --json   # same Result JSON agents, MCP and A2A use
 ae connect cursor
 ```
+
+On a terminal, commands print cards and tables. Agents should use `--json`, set
+`AGENTENG_OUTPUT=json`, or pipe the output; non-TTY stdout always returns the
+shared Result JSON contract.
 
 From a source checkout for development:
 
@@ -56,6 +61,18 @@ uv run --frozen agenteng tools --discipline memory
 uv run --frozen agenteng tool langgraph
 uv run --frozen agenteng tickets agenteng-london-2026
 uv run --frozen agenteng agenda agenteng-london-2026 --topic memory
+uv run --frozen agenteng speaker samuel-colvin
+uv run --frozen agenteng talks --search memory
+uv run --frozen agenteng talk samuel-colvin
+uv run --frozen agenteng faq --search tickets
+uv run --frozen agenteng venue agenteng-london-2026
+uv run --frozen agenteng sponsors
+uv run --frozen agenteng conduct
+uv run --frozen agenteng themes
+uv run --frozen agenteng now agenteng-london-2026
+uv run --frozen agenteng save samuel-colvin
+uv run --frozen agenteng my-agenda
+uv run --frozen agenteng agenda agenteng-london-2026 --format ics --output london.ics
 uv run --frozen agenteng ask 'When is the next London conference?'
 uv run --frozen agenteng participate
 uv run --frozen agenteng plan agenteng-london-2026 --interest evaluation --format ics --output agenda.ics
@@ -66,10 +83,11 @@ This source tracks the **0.0.4 alpha** release. The published package is on [PyP
 The CLI uses its bundled catalogue offline. Put global options before the command:
 
 ```sh
-agenteng --json events --city London
-agenteng --remote https://YOUR_HOST events --upcoming
-agenteng --catalogue ./catalogue.json speakers --city 'San Francisco'
-agenteng query '{"operation":"events","upcoming":true}'
+ae --json events --city London
+ae events --city London
+ae --remote https://YOUR_HOST events --upcoming
+ae --catalogue ./catalogue.json speakers --city 'San Francisco'
+ae query '{"operation":"events","upcoming":true}'
 ```
 
 Run `agenteng --help` or `agenteng COMMAND --help` for command options.
@@ -134,7 +152,7 @@ MCP call example:
 {"name":"agenteng","arguments":{"request":{"operation":"tickets","event_id":"agenteng-london-2026"}}}
 ```
 
-Public operations are `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `tickets`, `recordings`, `search`, `plan`, `ask` and `participate`. Draft operations are `proposal_draft`, `proposal_preview` and `proposal_export`. Begin with `discover` for featured London/San Francisco events and interfaces, or `events` for published IDs. The same request can be an A2A JSON data part or an HTTP body; plain A2A text uses question routing or public-source search. Responses include supporting sources and snapshot metadata. A2A returns immediate messages and advertises no streaming or push notifications.
+Public operations are `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `save`, `unsave`, `my_agenda`, `tickets`, `recordings`, `search`, `plan`, `ask` and `participate`. Draft operations are `proposal_draft`, `proposal_preview` and `proposal_export`. Begin with `discover` for featured London/San Francisco events and interfaces, or `events` for published IDs. The same request can be an A2A JSON data part or an HTTP body; plain A2A text uses question routing or public-source search. Responses include supporting sources and snapshot metadata. A2A returns immediate messages and advertises no streaming or push notifications.
 
 The official host is live at `https://a2a.agentengineering.world` (health, agent card, catalogue, A2A JSON-RPC and MCP `/mcp/`). To self-host, set `AGENTENG_PUBLIC_URL` to your HTTPS origin and configure allowed origins. See [deployment](deploy/README.md), [architecture](docs/ARCHITECTURE.md) and the [HTTP MCP config](deploy/mcp-http.json).
 

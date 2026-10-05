@@ -78,17 +78,22 @@ and mirrored at [a2a.agentengineering.world/install.sh](https://a2a.agentenginee
 ```sh title="Install AgentEng"
 curl -fsSL https://agentengineering.world/install.sh | sh
 # Or: uv tool install --upgrade 'agenteng[server]'
+ae                 # interactive menu on a TTY
 ae discover
 ae events --upcoming
+ae events --json   # Result JSON for agents
 ae connect cursor
 ```
 
-**Your first result:** published London and San Francisco events, with supporting
-source links. The CLI uses its bundled snapshot, so event lookup, tool browsing
-and local drafting work offline with **zero model calls** and no provider key.
+**Your first result:** published London and San Francisco events as readable cards
+(or Result JSON for agents), with supporting source links. The CLI uses its bundled
+snapshot, so event lookup, tool browsing and local drafting work offline with
+**zero model calls** and no provider key.
 
-The package is named `agenteng`. The CLI commands are `agenteng` and the short alias `ae`.
-This source tracks the **0.0.4 alpha** release.
+On a terminal, `ae` opens an interactive menu and commands render tables and cards.
+Pass `--json`, set `AGENTENG_OUTPUT=json`, or pipe stdout to get the shared Result
+JSON used by MCP and A2A. The package is named `agenteng`. The CLI commands are
+`agenteng` and the short alias `ae`. This source tracks the **0.0.4 alpha** release.
 Run `ae --help` to explore commands, or `ae COMMAND --help` for options.
 Installing the CLI does not start or publish a hosted service.
 
@@ -98,16 +103,29 @@ Find an event, then use its returned ID to explore the agenda, speakers or ticke
 terms. Put global options such as `--json` before the command.
 
 ```sh title="Find your next event"
-agenteng events --city London --upcoming
-agenteng events --city 'San Francisco'
-agenteng ask 'When is the next London conference?'
-agenteng --json events
+ae events --city London --upcoming
+ae events --city 'San Francisco'
+ae ask 'When is the next London conference?'
+ae --json events
 ```
 
 ```sh title="Explore a published programme"
-agenteng speakers --city London
-agenteng agenda agenteng-london-2026 --topic memory
-agenteng tickets agenteng-london-2026
+ae speakers --city London
+ae speaker samuel-colvin
+ae talks --search memory
+ae talk samuel-colvin
+ae agenda agenteng-london-2026 --topic memory
+ae agenda agenteng-london-2026 --format ics --output london.ics
+ae faq --search tickets
+ae venue agenteng-london-2026
+ae sponsors
+ae conduct
+ae themes
+ae now agenteng-london-2026
+ae next agenteng-london-2026
+ae save samuel-colvin
+ae my-agenda
+ae tickets agenteng-london-2026
 ```
 
 The catalogue is a dated snapshot. Follow the event's official registration link
@@ -200,3 +218,5 @@ one child or leaf delegation.
 [🏗️ Architecture](ARCHITECTURE.md){ .md-button }
 
 </div>
+
+<!-- docs-ci-retrigger -->

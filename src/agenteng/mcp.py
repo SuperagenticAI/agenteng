@@ -18,8 +18,9 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
     mcp = FastMCP(
         "Agent Engineering HQ",
         instructions=(
-            "Use the single agenteng tool for public events, agendas, speakers, tickets, recordings, "
-            "search, session planning and participation guidance. Start with operation=events to discover event_id. "
+            "Use the single agenteng tool for public events, agendas, speakers, talks, FAQ, venue, "
+            "sponsors, code of conduct, themes, tickets, recordings, search, now/next, local bookmarks, "
+            "session planning and participation guidance. Start with operation=events to discover event_id. "
             "Use disciplines to find the twelve tool-directory filters, tools to browse/search with "
             "discipline, kind, category, query, limit and offset, and tool with tool_id for links. "
             "Continue pagination with next_offset and unchanged filters. Listings are not popularity rankings. "

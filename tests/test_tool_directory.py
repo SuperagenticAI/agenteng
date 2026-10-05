@@ -131,7 +131,10 @@ def test_cli_directory_json_text_and_unknown_ids():
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert len(payload["data"]["items"]) == 2 and payload["data"]["next_offset"] == 2
-    assert runner.invoke(main, ["tools", "--limit", "2"]).output.count("Next page:") == 1
+    # Non-TTY stdout returns the shared Result JSON (agents / pipes).
+    piped = runner.invoke(main, ["tools", "--limit", "2"])
+    assert piped.exit_code == 0, piped.output
+    assert json.loads(piped.output)["data"]["next_offset"] == 2
     assert "memory" in runner.invoke(main, ["disciplines"]).output
     alias = runner.invoke(main, ["--json", "tool", "letta-memory"])
     assert json.loads(alias.output)["data"]["tool"]["id"] == "letta"

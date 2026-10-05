@@ -15,22 +15,43 @@ from .models import Request, Result
 from .service import Service
 from .discovery import connection, validate_origin
 from .participation import Draft, Inbox, PRIVATE_OPERATIONS
-from .tool_directory import DISCIPLINES, TOOL_OPERATIONS, ToolKind
+from .tool_directory import DISCIPLINES, ToolKind
+from .output import stdout_is_tty, stdin_is_tty
 from typing import get_args
 
 
-@click.group(context_settings={"help_option_names": ["-h", "--help"]})
+@click.group(
+    invoke_without_command=True,
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
 @click.version_option(__version__)
 @click.option(
     "--catalogue", type=click.Path(exists=True, dir_okay=False), help="Local public catalogue JSON."
 )
 @click.option("--remote", help="HTTP service base URL (otherwise use bundled offline catalogue).")
-@click.option("--json", "as_json", is_flag=True, help="Print the shared structured result.")
+@click.option(
+    "--json",
+    "as_json",
+    is_flag=True,
+    help="Print the shared structured Result JSON (also used when stdout is not a TTY).",
+)
 @click.pass_context
 def main(ctx, catalogue, remote, as_json):
-    """Agent Engineering HQ events, CLI, MCP and A2A."""
+    """Agent Engineering HQ events, CLI, MCP and A2A.
+
+    Run with no arguments in a terminal to open the interactive menu.
+    Human-readable cards are the default on a TTY; agents get Result JSON via
+    --json, AGENTENG_OUTPUT=json, or a pipe.
+    """
     ctx.ensure_object(dict)
     ctx.obj.update(catalogue=catalogue, remote=remote, as_json=as_json)
+    if ctx.invoked_subcommand is None:
+        if stdout_is_tty() and stdin_is_tty():
+            from .interactive import run_menu
+
+            run_menu(ctx)
+        else:
+            click.echo(ctx.get_help())
 
 
 def dispatch(ctx, payload, output=None, *, quiet=False):
@@ -71,42 +92,22 @@ def dispatch(ctx, payload, output=None, *, quiet=False):
                 Path(output).write_bytes(result.artifact.encode())
         except OSError as exc:
             raise click.ClickException("Cannot create output; choose a new writable file.") from exc
-    if ctx.obj["as_json"]:
+    forced_json = bool(ctx.obj["as_json"]) or (
+        os.environ.get("AGENTENG_OUTPUT", "").strip().lower() == "json"
+    )
+    if forced_json:
         click.echo(result.model_dump_json(indent=2))
     elif result.artifact and not output:
         click.echo(result.artifact, nl=False)
+    elif not stdout_is_tty():
+        click.echo(result.model_dump_json(indent=2))
     else:
-        click.echo(result.answer)
-        if request.operation in TOOL_OPERATIONS:
-            render_directory(result)
-        elif result.data:
-            click.echo(json.dumps(result.data, ensure_ascii=False, indent=2))
-        for source in result.sources:
-            click.echo(f"Source: {source.url} [{source.id}]")
-        if result.stale:
-            click.echo(
-                "Catalogue snapshot is older than 48 hours; confirm current details on the linked website."
-            )
+        from .render import render_result
+
+        render_result(result, request.operation)
     if result.status != "ok":
         ctx.exit(1)
     return result
-
-
-def render_directory(result):
-    """Compact plain-text listings; --json retains the complete shared contract."""
-    data = result.data
-    for row in data.get("items", []):
-        if "tool_count" in row:
-            click.echo(f"{row['id']:12} {row['name']} ({row['tool_count']} listings)")
-        else:
-            click.echo(
-                f"{row['id']:32} {row['name']} [{row['kind']}] ({', '.join(row['disciplines'])})"
-            )
-            click.echo("  " + (row["website_url"] or row["repository_url"]))
-    if data.get("tool"):
-        click.echo(json.dumps(data["tool"], ensure_ascii=False, indent=2))
-    if data.get("next_offset") is not None:
-        click.echo(f"Next page: repeat the same filters with --offset {data['next_offset']}.")
 
 
 @main.command()
@@ -157,6 +158,39 @@ def tool(ctx, tool_id):
     dispatch(ctx, dict(operation="tool", tool_id=tool_id))
 
 
+def local_service(ctx):
+    """Build a local Service for ID resolution helpers."""
+    from dataclasses import replace
+
+    settings = Settings.from_env()
+    if ctx.obj.get("catalogue"):
+        settings = replace(settings, catalogue_path=ctx.obj["catalogue"])
+    return Service(settings)
+
+
+def resolve_talk(ctx, identifier: str, event_id: str | None = None):
+    """Resolve a session or speaker identifier to a talk session row."""
+    if ctx.obj.get("remote"):
+        result = dispatch(
+            ctx,
+            dict(operation="talks", event_id=event_id, query=identifier),
+            quiet=True,
+        )
+        rows = result.data if isinstance(result.data, list) else []
+    else:
+        service = local_service(ctx)
+        result = service.lookup(Request(operation="talks", event_id=event_id, query=identifier))
+        rows = result.data if isinstance(result.data, list) else []
+    exact = [
+        row for row in rows if row.get("id") == identifier or row.get("speaker_id") == identifier
+    ]
+    if exact:
+        return exact[0]
+    if len(rows) == 1:
+        return rows[0]
+    return None
+
+
 def write_private(path, text):
     """Never replace an existing file or follow a destination symlink."""
     fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
@@ -175,37 +209,193 @@ def events(ctx, city, upcoming, past):
 
 
 @main.command()
-@click.argument("event_id")
+@click.argument("event_id", required=False)
 @click.pass_context
 def event(ctx, event_id):
     """Read one event by its published ID."""
-    dispatch(ctx, dict(operation="event", event_id=event_id))
+    from .interactive import require_event_id
+
+    dispatch(ctx, dict(operation="event", event_id=require_event_id(ctx, event_id)))
 
 
 @main.command()
-@click.argument("event_id")
+@click.argument("event_id", required=False)
 @click.option("--topic")
+@click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
+@click.option(
+    "--output", type=click.Path(dir_okay=False), help="Write an .ics calendar when --format ics."
+)
 @click.pass_context
-def agenda(ctx, event_id, topic):
-    """Read an event's public agenda."""
-    dispatch(ctx, dict(operation="agenda", event_id=event_id, topic=topic))
+def agenda(ctx, event_id, topic, output_format, output):
+    """Read an event's public agenda; optionally export .ics."""
+    from .interactive import require_event_id
+
+    dispatch(
+        ctx,
+        dict(
+            operation="agenda",
+            event_id=require_event_id(ctx, event_id),
+            topic=topic,
+            format=output_format,
+        ),
+        output,
+    )
 
 
 @main.command()
 @click.option("--event", "event_id")
 @click.option("--city")
+@click.option("--search", "query", default="", help="Match name, company, talk title or abstract.")
 @click.pass_context
-def speakers(ctx, event_id, city):
-    """List published speakers."""
-    dispatch(ctx, dict(operation="speakers", event_id=event_id, city=city))
+def speakers(ctx, event_id, city, query):
+    """List published speakers with roles, companies, talks and abstracts."""
+    dispatch(ctx, dict(operation="speakers", event_id=event_id, city=city, query=query))
+
+
+@main.command("speaker")
+@click.argument("speaker_id")
+@click.option("--event", "event_id")
+@click.pass_context
+def speaker_detail(ctx, speaker_id, event_id):
+    """Read one speaker: bio fields, links, projects, disciplines and full abstract."""
+    dispatch(ctx, dict(operation="speaker", speaker_id=speaker_id, event_id=event_id))
 
 
 @main.command()
-@click.argument("event_id")
+@click.option("--event", "event_id")
+@click.option("--search", "query", default="", help="Match talk title, abstract or speaker.")
+@click.option("--speaker", "speaker_id")
+@click.pass_context
+def talks(ctx, event_id, query, speaker_id):
+    """List published talks with full abstracts."""
+    dispatch(
+        ctx,
+        dict(operation="talks", event_id=event_id, query=query, speaker_id=speaker_id),
+    )
+
+
+@main.command("talk")
+@click.argument("identifier", required=False)
+@click.option("--event", "event_id")
+@click.option("--search", "query", default="")
+@click.pass_context
+def talk_detail(ctx, identifier, event_id, query):
+    """Read one talk by session ID, speaker ID, or --search text."""
+    payload = dict(operation="talk", event_id=event_id, query=query)
+    if identifier:
+        row = resolve_talk(ctx, identifier, event_id)
+        if row:
+            payload["session_id"] = row["id"]
+            payload["query"] = ""
+        elif not query:
+            payload["query"] = identifier
+    dispatch(ctx, payload)
+
+
+@main.command()
+@click.option("--event", "event_id")
+@click.option("--search", "query", default="", help="Match FAQ question or answer text.")
+@click.pass_context
+def faq(ctx, event_id, query):
+    """Read published FAQ answers from the conference website."""
+    dispatch(ctx, dict(operation="faq", event_id=event_id, query=query))
+
+
+@main.command()
+@click.argument("event_id", required=False)
+@click.pass_context
+def venue(ctx, event_id):
+    """Read venue address, tour link, track and accessibility notes."""
+    from .interactive import require_event_id
+
+    dispatch(ctx, dict(operation="venue", event_id=require_event_id(ctx, event_id)))
+
+
+@main.command()
+@click.option("--city")
+@click.pass_context
+def sponsors(ctx, city):
+    """List published sponsors and London support options."""
+    dispatch(ctx, dict(operation="sponsors", city=city))
+
+
+@main.command()
+@click.pass_context
+def conduct(ctx):
+    """Read the published code of conduct summary and report contact."""
+    dispatch(ctx, dict(operation="conduct"))
+
+
+@main.command()
+@click.pass_context
+def themes(ctx):
+    """List published program themes from the website."""
+    dispatch(ctx, dict(operation="themes"))
+
+
+@main.command("now")
+@click.argument("event_id", required=False)
+@click.pass_context
+def now_cmd(ctx, event_id):
+    """Show what is on now from the published timed agenda."""
+    dispatch(ctx, dict(operation="now", event_id=event_id))
+
+
+@main.command("next")
+@click.argument("event_id", required=False)
+@click.pass_context
+def next_cmd(ctx, event_id):
+    """Show the next published session from the timed agenda."""
+    dispatch(ctx, dict(operation="next", event_id=event_id))
+
+
+@main.command("save")
+@click.argument("identifier")
+@click.pass_context
+def save_cmd(ctx, identifier):
+    """Bookmark a talk locally by session ID or speaker ID (this machine only)."""
+    row = resolve_talk(ctx, identifier)
+    if not row:
+        raise click.ClickException(
+            "Could not resolve a single talk. Pass a session ID or speaker ID from `ae talks`."
+        )
+    dispatch(ctx, dict(operation="save", session_id=row["id"]))
+
+
+@main.command("unsave")
+@click.argument("identifier")
+@click.pass_context
+def unsave_cmd(ctx, identifier):
+    """Remove a local talk bookmark by session ID or speaker ID."""
+    row = resolve_talk(ctx, identifier)
+    if row:
+        dispatch(ctx, dict(operation="unsave", session_id=row["id"]))
+    else:
+        dispatch(ctx, dict(operation="unsave", speaker_id=identifier))
+
+
+@main.command("my-agenda")
+@click.option("--event", "event_id")
+@click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
+@click.option("--output", type=click.Path(dir_okay=False))
+@click.pass_context
+def my_agenda(ctx, event_id, output_format, output):
+    """Show locally bookmarked talks; optional .ics export."""
+    dispatch(
+        ctx,
+        dict(operation="my_agenda", event_id=event_id, format=output_format),
+        output,
+    )
+
+
+@main.command()
+@click.argument("event_id", required=False)
 @click.pass_context
 def tickets(ctx, event_id):
     """Read published prices and the official registration link."""
-    dispatch(ctx, dict(operation="tickets", event_id=event_id))
+    from .interactive import require_event_id
+
+    dispatch(ctx, dict(operation="tickets", event_id=require_event_id(ctx, event_id)))
 
 
 @main.command()
@@ -240,16 +430,23 @@ def ask(ctx, query, event_id, engine):
 
 
 @main.command()
-@click.argument("event_id")
+@click.argument("event_id", required=False)
 @click.option("--interest", "interests", multiple=True)
 @click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
 @click.option("--output", type=click.Path(dir_okay=False))
 @click.pass_context
 def plan(ctx, event_id, interests, output_format, output):
     """Select sessions by published text and optionally export a calendar."""
+    from .interactive import require_event_id
+
     dispatch(
         ctx,
-        dict(operation="plan", event_id=event_id, interests=list(interests), format=output_format),
+        dict(
+            operation="plan",
+            event_id=require_event_id(ctx, event_id),
+            interests=list(interests),
+            format=output_format,
+        ),
         output,
     )
 
