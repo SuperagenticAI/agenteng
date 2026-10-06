@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://agentengineering.world">
-    <img src="https://raw.githubusercontent.com/SuperagenticAI/agenteng/main/docs/assets/logo.png" alt="Agent Engineering HQ logo" width="256" height="256">
+    <img src="https://raw.githubusercontent.com/SuperagenticAI/agenteng/main/docs/assets/logo.png" alt="Agent Engineering HQ logo" width="128" height="128">
   </a>
 </p>
 
@@ -8,7 +8,7 @@
 
 <p align="center">
   <strong>The home of the agent engineering discipline.</strong><br>
-  Discover events, people and tools — from your terminal to your coding agent.<br>
+  Discover events, people and tools from your terminal to your coding agent.<br>
   London &amp; San Francisco · CLI · MCP · A2A
 </p>
 
