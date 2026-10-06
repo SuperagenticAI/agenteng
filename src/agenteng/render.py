@@ -741,6 +741,39 @@ def render_generic(console: Console, result: Result) -> None:
     console.print_json(data=data)
 
 
+def render_acp_agents(rows: list[dict], registry: str, console: Console | None = None) -> None:
+    """Table for `ae code --list`: known ACP agents and whether they are on PATH."""
+    console = console or make_console()
+    table = Table(
+        title="ACP coding agents",
+        title_style="ae.title",
+        border_style=BLUE,
+        box=BOX,
+        show_header=True,
+        pad_edge=False,
+        expand=True,
+    )
+    table.add_column("Agent", style="ae.accent", no_wrap=True)
+    table.add_column("Launch", no_wrap=True)
+    table.add_column("Status", ratio=1, overflow="fold")
+    for row in rows:
+        name = Text(row["name"], style="ae.accent")
+        name.append("\n" + display_text(row["title"]), style="ae.meta")
+        if row["installed"]:
+            status = Text("installed ", style="ae.ok")
+            status.append(row["path"], style="ae.meta")
+        else:
+            status = Text("not found ", style="ae.warn")
+            status.append(display_text(row["install"]), style="ae.meta")
+        table.add_row(name, Text(row["command"]), status)
+    console.print(table)
+    installed = sum(1 for row in rows if row["installed"])
+    console.print(
+        f"[ae.meta]{installed} of {len(rows)} installed. Use `ae code --agent NAME PROMPT`, "
+        f"or --agent-command for any other ACP agent. Registry: {registry}[/]"
+    )
+
+
 def render_result(result: Result, operation: str, console: Console | None = None) -> None:
     """Render a service Result for humans. Does not change JSON shapes."""
     console = console or make_console()

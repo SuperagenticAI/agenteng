@@ -58,6 +58,7 @@ exclude_docs: |
   **
   !/index.md
   !/INTEGRATIONS.md
+  !/ACP.md
   !/TOOLS.md
   !/PARTICIPATION.md
   !/COMMUNITY.md
@@ -77,6 +78,7 @@ exclude_docs: |
 nav:
   - 🚀 Start here: index.md
   - 🤖 MCP & A2A: INTEGRATIONS.md
+  - 🤝 ACP client (spike): ACP.md
   - 🧰 Tool directory: TOOLS.md
   - 💡 Participate: PARTICIPATION.md
   - 📚 Reference:

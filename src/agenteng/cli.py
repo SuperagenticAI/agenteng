@@ -169,23 +169,28 @@ def local_service(ctx):
 
 
 def resolve_talk(ctx, identifier: str, event_id: str | None = None):
-    """Resolve a session or speaker identifier to a talk session row."""
-    if ctx.obj.get("remote"):
-        result = dispatch(
-            ctx,
-            dict(operation="talks", event_id=event_id, query=identifier),
-            quiet=True,
-        )
-        rows = result.data if isinstance(result.data, list) else []
-    else:
-        service = local_service(ctx)
-        result = service.lookup(Request(operation="talks", event_id=event_id, query=identifier))
-        rows = result.data if isinstance(result.data, list) else []
+    """Resolve a session or speaker identifier to a talk session row.
+
+    Exact session or speaker IDs win over text search: IDs such as
+    ``agenteng-london-2026-14`` share most tokens with other talks.
+    """
+
+    def talk_rows(query: str) -> list[dict]:
+        payload = dict(operation="talks", event_id=event_id, query=query, limit=100)
+        if ctx.obj.get("remote"):
+            result = dispatch(ctx, payload, quiet=True)
+        else:
+            result = local_service(ctx).lookup(Request(**payload))
+        return result.data if isinstance(result.data, list) else []
+
     exact = [
-        row for row in rows if row.get("id") == identifier or row.get("speaker_id") == identifier
+        row
+        for row in talk_rows("")
+        if row.get("id") == identifier or row.get("speaker_id") == identifier
     ]
     if exact:
         return exact[0]
+    rows = talk_rows(identifier)
     if len(rows) == 1:
         return rows[0]
     return None
@@ -710,6 +715,153 @@ def revoke_access(ctx, credential_file):
     except (OSError, ValueError) as exc:
         raise click.ClickException("Could not revoke this participant credential.") from exc
     click.echo("Participant access and pending previews revoked.")
+
+
+@main.command("code")
+@click.argument("prompt", nargs=-1)
+@click.option(
+    "--agent", "agent_name", help="Agent to launch (see --list). Default: first installed."
+)
+@click.option(
+    "--agent-command", help="Custom ACP agent command line, for example 'my-agent --acp'."
+)
+@click.option(
+    "--list", "list_agents", is_flag=True, help="Show known ACP agents and which are on PATH."
+)
+@click.option(
+    "--cwd",
+    type=click.Path(exists=True, file_okay=False, resolve_path=True),
+    help="Working directory for the agent session (default: current directory).",
+)
+@click.option(
+    "--context",
+    "context_ids",
+    multiple=True,
+    help="Attach a talk, event, speaker or tool:ID record to the prompt. Repeatable.",
+)
+@click.option("--no-mcp", is_flag=True, help="Do not attach the AgentEng MCP server.")
+@click.option("--npx", is_flag=True, help="Launch a missing npm-distributed agent through npx.")
+@click.option("--show-thoughts", is_flag=True, help="Show the agent's thought chunks.")
+@click.option(
+    "--allow-always-option",
+    is_flag=True,
+    help="Also offer the agent's 'allow always' choice in permission prompts (hidden by default).",
+)
+@click.option("--json", "json_events", is_flag=True, help="Stream newline-delimited JSON events.")
+@click.pass_context
+def code(
+    ctx,
+    prompt,
+    agent_name,
+    agent_command,
+    list_agents,
+    cwd,
+    context_ids,
+    no_mcp,
+    npx,
+    show_thoughts,
+    allow_always_option,
+    json_events,
+):
+    """Drive an ACP coding agent with AgentEng context (install [acp]).
+
+    Spawns the agent over the Agent Client Protocol, attaches the AgentEng MCP
+    server and streams its reply. Every permission request is asked in the
+    terminal; without a terminal it is rejected. Nothing is auto-approved.
+
+    Example: ae code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
+    """
+    from .acp_agents import AGENTS, REGISTRY_URL, default_agent, find_agent
+    from .output import use_json
+
+    as_json = json_events or use_json(ctx)
+    if list_agents:
+        rows = [spec.as_dict() for spec in AGENTS]
+        if as_json:
+            click.echo(json.dumps({"registry": REGISTRY_URL, "agents": rows}, indent=2))
+        else:
+            from .render import render_acp_agents
+
+            render_acp_agents(rows, REGISTRY_URL)
+        return
+    text = " ".join(prompt).strip()
+    if not text and not stdin_is_tty():
+        text = click.get_text_stream("stdin").read().strip()
+    if not text:
+        raise click.UsageError(
+            'Give a prompt, for example: ae code "explain talk agenteng-london-2026-2"'
+        )
+    try:
+        from . import acp_client
+    except ImportError as exc:
+        raise click.ClickException("Install agenteng[acp] for ae code.") from exc
+    import shlex
+
+    try:
+        if agent_command:
+            argv = shlex.split(agent_command)
+            if not argv:
+                raise LookupError("--agent-command is empty.")
+            import shutil
+
+            argv[0] = shutil.which(argv[0]) or argv[0]
+        else:
+            spec = find_agent(agent_name) if agent_name else default_agent()
+            argv = spec.argv(npx=npx)
+    except LookupError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    global_args = []
+    if ctx.obj.get("remote"):
+        global_args += ["--remote", ctx.obj["remote"]]
+    if ctx.obj.get("catalogue"):
+        global_args += ["--catalogue", str(Path(ctx.obj["catalogue"]).resolve())]
+
+    sink = acp_client.JsonSink() if as_json else acp_client.RichSink(show_thoughts=show_thoughts)
+    mcp_servers = []
+    if not no_mcp:
+        if acp_client.mcp_available():
+            mcp_servers.append(acp_client.mcp_server_config(global_args))
+        else:
+            sink.emit(
+                "warning",
+                message="The mcp package is missing, so AgentEng tools are not attached. "
+                "Install agenteng[acp] (includes mcp) to attach them.",
+            )
+    records = []
+    if not ctx.obj.get("remote"):
+        records = acp_client.context_records(local_service(ctx), text, list(context_ids))
+    blocks = acp_client.build_prompt(text, records, mcp_attached=bool(mcp_servers))
+    if not stdin_is_tty():
+        prompter = None
+    elif as_json:
+        prompter = acp_client.terminal_prompter(err=True)
+    else:
+        prompter = acp_client.terminal_prompter(sink.console)
+    try:
+        outcome = asyncio.run(
+            acp_client.run_session(
+                argv,
+                blocks,
+                cwd=cwd or os.getcwd(),
+                sink=sink,
+                prompter=prompter,
+                mcp_servers=mcp_servers,
+                context_ids=[f"{r['kind']}:{r['id']}" for r in records],
+                allow_always=allow_always_option,
+            )
+        )
+    except acp_client.AgentError as exc:
+        if as_json:
+            sink.emit("error", message=str(exc))
+            ctx.exit(1)
+        raise click.ClickException(str(exc)) from exc
+    except KeyboardInterrupt:
+        ctx.exit(130)
+    if outcome.stop_reason == "cancelled":
+        ctx.exit(130)
+    if outcome.stop_reason not in ("end_turn", "max_tokens", "max_turn_requests"):
+        ctx.exit(1)
 
 
 @main.command("query")
