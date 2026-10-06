@@ -797,6 +797,10 @@ def render_result(result: Result, operation: str, console: Console | None = None
         "sponsors": render_sponsors,
         "conduct": render_conduct,
         "themes": render_themes,
+        "about": render_about,
+        "hq": render_hq,
+        "bingo": render_bingo,
+        "live": lambda c, r: c.print(live_board(r), height=min(c.size.height, 40)),
         "now": lambda c, r: render_live(c, r, title="Now"),
         "next": lambda c, r: render_live(c, r, title="Next"),
         "save": render_bookmarks,
@@ -824,3 +828,392 @@ def render_result(result: Result, operation: str, console: Console | None = None
     handler = handlers.get(operation, render_generic)
     handler(console, result)
     _footer(console, result)
+
+
+# --- about / hq -------------------------------------------------------------
+
+
+def _kv_table() -> Table:
+    table = Table.grid(padding=(0, 2))
+    table.add_column(style="ae.accent", no_wrap=True)
+    table.add_column(overflow="fold")
+    return table
+
+
+def render_about(console: Console, result: Result) -> None:
+    data = result.data if isinstance(result.data, dict) else {}
+    section = data.get("section")
+    if not section:
+        intro = Text()
+        if data.get("summary"):
+            intro.append(display_text(data["summary"]) + "\n\n")
+        if data.get("definition"):
+            intro.append("Our definition  ", style="ae.accent")
+            intro.append(display_text(data["definition"]))
+        console.print(_panel(data.get("name") or "Agent Engineering HQ", intro, border=MAGENTA))
+    organiser = data.get("organiser")
+    if organiser:
+        body = Text()
+        body.append(display_text(organiser["name"]), style="bold")
+        if organiser.get("blurb"):
+            body.append("\n" + display_text(organiser["blurb"]))
+        body.append("\n" + organiser["url"], style="ae.blue")
+        console.print(_panel("Organised by", body, border=VIOLET))
+    chair = data.get("chair")
+    if chair:
+        body = Text()
+        body.append(display_text(chair["name"]), style="bold")
+        body.append("\n" + display_text(chair["title"]), style="ae.meta")
+        if chair.get("bio"):
+            body.append("\n\n" + display_text(chair["bio"]))
+        for link in chair.get("links") or []:
+            body.append(f"\n{link['label']}: ", style="ae.accent")
+            body.append(link["url"], style="ae.blue")
+        console.print(_panel("Conference chair", body, border=VIOLET))
+    links = data.get("links")
+    if links:
+        table = _kv_table()
+        labels = {
+            "website": "Website",
+            "hq": "Agent Engineering HQ",
+            "london": "London",
+            "san_francisco": "San Francisco",
+            "code_of_conduct": "Code of conduct",
+        }
+        for key, url in links.items():
+            table.add_row(labels.get(key, key), url)
+        if data.get("contact_email"):
+            table.add_row("Contact", data["contact_email"])
+        console.print(_panel("Links", table))
+    connect = data.get("connect")
+    if connect:
+        table = _kv_table()
+        table.add_row("Install", connect["install"])
+        table.add_row("Or with uv", connect["install_uv"])
+        table.add_row("Remote MCP", connect["mcp_url"])
+        table.add_row("A2A agent card", connect["agent_card_url"])
+        table.add_row("HTTP query", "POST " + connect["http_query_url"])
+        table.add_row("Local MCP", connect["local_mcp"])
+        table.add_row("Set up a client", " | ".join(connect["connect_commands"]))
+        console.print(_panel("Connect your agent", table, border=BLUE))
+
+
+def render_hq(console: Console, result: Result) -> None:
+    data = result.data if isinstance(result.data, dict) else {}
+    if not data.get("section") and data.get("summary"):
+        intro = Text(display_text(data["summary"]))
+        if data.get("cities"):
+            intro.append("\n\n" + display_text(data["cities"]), style="ae.meta")
+        intro.append("\n" + str(data.get("url") or ""), style="ae.blue")
+        console.print(_panel("Agent Engineering HQ", intro, border=MAGENTA))
+    if data.get("manifesto"):
+        body = Table.grid(padding=(0, 2))
+        body.add_column(style="ae.meta", no_wrap=True)
+        body.add_column(overflow="fold")
+        for i, paragraph in enumerate(data["manifesto"], 1):
+            style = "bold" if i == 1 else ""
+            body.add_row(f"{i:02d}", Text(display_text(paragraph), style=style))
+            if i < len(data["manifesto"]):
+                body.add_row("", "")
+        console.print(_panel("The Agent Engineering Manifesto", body, border=VIOLET))
+    if data.get("mindset"):
+        table = Table(box=BOX, border_style=BLUE, expand=True, show_header=False)
+        table.add_column(style="ae.title", overflow="fold", ratio=2)
+        table.add_column(overflow="fold", ratio=5)
+        for principle in data["mindset"]:
+            table.add_row(display_text(principle["title"]), display_text(principle["description"]))
+        console.print(_panel("The Agent Engineering Mindset", table, border=BLUE))
+    if data.get("further_reading"):
+        body = Table.grid(padding=(0, 2))
+        body.add_column(style="ae.meta", no_wrap=True)
+        body.add_column(overflow="fold")
+        if data.get("further_reading_intro"):
+            body.add_row("", Text(display_text(data["further_reading_intro"]), style="italic"))
+        for item in data["further_reading"]:
+            text = Text(display_text(item["title"]), style="bold")
+            text.append("\n" + item["url"], style="ae.blue")
+            body.add_row(item["date"], text)
+        console.print(_panel("Further reading", body, border=VIOLET))
+
+
+# --- talk bingo ---------------------------------------------------------------
+
+
+def bingo_table(card: dict, marked: set[tuple[int, int]] | None = None) -> Table:
+    marked = marked or set()
+    size = card["size"]
+    table = Table(
+        box=box.HEAVY,
+        border_style=VIOLET,
+        show_lines=True,
+        expand=False,
+        title=Text("AGENTENG TALK BINGO", style=f"bold {MAGENTA}"),
+        caption=Text(f"Card {card['card_id']}", style="ae.meta"),
+        pad_edge=True,
+    )
+    table.add_column("", style="ae.meta", no_wrap=True, justify="right")
+    for c in range(size):
+        table.add_column("ABCDE"[c], justify="center", vertical="middle", width=14)
+    for r, row in enumerate(card["grid"]):
+        cells = []
+        for c, label in enumerate(row):
+            if label == "FREE":
+                cells.append(Text("\n★ FREE ★\n", style=f"bold white on {MAGENTA}"))
+            elif (r, c) in marked:
+                cells.append(Text(f"\n✓ {display_text(label)}\n", style=f"bold white on {VIOLET}"))
+            else:
+                cells.append(Text(f"\n{display_text(label)}\n", style="bold"))
+        table.add_row(f"\n{r + 1}", *cells)
+    return table
+
+
+def render_bingo(console: Console, result: Result) -> None:
+    card = result.data if isinstance(result.data, dict) else {}
+    if not card.get("grid"):
+        console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+        return
+    console.print(Text(display_text(card["event_title"]), style="ae.title"))
+    console.print(bingo_table(card))
+    console.print(f"[ae.meta]{display_text(card['rules'])}[/]")
+    console.print(f"[ae.accent]Same card again:[/] {card['command']}")
+    console.print("[ae.accent]Print it:[/] add --format html --output bingo.html")
+
+
+def play_bingo(result: Result, console: Console | None = None, *, ask=None) -> set[str]:
+    """Mark squares in the terminal. Returns the winning lines seen. Nothing is stored."""
+    import click
+
+    from .screens import winning_lines
+
+    console = console or make_console()
+    card = result.data
+    size = card["size"]
+    marked = {
+        (r, c) for r, row in enumerate(card["grid"]) for c, v in enumerate(row) if v == "FREE"
+    }
+    ask = ask or (lambda: click.prompt("Mark a square (B3), u = undo, q = quit", default="q"))
+    history: list[tuple[int, int]] = []
+    won: set[str] = set()
+    while True:
+        console.print(bingo_table(card, marked))
+        try:
+            answer = str(ask()).strip().upper()
+        except (EOFError, KeyboardInterrupt, click.Abort):
+            answer = "Q"
+        if answer in {"Q", "QUIT", ""}:
+            console.print("[ae.meta]Card not saved; re-create it any time:[/] " + card["command"])
+            return won
+        if answer == "U":
+            if history:
+                marked.discard(history.pop())
+            continue
+        if len(answer) < 2 or answer[0] not in "ABCDE"[:size] or not answer[1:].isdigit():
+            console.print("[ae.warn]Use a column letter and row number, such as B3.[/]")
+            continue
+        r, c = int(answer[1:]) - 1, "ABCDE".index(answer[0])
+        if not 0 <= r < size:
+            console.print(f"[ae.warn]Rows run from 1 to {size}.[/]")
+            continue
+        if (r, c) in marked and card["grid"][r][c] != "FREE":
+            marked.discard((r, c))
+        else:
+            marked.add((r, c))
+            history.append((r, c))
+        new = set(winning_lines(marked, size)) - won
+        if new:
+            won |= new
+            console.print(
+                Panel(
+                    Text(
+                        f"BINGO! {', '.join(sorted(new))}",
+                        style=f"bold white on {MAGENTA}",
+                        justify="center",
+                    ),
+                    border_style=MAGENTA,
+                )
+            )
+
+
+# --- live venue screen --------------------------------------------------------
+
+_DIGITS = {
+    "0": ["███", "█ █", "█ █", "█ █", "███"],
+    "1": [" ██", "  █", "  █", "  █", "  █"],
+    "2": ["███", "  █", "███", "█  ", "███"],
+    "3": ["███", "  █", "███", "  █", "███"],
+    "4": ["█ █", "█ █", "███", "  █", "  █"],
+    "5": ["███", "█  ", "███", "  █", "███"],
+    "6": ["███", "█  ", "███", "█ █", "███"],
+    "7": ["███", "  █", "  █", "  █", "  █"],
+    "8": ["███", "█ █", "███", "█ █", "███"],
+    "9": ["███", "█ █", "███", "  █", "███"],
+    ":": [" ", "▪", " ", "▪", " "],
+}
+
+
+def big_clock(value: str, style: str = MAGENTA) -> Text:
+    rows = [" ".join(_DIGITS[ch][i] for ch in value if ch in _DIGITS) for i in range(5)]
+    return Text("\n".join(rows), style=f"bold {style}", no_wrap=True)
+
+
+def _hhmm(value: str | None) -> str:
+    parsed = _parse_dt(value)
+    return parsed.strftime("%H:%M") if parsed else ""
+
+
+def _minutes(seconds: int | None) -> str:
+    if seconds is None:
+        return ""
+    minutes = max(0, round(seconds / 60))
+    if minutes >= 60:
+        return f"{minutes // 60} h {minutes % 60:02d} min"
+    return f"{minutes} min"
+
+
+def _talk_lines(talk: dict, *, title_style: str) -> Text:
+    text = Text()
+    text.append(display_text(talk.get("talk_title") or talk.get("title")), style=title_style)
+    who = [talk.get("speaker_name"), talk.get("speaker_company")]
+    who = " · ".join(display_text(w) for w in who if w)
+    if who:
+        text.append("\n" + who, style=f"bold {BLUE}")
+    if talk.get("speaker_role"):
+        text.append("\n" + display_text(talk["speaker_role"]), style="ae.meta")
+    return text
+
+
+def live_board(result: Result):
+    """One full-screen frame for `ae live`."""
+    from rich.layout import Layout
+    from rich.progress_bar import ProgressBar
+
+    data = result.data if isinstance(result.data, dict) else {}
+    event = data.get("event") or {}
+    as_of = _parse_dt(data.get("as_of"))
+    clock = as_of.strftime("%H:%M") if as_of else "--:--"
+
+    header = Table.grid(expand=True)
+    header.add_column(ratio=1, vertical="middle")
+    header.add_column(justify="right", vertical="middle")
+    head = Text()
+    head.append(display_text(event.get("title") or "AgentEng").upper(), style=f"bold {MAGENTA}")
+    place = [event.get("venue")]
+    if event.get("track"):
+        place.append(f"{str(event['track']).capitalize()} track")
+    head.append("\n" + " · ".join(display_text(p) for p in place if p), style="ae.meta")
+    if as_of:
+        head.append("\n" + as_of.strftime("%A %-d %B %Y"), style="ae.accent")
+    header.add_row(head, big_clock(clock))
+
+    current, upcoming, phase = data.get("current"), data.get("next"), data.get("phase")
+    if current:
+        body = Table.grid(expand=True)
+        body.add_column()
+        body.add_row(_talk_lines(current, title_style="bold white"))
+        body.add_row("")
+        span = f"{_hhmm(current.get('start'))} to {_hhmm(current.get('end'))}"
+        body.add_row(
+            Text(f"{span}  ·  {_minutes(current.get('remaining_seconds'))} left", style="ae.accent")
+        )
+        body.add_row(
+            ProgressBar(total=1.0, completed=current.get("progress") or 0, complete_style=MAGENTA)
+        )
+        now_panel = Panel(
+            body,
+            title=Text(" NOW ", style=f"bold white on {MAGENTA}"),
+            title_align="left",
+            border_style=MAGENTA,
+            padding=(1, 2),
+        )
+    else:
+        message = {
+            "before": "Doors open soon.",
+            "between": "Break. Grab a coffee and say hello.",
+            "after": "That's a wrap. Thank you for coming.",
+        }.get(phase, display_text(result.answer))
+        now_panel = Panel(
+            Text(message, style="bold white", justify="center"),
+            title=Text(" NOW ", style=f"bold white on {MAGENTA}"),
+            title_align="left",
+            border_style=MAGENTA,
+            padding=(1, 2),
+        )
+    if upcoming:
+        nxt = _talk_lines(upcoming, title_style="bold")
+        nxt.append(
+            f"\n{_hhmm(upcoming.get('start'))}  ·  in {_minutes(upcoming.get('starts_in_seconds'))}",
+            style="ae.accent",
+        )
+    else:
+        nxt = Text("Nothing else on the published agenda today.", style="ae.meta")
+    next_panel = Panel(
+        nxt,
+        title=Text(" NEXT UP ", style=f"bold white on {BLUE}"),
+        title_align="left",
+        border_style=BLUE,
+        padding=(1, 2),
+    )
+    later = Table.grid(padding=(0, 2))
+    later.add_column(style="ae.accent", no_wrap=True)
+    later.add_column(overflow="ellipsis")
+    for row in data.get("later") or []:
+        later.add_row(_hhmm(row.get("start")), display_text(row.get("title")))
+    later_panel = Panel(
+        later,
+        title=Text(" LATER ", style=f"bold white on {VIOLET}"),
+        title_align="left",
+        border_style=VIOLET,
+        padding=(0, 2),
+    )
+    footer = Text(
+        "agentengineering.world  ·  ae live  ·  Ctrl-C to exit", style="ae.meta", justify="center"
+    )
+
+    layout = Layout()
+    layout.split_column(
+        Layout(Panel(header, border_style=VIOLET, padding=(0, 2)), name="head", size=9),
+        Layout(now_panel, name="now", ratio=3),
+        Layout(name="bottom", ratio=2),
+        Layout(footer, name="foot", size=1),
+    )
+    layout["bottom"].split_row(Layout(next_panel, ratio=3), Layout(later_panel, ratio=2))
+    return layout
+
+
+def run_live_screen(ctx, payload: dict, *, refresh: int, once: bool = False, console=None) -> None:
+    """Redraw the venue board every `refresh` seconds until Ctrl-C."""
+    import time
+    from datetime import datetime, timedelta
+
+    from rich.live import Live
+
+    from .cli import execute
+    from .models import Request
+
+    console = console or make_console()
+    started = time.monotonic()
+    start_at = payload.get("at")
+
+    def frame():
+        request = dict(payload)
+        if start_at:
+            # A demo --at clock keeps running forward from the given time.
+            moved = datetime.fromisoformat(start_at) + timedelta(seconds=time.monotonic() - started)
+            request["at"] = moved.isoformat()
+        result = execute(ctx, Request.model_validate(request))
+        if result.status != "ok" and not (
+            isinstance(result.data, dict) and result.data.get("event")
+        ):
+            raise ValueError(result.answer)
+        return live_board(result)
+
+    if once:
+        console.print(frame(), height=console.size.height)
+        return
+    try:
+        with Live(frame(), console=console, screen=True, refresh_per_second=4) as live:
+            while True:
+                time.sleep(refresh)
+                live.update(frame())
+    except KeyboardInterrupt:
+        pass

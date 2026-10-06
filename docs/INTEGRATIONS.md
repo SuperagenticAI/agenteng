@@ -96,6 +96,8 @@ This bridge requires network access and relays requests to that origin; it does 
 
 Start with `{"operation":"discover"}` or `{"operation":"events","upcoming":true}`. Use returned IDs for agenda, speakers, tickets and planning. London 2026 is `agenteng-london-2026`; the October San Francisco event is `sf-code-engineering-2026`, whose published title remains **Code Engineering: From Coding Agents to Software Factories**.
 
+Event-day operations: `{"operation":"live","at":"2026-10-16T10:40:00+01:00"}` returns a now/next venue-screen snapshot (`at` is optional and also works for `now` and `next`), `{"operation":"bingo","seed":7,"size":5,"format":"svg"}` deals a reproducible talk bingo card (`format` json, text, svg or html; the card is in `artifact`), `{"operation":"about","section":"connect"}` returns the organiser, chair and connection details, and `{"operation":"hq","section":"manifesto"}` returns Agent Engineering HQ content. City filters accept website slugs such as `san-francisco`.
+
 An LLM client can use the same typed operations through MCP, or translate them to `POST /v1/query` using `/openapi.json`. A2A clients discover `/.well-known/agent-card.json` and send A2A 1.0 JSON-RPC to `/` with `A2A-Version: 1.0`. The card advertises skills, examples and any enabled participant security requirements. Client/model usage may have its own costs; default AgentEng lookup and drafting make zero server-side model calls.
 
 ## Tool directory

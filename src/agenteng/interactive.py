@@ -308,6 +308,22 @@ def _code_with_agent(ctx) -> None:
     run_code(ctx, argv, "", chat=True, context_ids=context_ids)
 
 
+def _bingo(ctx) -> None:
+    """Deal a card, then optionally play it in the terminal."""
+    from .cli import bingo
+
+    mode = _select(
+        "Talk bingo",
+        [
+            Choice("Play a new card here (mark squares as you hear them)", "play"),
+            Choice("Show a new card", "show"),
+            Choice("Back", None),
+        ],
+    )
+    if mode:
+        ctx.invoke(bingo, play=mode == "play")
+
+
 def run_menu(ctx) -> None:
     """Top-level interactive loop. Ctrl-C or Quit exits cleanly."""
     click.echo("AgentEng interactive mode. Pick an option or press ctrl-c to quit.\n")
@@ -321,6 +337,10 @@ def run_menu(ctx) -> None:
                     Choice("FAQ / code of conduct", "faq"),
                     Choice("Sponsors and support", "sponsors"),
                     Choice("Program themes", "themes"),
+                    Choice("Live now/next board (venue screen)", "live"),
+                    Choice("Talk bingo card", "bingo"),
+                    Choice("About Agent Engineering", "about"),
+                    Choice("Agent Engineering HQ: manifesto and mindset", "hq"),
                     Choice("My bookmarked agenda", "my_agenda"),
                     Choice("Browse the tool directory", "tools"),
                     Choice("Draft a talk or event idea", "draft"),
@@ -357,6 +377,14 @@ def run_menu(ctx) -> None:
                 _show(ctx, dict(operation="sponsors"))
             elif action == "themes":
                 _show(ctx, dict(operation="themes"))
+            elif action == "live":
+                from .cli import live_cmd
+
+                ctx.invoke(live_cmd)
+            elif action == "bingo":
+                _bingo(ctx)
+            elif action in {"about", "hq"}:
+                _show(ctx, dict(operation=action))
             elif action == "my_agenda":
                 _show(ctx, dict(operation="my_agenda"))
             elif action == "tools":

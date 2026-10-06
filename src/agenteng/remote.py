@@ -19,7 +19,9 @@ class RemoteService:
         headers = {"Authorization": "Bearer " + token} if token else {}
         async with httpx.AsyncClient(timeout=50, transport=self.transport) as client:
             response = await client.post(
-                self.url + "/v1/query", json=request.model_dump(mode="json"), headers=headers
+                self.url + "/v1/query",
+                json=request.model_dump(mode="json", exclude_defaults=True),
+                headers=headers,
             )
             response.raise_for_status()
             return Result.model_validate(response.json())

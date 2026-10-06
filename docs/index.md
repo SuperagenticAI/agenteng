@@ -81,7 +81,7 @@ curl -fsSL https://agentengineering.world/install.sh | sh
 ae                 # interactive menu on a TTY
 ae discover
 ae events --upcoming
-ae events --json   # Result JSON for agents
+ae --json events   # Result JSON for agents
 ae connect cursor
 ```
 
@@ -130,6 +130,32 @@ ae tickets agenteng-london-2026
 
 The catalogue is a dated snapshot. Follow the event's official registration link
 for current availability and details. See [data and attribution](DATA.md).
+
+## 🎉 At the event { #at-the-event }
+
+```sh title="Venue screens, bingo and the HQ"
+ae live                      # full-screen now/next board; Ctrl-C exits
+ae live --at 10:40 --refresh 15   # demo the board at a time on the event day
+ae now --screen              # same as ae live
+ae bingo --seed 7            # talk bingo from published talk terms
+ae bingo --size 4 --format html --output bingo.html   # printable (text, svg, html)
+ae bingo --play              # mark squares in the terminal
+ae about                     # definition, organiser, chair, links, how to connect agents
+ae about --connect           # install line, MCP URL and agent card only
+ae hq                        # manifesto, mindset and further reading
+ae hq manifesto
+```
+
+`ae live` shows the current talk with a progress bar, what is next and what comes
+later, with the venue, track and a large clock. Piped or with `--json` it prints a
+single Result JSON snapshot, the same one agents get from `{"operation":"live"}`.
+Bingo cards only use terms that appear in the event's published talk titles,
+abstracts and agenda. The seed is printed on every card, so the same command
+always deals the same card. Nothing is sent anywhere.
+
+The commands shown on agentengineering.world are tracked in [site sync](SITE-SYNC.md):
+city slugs (`--city san-francisco`), `--london` and `--sf`, `events --next` and
+`--history`, `--list-disciplines`, `--themes` and `inspect --speaker SLUG` all run.
 
 ## 🧠 Twelve disciplines, one directory { #the-twelve-disciplines }
 

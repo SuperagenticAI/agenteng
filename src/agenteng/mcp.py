@@ -7,6 +7,7 @@ from mcp.server.fastmcp import Context, FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import ToolAnnotations
 
+from . import __version__
 from .auth import bearer
 from .models import Request, Result
 from .service import Service
@@ -25,6 +26,9 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
             "discipline, kind, category, query, limit and offset, and tool with tool_id for links. "
             "Continue pagination with next_offset and unchanged filters. Listings are not popularity rankings. "
             "AgentEng is the Agent Engineering Conference, organized by Agent Engineering HQ in London and San Francisco. "
+            "Use about for the organiser, chair and connection details, hq for the manifesto, "
+            "mindset and further reading, live for a now/next venue-screen snapshot (at overrides the clock), "
+            "and bingo for a reproducible talk bingo card (seed, size 4 or 5, format text/svg/html). "
             "Use discover for featured events and interfaces; proposal_draft/preview/export prepare ideas without sending. "
             "Private intake requires organizer-issued participant access, proposal_prepare and explicit contributor "
             "confirmation before proposal_submit. London 2026 has an invited programme and no public CFP. "
@@ -46,6 +50,9 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
             allowed_origins=list(service.settings.allowed_origins),
         ),
     )
+
+    # FastMCP reports the MCP SDK version in serverInfo unless the server sets its own.
+    mcp._mcp_server.version = __version__
 
     @mcp.tool(
         name="agenteng",
