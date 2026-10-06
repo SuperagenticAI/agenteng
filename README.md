@@ -68,16 +68,17 @@ Pin a version with `AGENTENG_VERSION=0.0.7`. The installer bootstraps [uv](https
 agenteng                         # interactive menu (TTY)
 agenteng discover                # London / SF overview
 agenteng events --upcoming
+agenteng event agenteng-london-2026
 agenteng talks
 agenteng speakers --city London
 agenteng agenda agenteng-london-2026
 agenteng tickets agenteng-london-2026
-agenteng --json events           # shared Result JSON for agents and pipes
+agenteng --json talks           # --json goes before the subcommand
 ```
 
-On a terminal, commands print cards and tables. Agents should use `--json` (before the command), set `AGENTENG_OUTPUT=json`, or pipe stdout. Non-TTY stdout always returns the shared Result JSON.
+On a terminal, commands print cards and tables. Agents should use `--json` **before** the subcommand (`agenteng --json talks`), set `AGENTENG_OUTPUT=json`, or pipe stdout. Non-TTY stdout always returns the shared Result JSON.
 
-Put global flags before the command: `agenteng --json events --city London`.
+Also useful: `agenteng search 'memory'`, `agenteng recordings`, `agenteng save SESSION`, `agenteng unsave SESSION`, `agenteng my-agenda`. Full CLI reference: [docs/COMMANDS.md](docs/COMMANDS.md).
 
 ## For agents
 
@@ -96,11 +97,23 @@ Put global flags before the command: `agenteng --json events --city London`.
 
 `agenteng connect cursor` (also `claude-code`, `codex`) prints setup for that client. See [integrations](https://docs.agentengineering.world/INTEGRATIONS/).
 
-### A2A
+### A2A and HTTP
 
 - Agent card: `https://a2a.agentengineering.world/.well-known/agent-card.json`
 - JSON-RPC: `https://a2a.agentengineering.world/` with header `A2A-Version: 1.0`
 - MCP Streamable HTTP: `https://a2a.agentengineering.world/mcp/`
+
+| Interface | Route |
+| --- | --- |
+| MCP Streamable HTTP | `/mcp/` |
+| A2A 1.0 discovery | `/.well-known/agent-card.json` |
+| A2A JSON-RPC | `/` with `A2A-Version: 1.0` |
+| Typed HTTP query | `/v1/query` |
+| Catalogue / health | `/catalogue.json`, `/health` |
+| OpenAPI / Swagger / ReDoc | `/openapi.json`, `/docs`, `/redoc` |
+| Crawlable discovery | `/`, `/events/EVENT_ID`, `/events.json`, `/tools`, `/tools/TOOL_ID` |
+| Full tool directory feed | `/tools.json` |
+| Crawler / agent guides | `/llms.txt`, `/robots.txt`, `/sitemap.xml` |
 
 ### JSON output
 
@@ -110,7 +123,11 @@ agenteng --json talks
 AGENTENG_OUTPUT=json agenteng events --upcoming
 ```
 
-The same typed request works from CLI, MCP, A2A and HTTP (`/v1/query`). Full operation list: [architecture](docs/ARCHITECTURE.md).
+### Public operations
+
+Public operations (CLI, MCP, A2A, HTTP) include: `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `live`, `bingo`, `about`, `hq`, `save`, `unsave`, `my_agenda`, `tickets`, `recordings`, `search`, `plan`, `ask` and `participate`. Draft operations are `proposal_draft`, `proposal_preview` and `proposal_export`.
+
+Begin with `discover` for featured London/San Francisco events, or `events` for published IDs. The same typed request works as an A2A JSON data part or an HTTP body. Full command and flag reference: [docs/COMMANDS.md](docs/COMMANDS.md). Architecture and request shapes: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Event day
 
@@ -126,7 +143,7 @@ agenteng talks
 agenteng speakers --city London
 ```
 
-Piped or with `--json`, `agenteng live` prints one Result JSON snapshot (`agenteng --json live --once`). Website command wording is tracked in [docs/SITE-SYNC.md](docs/SITE-SYNC.md).
+Piped or with `--json` before the subcommand, `agenteng live` prints one Result JSON snapshot (`agenteng --json live --once`). Website command wording is tracked in [docs/SITE-SYNC.md](docs/SITE-SYNC.md).
 
 ## Experimental: drive a coding agent (`agenteng code`)
 
@@ -154,6 +171,7 @@ Full policy: [Privacy in DATA.md](docs/DATA.md#privacy).
 | Topic | Link |
 | --- | --- |
 | Start here | [docs.agentengineering.world](https://docs.agentengineering.world) |
+| CLI command reference | [COMMANDS.md](docs/COMMANDS.md) |
 | Coding-agent integrations | [INTEGRATIONS](https://docs.agentengineering.world/INTEGRATIONS/) |
 | Tool directory | [TOOLS](https://docs.agentengineering.world/TOOLS/) |
 | ACP client | [ACP](https://docs.agentengineering.world/ACP/) |
