@@ -12,6 +12,9 @@ and CI runs every row: a command marked as working must exit 0, a command marked
 command marked "not built" must fail. When the site adds or rewords a command, add or
 edit its row in that file and this page.
 
+The website always writes commands as `agenteng ...`. The short `ae` alias is a
+convenience for developers in their own terminal and is never used on the site.
+
 ## Summary
 
 | | Count |
@@ -86,8 +89,8 @@ Status meanings:
 2. For the 11 "not built" commands, restyle them as headings or add a small
    "illustrative" marker, so every command shown as a command runs.
 3. Shown nowhere on the site yet, and worth adding: the install line
-   (`curl -fsSL https://agentengineering.world/install.sh | sh`), `ae live`,
-   `ae bingo`, `ae about`, the remote MCP URL `https://a2a.agentengineering.world/mcp/`
+   (`curl -fsSL https://agentengineering.world/install.sh | sh`), `agenteng live`,
+   `agenteng bingo`, `agenteng about`, the remote MCP URL `https://a2a.agentengineering.world/mcp/`
    and the agent card `https://a2a.agentengineering.world/.well-known/agent-card.json`.
 
 Not `agenteng` commands, fine as they are: `all_roads --lead-to agent_engineering`,
@@ -106,5 +109,5 @@ nothing, or a second name for the same thing, and make the CLI harder to read:
   `plan --program`, `schedule --optimize`, `init --conference 2026`: new verbs for
   existing commands.
 - `read --file manifesto.md`, `read --further`, `mindset --principles`, `hq --init`,
-  `hq --subscribe`, `hq --city`: `ae hq [manifesto|mindset|reading]` is the one place
+  `hq --subscribe`, `hq --city`: `agenteng hq [manifesto|mindset|reading]` is the one place
   for HQ content.
