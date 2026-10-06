@@ -1,6 +1,6 @@
 """Experimental ACP client: drive a coding agent with AgentEng context (install [acp]).
 
-``ae code`` spawns an Agent Client Protocol agent over stdio, initializes it,
+``agenteng code`` spawns an Agent Client Protocol agent over stdio, initializes it,
 opens a session with the AgentEng MCP server attached, sends one prompt and
 streams the agent's updates. Permission requests are always routed to the user;
 nothing is auto-approved. See docs/ACP.md.
@@ -91,7 +91,7 @@ def context_records(service, prompt: str, explicit: list[str]) -> list[dict]:
 def build_prompt(text: str, records: list[dict], *, mcp_attached: bool) -> list:
     """Prompt blocks: a short AgentEng preamble, resolved records, then the user's text."""
     lines = [
-        "You are running inside AgentEng (`ae code`), the CLI for the AgentEng Agent "
+        "You are running inside AgentEng (`agenteng code`), the CLI for the AgentEng Agent "
         "Engineering Conference (London and San Francisco).",
     ]
     if mcp_attached:
@@ -329,7 +329,7 @@ class RichSink:
             name = info.get("title") or info.get("name") or data.get("command", "agent")
             version = info.get("version", "")
             self.console.print(
-                f"[ae.title]ae code[/] [ae.meta]→[/] [ae.accent]{escape(name)}[/] "
+                f"[ae.title]agenteng code[/] [ae.meta]→[/] [ae.accent]{escape(name)}[/] "
                 f"[ae.meta]{escape(version)} · ACP v{data.get('protocol_version')}[/]"
             )
         elif event == "session":
@@ -599,7 +599,7 @@ class AgentEngClient(acp.Client):
         return response
 
     async def _unsupported(self, *args, **kwargs):
-        raise acp.RequestError.method_not_found("not supported by ae code")
+        raise acp.RequestError.method_not_found("not supported by agenteng code")
 
     write_text_file = read_text_file = create_terminal = terminal_output = _unsupported
     release_terminal = wait_for_terminal_exit = kill_terminal = _unsupported
@@ -778,7 +778,7 @@ class AgentSession:
             if exc.code == -32000:
                 raise AgentError(
                     "The agent needs you to sign in first. Authenticate it in its own "
-                    "CLI (see `ae code --list`), then retry."
+                    "CLI (see `agenteng code --list`), then retry."
                 ) from exc
             raise AgentError(f"Agent rejected the session: {exc}") from exc
         self.session_id = session.session_id

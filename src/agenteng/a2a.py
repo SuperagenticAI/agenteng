@@ -108,7 +108,8 @@ def agent_card(service):
                 name="AgentEng event day and about",
                 description="Venue-screen now/next snapshots (live, with an optional at time), "
                 "reproducible talk bingo cards from published talk terms (bingo with seed, size 4 "
-                "or 5, format json/text/svg/html), the organiser and chair card (about) and the "
+                "or 5; the card is always in data, and format text, svg or html also returns a "
+                "printable copy in artifact), the organiser and chair card (about) and the "
                 "Agent Engineering HQ manifesto, mindset and further reading (hq). Model-free.",
                 tags=["live", "now-next", "bingo", "about", "manifesto", "Agent Engineering HQ"],
                 examples=[

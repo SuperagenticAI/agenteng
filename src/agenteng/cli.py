@@ -16,7 +16,7 @@ from .service import Service
 from .discovery import connection, validate_origin
 from .participation import Draft, Inbox, PRIVATE_OPERATIONS
 from .tool_directory import DISCIPLINES, ToolKind
-from .output import stdout_is_tty, stdin_is_tty
+from .output import empty_but_valid, stdout_is_tty, stdin_is_tty
 from typing import get_args
 
 
@@ -94,7 +94,8 @@ def dispatch(ctx, payload, output=None, *, quiet=False):
         result = execute(ctx, request)
     except (ValidationError, ValueError, OSError, httpx.HTTPError) as exc:
         raise click.ClickException(str(exc)) from exc
-    if quiet and result.status == "ok":
+    empty_ok = empty_but_valid(result, request.operation)
+    if quiet and (result.status == "ok" or empty_ok):
         return result
     if output and result.artifact:
         try:
@@ -117,7 +118,7 @@ def dispatch(ctx, payload, output=None, *, quiet=False):
         from .render import render_result
 
         render_result(result, request.operation)
-    if result.status != "ok":
+    if result.status != "ok" and not empty_ok:
         ctx.exit(1)
     return result
 
@@ -130,19 +131,33 @@ def disciplines(ctx):
 
 
 @main.command()
-@click.option("--discipline", type=click.Choice(list(DISCIPLINES)))
-@click.option("--kind", type=click.Choice(list(get_args(ToolKind))))
+@click.option(
+    "--discipline", type=click.Choice(list(DISCIPLINES)), help="Only tools in this discipline."
+)
+@click.option(
+    "--kind", type=click.Choice(list(get_args(ToolKind))), help="Only tools of this kind."
+)
 @click.option(
     "--category", help="Exact source category; use agenteng --json disciplines to find categories."
 )
 @click.option("--search", "query", default="", help="Match names, aliases, IDs and category tags.")
-@click.option("--limit", type=click.IntRange(1, 100), default=20, show_default=True)
-@click.option("--offset", type=click.IntRange(0, 10000), default=0)
+@click.option(
+    "--limit",
+    type=click.IntRange(1, 100),
+    default=20,
+    show_default=True,
+    help="Tools per page.",
+)
+@click.option(
+    "--offset", type=click.IntRange(0, 10000), default=0, help="Skip this many tools (next page)."
+)
 @click.option(
     "--status",
     "tool_status",
     type=click.Choice(["listed", "hold", "deprecated", "all"]),
     default="listed",
+    show_default=True,
+    help="Listing status to show; all shows every status.",
 )
 @click.pass_context
 def tools(ctx, discipline, kind, category, query, limit, offset, tool_status):
@@ -166,7 +181,10 @@ def tools(ctx, discipline, kind, category, query, limit, offset, tool_status):
 @click.argument("tool_id")
 @click.pass_context
 def tool(ctx, tool_id):
-    """Read a tool's links, tags, aliases and source provenance."""
+    """Read a tool's links, tags, aliases and source provenance.
+
+    TOOL_ID is a tool ID from agenteng tools, for example langgraph.
+    """
     dispatch(ctx, dict(operation="tool", tool_id=tool_id))
 
 
@@ -258,7 +276,10 @@ def event_or_city(ctx, event_id: str | None, city: str | None = None) -> str | N
 @click.option("--past", "--history", "--previous", is_flag=True, help="Only past events.")
 @click.pass_context
 def events(ctx, where, city, upcoming, past):
-    """List events with published date precision and current state."""
+    """List events with published date precision and current state.
+
+    CITY is optional: London or San Francisco (slugs such as san-francisco work).
+    """
     dispatch(ctx, dict(operation="events", city=city or where, upcoming=upcoming, past=past))
 
 
@@ -267,7 +288,10 @@ def events(ctx, where, city, upcoming, past):
 @city_shortcuts
 @click.pass_context
 def event(ctx, event_id, city=None):
-    """Read one event by its published ID (or a city: london, san-francisco)."""
+    """Read one event by its published ID (or a city: london, san-francisco).
+
+    EVENT_ID is an event ID from agenteng events, or a city. Omit it in a terminal to pick one.
+    """
     from .interactive import require_event_id
 
     event_id = event_or_city(ctx, event_id, city)
@@ -276,15 +300,25 @@ def event(ctx, event_id, city=None):
 
 @main.command()
 @click.argument("event_id", required=False)
-@click.option("--topic")
-@click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
+@click.option("--topic", help="Only sessions matching this text, for example memory.")
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["json", "ics"]),
+    default="json",
+    show_default=True,
+    help="json for Result JSON, ics for a calendar file.",
+)
 @click.option(
     "--output", type=click.Path(dir_okay=False), help="Write an .ics calendar when --format ics."
 )
 @city_shortcuts
 @click.pass_context
 def agenda(ctx, event_id, topic, output_format, output, city=None):
-    """Read an event's public agenda; optionally export .ics."""
+    """Read an event's public agenda; optionally export .ics.
+
+    EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
+    """
     from .interactive import require_event_id
 
     event_id = event_or_city(ctx, event_id, city)
@@ -301,8 +335,8 @@ def agenda(ctx, event_id, topic, output_format, output, city=None):
 
 
 @main.command()
-@click.option("--event", "event_id")
-@click.option("--city")
+@click.option("--event", "event_id", help="Only speakers at this event ID.")
+@click.option("--city", help="Only speakers in London or San Francisco.")
 @city_shortcuts
 @click.option("--search", "query", default="", help="Match name, company, talk title or abstract.")
 @click.pass_context
@@ -313,10 +347,13 @@ def speakers(ctx, event_id, city, query):
 
 @main.command("speaker")
 @click.argument("speaker_id")
-@click.option("--event", "event_id")
+@click.option("--event", "event_id", help="Event ID, when the speaker appears at more than one.")
 @click.pass_context
 def speaker_detail(ctx, speaker_id, event_id):
-    """Read one speaker: bio fields, links, projects, disciplines and full abstract."""
+    """Read one speaker: bio fields, links, projects, disciplines and full abstract.
+
+    SPEAKER_ID is a speaker ID from agenteng speakers, for example samuel-colvin.
+    """
     dispatch(ctx, dict(operation="speaker", speaker_id=speaker_id, event_id=event_id))
 
 
@@ -325,14 +362,14 @@ def speaker_detail(ctx, speaker_id, event_id):
 @click.option("--event", "event_id")
 @click.pass_context
 def inspect_speaker(ctx, speaker_id, event_id):
-    """Website wording for `ae speaker SPEAKER_ID`."""
+    """Website wording for `agenteng speaker SPEAKER_ID`."""
     ctx.invoke(speaker_detail, speaker_id=speaker_id, event_id=event_id)
 
 
 @main.command()
-@click.option("--event", "event_id")
+@click.option("--event", "event_id", help="Only talks at this event ID.")
 @click.option("--search", "query", default="", help="Match talk title, abstract or speaker.")
-@click.option("--speaker", "speaker_id")
+@click.option("--speaker", "speaker_id", help="Only talks by this speaker ID.")
 @click.pass_context
 def talks(ctx, event_id, query, speaker_id):
     """List published talks with full abstracts."""
@@ -344,11 +381,14 @@ def talks(ctx, event_id, query, speaker_id):
 
 @main.command("talk")
 @click.argument("identifier", required=False)
-@click.option("--event", "event_id")
-@click.option("--search", "query", default="")
+@click.option("--event", "event_id", help="Only look in this event ID.")
+@click.option("--search", "query", default="", help="Find the talk by title or abstract text.")
 @click.pass_context
 def talk_detail(ctx, identifier, event_id, query):
-    """Read one talk by session ID, speaker ID, or --search text."""
+    """Read one talk by session ID, speaker ID, or --search text.
+
+    IDENTIFIER is a session ID or speaker ID from agenteng talks.
+    """
     payload = dict(operation="talk", event_id=event_id, query=query)
     if identifier:
         row = resolve_talk(ctx, identifier, event_id)
@@ -361,7 +401,7 @@ def talk_detail(ctx, identifier, event_id, query):
 
 
 @main.command()
-@click.option("--event", "event_id")
+@click.option("--event", "event_id", help="Only FAQ entries for this event ID.")
 @click.option("--search", "query", default="", help="Match FAQ question or answer text.")
 @click.pass_context
 def faq(ctx, event_id, query):
@@ -374,7 +414,10 @@ def faq(ctx, event_id, query):
 @city_shortcuts
 @click.pass_context
 def venue(ctx, event_id, city=None):
-    """Read venue address, tour link, track and accessibility notes."""
+    """Read venue address, tour link, track and accessibility notes.
+
+    EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
+    """
     from .interactive import require_event_id
 
     event_id = event_or_city(ctx, event_id, city)
@@ -382,7 +425,7 @@ def venue(ctx, event_id, city=None):
 
 
 @main.command()
-@click.option("--city")
+@click.option("--city", help="Only sponsors in London or San Francisco.")
 @city_shortcuts
 @click.pass_context
 def sponsors(ctx, city):
@@ -410,11 +453,14 @@ AT_HELP = "Pretend it is this time: ISO (2026-10-16T10:15) or HH:MM on the event
 @main.command("now")
 @click.argument("event_id", required=False)
 @click.option("--at", "at", help=AT_HELP)
-@click.option("--screen", is_flag=True, help="Full-screen venue display; same as `ae live`.")
+@click.option("--screen", is_flag=True, help="Full-screen venue display; same as `agenteng live`.")
 @city_shortcuts
 @click.pass_context
 def now_cmd(ctx, event_id, at, screen, city=None):
-    """Show what is on now from the published timed agenda."""
+    """Show what is on now from the published timed agenda.
+
+    EVENT_ID is an event ID or a city; defaults to the live conference.
+    """
     event_id = event_or_city(ctx, event_id, city)
     if screen:
         ctx.invoke(live_cmd, event_id=event_id, at=at)
@@ -428,7 +474,10 @@ def now_cmd(ctx, event_id, at, screen, city=None):
 @city_shortcuts
 @click.pass_context
 def next_cmd(ctx, event_id, at, city=None):
-    """Show the next published session from the timed agenda."""
+    """Show the next published session from the timed agenda.
+
+    EVENT_ID is an event ID or a city; defaults to the live conference.
+    """
     event_id = event_or_city(ctx, event_id, city)
     dispatch(ctx, dict(operation="next", event_id=event_id, at=resolve_at(ctx, at, event_id)))
 
@@ -494,11 +543,14 @@ def live_cmd(ctx, event_id=None, refresh=30, at=None, once=False, city=None):
 @click.argument("identifier")
 @click.pass_context
 def save_cmd(ctx, identifier):
-    """Bookmark a talk locally by session ID or speaker ID (this machine only)."""
+    """Bookmark a talk locally by session ID or speaker ID (this machine only).
+
+    IDENTIFIER is a session ID or speaker ID from agenteng talks.
+    """
     row = resolve_talk(ctx, identifier)
     if not row:
         raise click.ClickException(
-            "Could not resolve a single talk. Pass a session ID or speaker ID from `ae talks`."
+            "Could not resolve a single talk. Pass a session ID or speaker ID from `agenteng talks`."
         )
     dispatch(ctx, dict(operation="save", session_id=row["id"]))
 
@@ -507,7 +559,10 @@ def save_cmd(ctx, identifier):
 @click.argument("identifier")
 @click.pass_context
 def unsave_cmd(ctx, identifier):
-    """Remove a local talk bookmark by session ID or speaker ID."""
+    """Remove a local talk bookmark by session ID or speaker ID.
+
+    IDENTIFIER is a session ID or speaker ID you saved before.
+    """
     row = resolve_talk(ctx, identifier)
     if row:
         dispatch(ctx, dict(operation="unsave", session_id=row["id"]))
@@ -516,9 +571,16 @@ def unsave_cmd(ctx, identifier):
 
 
 @main.command("my-agenda")
-@click.option("--event", "event_id")
-@click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
-@click.option("--output", type=click.Path(dir_okay=False))
+@click.option("--event", "event_id", help="Only bookmarks for this event ID.")
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["json", "ics"]),
+    default="json",
+    show_default=True,
+    help="json for Result JSON, ics for a calendar file.",
+)
+@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
 @click.pass_context
 def my_agenda(ctx, event_id, output_format, output):
     """Show locally bookmarked talks; optional .ics export."""
@@ -534,7 +596,10 @@ def my_agenda(ctx, event_id, output_format, output):
 @city_shortcuts
 @click.pass_context
 def tickets(ctx, event_id, city=None):
-    """Read published prices and the official registration link."""
+    """Read published prices and the official registration link.
+
+    EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
+    """
     from .interactive import require_event_id
 
     event_id = event_or_city(ctx, event_id, city)
@@ -542,8 +607,8 @@ def tickets(ctx, event_id, city=None):
 
 
 @main.command()
-@click.option("--event", "event_id")
-@click.option("--city")
+@click.option("--event", "event_id", help="Only recordings from this event ID.")
+@click.option("--city", help="Only recordings from London or San Francisco.")
 @city_shortcuts
 @click.pass_context
 def recordings(ctx, event_id, city):
@@ -553,35 +618,55 @@ def recordings(ctx, event_id, city):
 
 @main.command()
 @click.argument("query")
-@click.option("--event", "event_id")
-@click.option("--city")
+@click.option("--event", "event_id", help="Only search this event ID.")
+@click.option("--city", help="Only search London or San Francisco.")
 @click.pass_context
 def search(ctx, query, event_id, city):
-    """Search public sources without model calls."""
+    """Search public sources without model calls.
+
+    QUERY is the text to find in published talks, speakers, FAQ, themes and site pages.
+    """
     dispatch(ctx, dict(operation="search", query=query, event_id=event_id, city=city))
 
 
 @main.command()
 @click.argument("query")
-@click.option("--event", "event_id")
+@click.option("--event", "event_id", help="Only answer from this event ID.")
 @click.option(
-    "--engine", type=click.Choice(["lookup", "auto", "standard", "rlm"]), default="lookup"
+    "--engine",
+    type=click.Choice(["lookup", "auto", "standard", "rlm"]),
+    default="lookup",
+    show_default=True,
+    help="lookup needs no model; standard and rlm need a server-side enabled model.",
 )
 @click.pass_context
 def ask(ctx, query, event_id, engine):
-    """Find attributed excerpts, or explicitly request an enabled model engine."""
+    """Find attributed excerpts, or explicitly request an enabled model engine.
+
+    QUERY is a plain question, for example "When is the next London conference?".
+    """
     dispatch(ctx, dict(operation="ask", query=query, event_id=event_id, engine=engine))
 
 
 @main.command()
 @click.argument("event_id", required=False)
-@click.option("--interest", "interests", multiple=True)
-@click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
-@click.option("--output", type=click.Path(dir_okay=False))
+@click.option("--interest", "interests", multiple=True, help="A topic you care about. Repeatable.")
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["json", "ics"]),
+    default="json",
+    show_default=True,
+    help="json for Result JSON, ics for a calendar file.",
+)
+@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
 @city_shortcuts
 @click.pass_context
 def plan(ctx, event_id, interests, output_format, output, city=None):
-    """Select sessions by published text and optionally export a calendar."""
+    """Select sessions by published text and optionally export a calendar.
+
+    EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
+    """
     from .interactive import require_event_id
 
     event_id = event_or_city(ctx, event_id, city)
@@ -638,7 +723,7 @@ def about(ctx, section):
 @click.option("--chair", is_flag=True, help="Show the conference chair (website wording).")
 @click.pass_context
 def whoami(ctx, chair):
-    """Website wording for `ae about --chair`."""
+    """Website wording for `agenteng about --chair`."""
     ctx.invoke(about, section="chair")
 
 
@@ -646,13 +731,22 @@ def whoami(ctx, chair):
 @click.argument("section", required=False, type=click.Choice(["manifesto", "mindset", "reading"]))
 @click.pass_context
 def hq(ctx, section):
-    """Agent Engineering HQ: the manifesto, the mindset and further reading."""
+    """Agent Engineering HQ: the manifesto, the mindset and further reading.
+
+    SECTION is optional: manifesto, mindset or reading. Omit it for all three.
+    """
     dispatch(ctx, dict(operation="hq", section=section))
 
 
 @main.command()
 @click.option("--event", "event_id", help="Event ID or city; defaults to the London conference.")
-@click.option("--size", type=click.Choice(["4", "5"]), default="5", show_default=True)
+@click.option(
+    "--size",
+    type=click.Choice(["4", "5"]),
+    default="5",
+    show_default=True,
+    help="Grid size: 5x5 with a free centre, or 4x4.",
+)
 @click.option(
     "--seed", type=click.IntRange(0, 2**53), help="Same seed, same card. Printed on every card."
 )
@@ -699,10 +793,21 @@ def bingo(ctx, event_id, size, seed, output_format, output, play, city=None):
 
 @main.command()
 @click.argument("client", type=click.Choice(["codex", "claude-code", "cursor", "generic"]))
-@click.option("--transport", type=click.Choice(["stdio", "http"]), default="stdio")
-@click.option("--url", default=Settings.public_url)
+@click.option(
+    "--transport",
+    type=click.Choice(["stdio", "http"]),
+    default="stdio",
+    show_default=True,
+    help="stdio runs agenteng mcp locally; http uses the hosted MCP server.",
+)
+@click.option(
+    "--url", default=Settings.public_url, show_default=True, help="Hosted server base URL for http."
+)
 def connect(client, transport, url):
-    """Print MCP setup instructions; never modify a client's configuration."""
+    """Print MCP setup instructions; never modify a client's configuration.
+
+    CLIENT is codex, claude-code, cursor or generic. Output is plain text.
+    """
     try:
         click.echo(connection(client, transport, url))
     except ValueError as exc:
@@ -715,19 +820,30 @@ def proposal():
 
 
 @proposal.command("draft")
-@click.option("--city", required=True, type=click.Choice(["London", "San Francisco"]))
 @click.option(
-    "--kind", type=click.Choice(["talk", "workshop", "event_idea", "feedback"]), default="talk"
+    "--city",
+    required=True,
+    type=click.Choice(["London", "San Francisco"]),
+    help="City the idea is for.",
 )
-@click.option("--title", default="")
-@click.option("--abstract", default="")
-@click.option("--audience", default="")
-@click.option("--outcome", "outcomes", multiple=True)
-@click.option("--speaker-name", default="")
-@click.option("--contact-email", default="")
-@click.option("--event", "event_id")
-@click.option("--interactive", is_flag=True)
-@click.option("--output", type=click.Path(dir_okay=False))
+@click.option(
+    "--kind",
+    type=click.Choice(["talk", "workshop", "event_idea", "feedback"]),
+    default="talk",
+    show_default=True,
+    help="What kind of idea this is.",
+)
+@click.option("--title", default="", help="Working title.")
+@click.option("--abstract", default="", help="Short abstract or idea.")
+@click.option("--audience", default="", help="Who it is for.")
+@click.option(
+    "--outcome", "outcomes", multiple=True, help="One practical learning outcome. Repeatable."
+)
+@click.option("--speaker-name", default="", help="Speaker name, saved in your local draft file.")
+@click.option("--contact-email", default="", help="Contact email, saved in your local draft file.")
+@click.option("--event", "event_id", help="Target event ID; omit for a possible future event.")
+@click.option("--interactive", is_flag=True, help="Ask for missing fields in the terminal.")
+@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
 @click.pass_context
 def proposal_draft(
     ctx,
@@ -773,13 +889,19 @@ def proposal_draft(
 
 
 @main.command()
-@click.option("--city", type=click.Choice(["London", "San Francisco"]))
+@click.option(
+    "--city",
+    type=click.Choice(["London", "San Francisco"]),
+    help="City the idea is for; asks when omitted.",
+)
 @click.option(
     "--kind",
     type=click.Choice(["talk", "workshop", "event_idea", "feedback"]),
     default="event_idea",
+    show_default=True,
+    help="What kind of idea this is.",
 )
-@click.option("--output", type=click.Path(dir_okay=False))
+@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
 @click.pass_context
 def engage(ctx, city, kind, output):
     """Build a future-event idea through a short guided conversation."""
@@ -800,19 +922,30 @@ def read_draft(path):
 @click.argument("file", type=click.Path(exists=True, dir_okay=False))
 @click.pass_context
 def proposal_preview(ctx, file):
-    """Check a draft locally; no external submission or stored receipt."""
+    """Check a draft locally; no external submission or stored receipt.
+
+    FILE is a draft JSON file from agenteng proposal draft or agenteng engage.
+    """
     dispatch(ctx, {"operation": "proposal_preview", "draft": read_draft(file)})
 
 
 @proposal.command("export")
 @click.argument("file", type=click.Path(exists=True, dir_okay=False))
 @click.option(
-    "--format", "draft_format", type=click.Choice(["json", "markdown"]), default="markdown"
+    "--format",
+    "draft_format",
+    type=click.Choice(["json", "markdown"]),
+    default="markdown",
+    show_default=True,
+    help="Export format.",
 )
-@click.option("--output", type=click.Path(dir_okay=False))
+@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
 @click.pass_context
 def proposal_export(ctx, file, draft_format, output):
-    """Export your draft for editing or sending yourself."""
+    """Export your draft for editing or sending yourself.
+
+    FILE is a draft JSON file from agenteng proposal draft or agenteng engage.
+    """
     dispatch(
         ctx,
         {"operation": "proposal_export", "draft": read_draft(file), "draft_format": draft_format},
@@ -824,7 +957,10 @@ def proposal_export(ctx, file, draft_format, output):
 @click.argument("file", type=click.Path(exists=True, dir_okay=False))
 @click.pass_context
 def proposal_submit(ctx, file):
-    """Prepare an exact private preview, then ask for explicit confirmation."""
+    """Prepare an exact private preview, then ask for explicit confirmation.
+
+    FILE is a draft JSON file. Needs the intake pilot and a participant credential.
+    """
     draft = read_draft(file)
     preview = dispatch(ctx, {"operation": "proposal_prepare", "draft": draft}, quiet=True)
     click.echo(json.dumps(preview.data, default=str, indent=2), err=True)
@@ -846,7 +982,10 @@ def proposal_submit(ctx, file):
 @click.argument("receipt")
 @click.pass_context
 def proposal_status(ctx, receipt):
-    """Read your own submission using the participant credential."""
+    """Read your own submission using the participant credential.
+
+    RECEIPT is the receipt printed by agenteng proposal submit.
+    """
     dispatch(ctx, {"operation": "proposal_status", "receipt": receipt})
 
 
@@ -854,7 +993,10 @@ def proposal_status(ctx, receipt):
 @click.argument("receipt")
 @click.pass_context
 def proposal_withdraw(ctx, receipt):
-    """Confirm withdrawal and erase active proposal content."""
+    """Confirm withdrawal and erase active proposal content.
+
+    RECEIPT is the receipt printed by agenteng proposal submit.
+    """
     click.confirm(
         "Withdraw this submission and erase its active proposal content?", abort=True, err=True
     )
@@ -878,8 +1020,19 @@ def inbox(ctx):
 
 
 @inbox.command("issue-access")
-@click.option("--days", type=click.IntRange(1, 365), default=30)
-@click.option("--output", required=True, type=click.Path(dir_okay=False))
+@click.option(
+    "--days",
+    type=click.IntRange(1, 365),
+    default=30,
+    show_default=True,
+    help="Days until the credential expires.",
+)
+@click.option(
+    "--output",
+    required=True,
+    type=click.Path(dir_okay=False),
+    help="New private file for the credential; must not exist.",
+)
 @click.pass_context
 def issue_access(ctx, days, output):
     """Write a new per-participant credential to a new private file."""
@@ -909,10 +1062,14 @@ def inbox_list(ctx):
     "--status",
     required=True,
     type=click.Choice(["under_review", "needs_information", "accepted", "declined"]),
+    help="Decision to record.",
 )
 @click.pass_context
 def inbox_review(ctx, receipt, status):
-    """Record an organizer decision; acceptance never schedules or publishes a talk."""
+    """Record an organizer decision; acceptance never schedules or publishes a talk.
+
+    RECEIPT is a submission receipt from agenteng inbox list.
+    """
     try:
         result = ctx.obj["inbox"].review(receipt, status)
     except ValueError as exc:
@@ -932,7 +1089,10 @@ def inbox_purge(ctx):
 @click.argument("credential_file", type=click.Path(exists=True, dir_okay=False))
 @click.pass_context
 def revoke_access(ctx, credential_file):
-    """Revoke a participant credential without printing it."""
+    """Revoke a participant credential without printing it.
+
+    CREDENTIAL_FILE is the file written by agenteng inbox issue-access.
+    """
     try:
         path = Path(credential_file)
         if path.stat().st_size > 1024:
@@ -1006,7 +1166,9 @@ def code(
     /help, /context ID, /agent, /exit or Ctrl-D. Ctrl-C cancels the current turn.
     With --chat and piped stdin, each line is one turn.
 
-    Example: ae code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
+    PROMPT is optional free text for one turn.
+
+    Example: agenteng code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
     """
     from .acp_agents import AGENTS, REGISTRY_URL
     from .output import use_json
@@ -1029,8 +1191,8 @@ def code(
         text = click.get_text_stream("stdin").read().strip()
     if not chat and not text:
         raise click.UsageError(
-            'Give a prompt, for example: ae code "explain talk agenteng-london-2026-2", '
-            "or run ae code in a terminal (or with --chat) to chat."
+            'Give a prompt, for example: agenteng code "explain talk agenteng-london-2026-2", '
+            "or run agenteng code in a terminal (or with --chat) to chat."
         )
     argv = resolve_agent_argv(agent_name, agent_command, npx)
     run_code(
@@ -1080,11 +1242,11 @@ def run_code(
     allow_always: bool = False,
     as_json: bool = False,
 ) -> None:
-    """Single-shot turn or chat loop on one ACP session (shared by ae code and the menu)."""
+    """Single-shot turn or chat loop on one ACP session (shared by agenteng code and the menu)."""
     try:
         from . import acp_client
     except ImportError as exc:
-        raise click.ClickException("Install agenteng[acp] for ae code.") from exc
+        raise click.ClickException("Install agenteng[acp] for agenteng code.") from exc
 
     global_args = []
     if ctx.obj.get("remote"):
@@ -1170,7 +1332,10 @@ def run_code(
 @click.argument("payload")
 @click.pass_context
 def raw_query(ctx, payload):
-    """Execute the same JSON request accepted by MCP and A2A."""
+    """Execute the same JSON request accepted by MCP and A2A.
+
+    PAYLOAD is one Request JSON object, for example '{"operation":"events"}'.
+    """
     try:
         parsed = json.loads(payload)
     except ValueError as exc:
@@ -1179,8 +1344,14 @@ def raw_query(ctx, payload):
 
 
 @main.command()
-@click.option("--host", default="127.0.0.1")
-@click.option("--port", default=8000, type=click.IntRange(1, 65535))
+@click.option("--host", default="127.0.0.1", show_default=True, help="Address to listen on.")
+@click.option(
+    "--port",
+    default=8000,
+    type=click.IntRange(1, 65535),
+    show_default=True,
+    help="Port to listen on.",
+)
 @click.option(
     "--access-log/--no-access-log",
     default=False,

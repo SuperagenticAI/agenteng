@@ -20,8 +20,8 @@ convenience for developers in their own terminal and is never used on the site.
 | | Count |
 | --- | --- |
 | Distinct commands on the site | 45 |
-| Worked in 0.0.6 | 3 |
-| Work after stage 1 (works now + aliases) | 17 |
+| Ran as printed before stage 1 (0.0.6 baseline) | 3 |
+| Run as printed in 0.0.7 (3 works now + 14 stage 1 aliases) | 17 |
 | Real command exists; site text should change | 17 |
 | Not built | 11 |
 

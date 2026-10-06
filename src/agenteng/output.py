@@ -68,3 +68,36 @@ def make_console(*, record: bool = False, width: int | None = None) -> Console:
     elif width is not None:
         kwargs["width"] = width
     return Console(**kwargs)
+
+
+# List and snapshot operations where "nothing matched" is a valid answer, not a failure.
+EMPTY_OK_OPERATIONS = frozenset(
+    {
+        "events",
+        "speakers",
+        "talks",
+        "faq",
+        "themes",
+        "sponsors",
+        "recordings",
+        "search",
+        "ask",
+        "agenda",
+        "plan",
+        "my_agenda",
+        "now",
+        "next",
+        "live",
+    }
+)
+
+
+def empty_but_valid(result, operation: str) -> bool:
+    """True for an empty list or "nothing on now" snapshot, so the CLI exits 0.
+
+    The Result JSON is unchanged (status stays ``not_found``) for MCP, A2A and HTTP.
+    Unknown IDs return empty ``data`` (``{}``) and still exit 1.
+    """
+    if result.status != "not_found" or operation not in EMPTY_OK_OPERATIONS:
+        return False
+    return isinstance(result.data, list) or bool(result.data)

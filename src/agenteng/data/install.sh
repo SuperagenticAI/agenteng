@@ -705,11 +705,11 @@ if [ "$FANCY" = "1" ]; then
     printf '  %sBuilt for coding agents exploring Agent Engineering HQ.%s\n\n' \
         "$C_DIM" "$C_RESET"
     printf '  %sNext steps for agents%s\n' "$C_BOLD" "$C_RESET"
-    printf '  %s%s%s ae discover\n' "$C_G1" "$GL_DOT" "$C_RESET"
-    printf '  %s%s%s ae events --upcoming\n' "$C_G2" "$GL_DOT" "$C_RESET"
-    printf '  %s%s%s ae connect cursor\n' "$C_G3" "$GL_DOT" "$C_RESET"
-    printf '  %s%s%s ae connect claude-code\n' "$C_G4" "$GL_DOT" "$C_RESET"
-    printf '  %s%s%s ae connect codex\n\n' "$C_G5" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s agenteng discover\n' "$C_G1" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s agenteng events --upcoming\n' "$C_G2" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s agenteng connect cursor\n' "$C_G3" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s agenteng connect claude-code\n' "$C_G4" "$GL_DOT" "$C_RESET"
+    printf '  %s%s%s agenteng connect codex\n\n' "$C_G5" "$GL_DOT" "$C_RESET"
     printf '  %sHosted MCP / A2A%s\n' "$C_BOLD" "$C_RESET"
     printf '  %s%s%s %s\n' "$C_G1" "$GL_DOT" "$C_RESET" "$A2A_HOST"
     printf '  %s%s%s %s/.well-known/agent-card.json\n' "$C_G3" "$GL_DOT" "$C_RESET" "$A2A_HOST"
@@ -726,11 +726,11 @@ else
     say "$agenteng_version"
     say "AgentEng is installed."
     say "Next steps for agents:"
-    say "  ae discover"
-    say "  ae events --upcoming"
-    say "  ae connect cursor"
-    say "  ae connect claude-code"
-    say "  ae connect codex"
+    say "  agenteng discover"
+    say "  agenteng events --upcoming"
+    say "  agenteng connect cursor"
+    say "  agenteng connect claude-code"
+    say "  agenteng connect codex"
     say "Hosted MCP / A2A: ${A2A_HOST}"
     say "Agent card: ${A2A_HOST}/.well-known/agent-card.json"
     say "MCP: ${A2A_HOST}/mcp/"
@@ -746,11 +746,11 @@ case ":${PATH}:" in
     *":${tool_bin}:"*) ;;
     *)
         if [ "$FANCY" = "1" ]; then
-            printf '  %sRestart your shell if '"'"'ae'"'"' is not found; %s must be on PATH.%s\n\n' \
+            printf '  %sRestart your shell if '"'"'agenteng'"'"' is not found; %s must be on PATH.%s\n\n' \
                 "$C_G6" "$tool_bin" "$C_RESET"
         else
             printf '%s\n' \
-                "Restart your shell if 'ae' is not found; ${tool_bin} must be on PATH."
+                "Restart your shell if 'agenteng' is not found; ${tool_bin} must be on PATH."
         fi
         ;;
 esac

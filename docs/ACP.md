@@ -1,6 +1,6 @@
-# 🤝 ACP client: `ae code` (experimental)
+# 🤝 ACP client: `agenteng code` (experimental)
 
-`ae code` lets AgentEng drive a coding agent you already use (Claude Code,
+`agenteng code` lets AgentEng drive a coding agent you already use (Claude Code,
 Codex, Gemini CLI, Copilot, Cursor, OpenCode and others) through the
 [Agent Client Protocol](https://agentclientprotocol.com) (ACP), with AgentEng
 conference data attached. It is an **optional extra** and **experimental**:
@@ -8,11 +8,13 @@ the command shape, defaults and output may change between releases.
 
 ```sh
 uv tool install 'agenteng[acp]'
-ae code --list
-ae code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
-ae code --agent claude          # chat: many turns on one session
-ae                              # menu: "Code with an agent (ACP, experimental)"
+agenteng code --list
+agenteng code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
+agenteng code --agent claude   # chat: many turns on one session
+agenteng                       # menu: "Code with an agent (ACP, experimental)"
 ```
+
+The short developer alias `ae` works too (`ae code --list`).
 
 ## Why
 
@@ -21,12 +23,12 @@ configured to find it. ACP flips that: AgentEng starts the agent, so the
 conference context is there from the first turn without editing any agent's
 config.
 
-- **Talk to demo.** `ae code "scaffold a demo of talk agenteng-london-2026-14"`
+- **Talk to demo.** `agenteng code "scaffold a demo of talk agenteng-london-2026-14"`
   gives the agent the talk, abstract, speaker and projects, then asks it to build
   something runnable in your directory.
 - **Workshop mode.** Facilitators hand attendees one command that works with
   whichever ACP agent each person has installed.
-- **Try a tool from the directory.** `ae code --context tool:a2a "write a hello
+- **Try a tool from the directory.** `agenteng code --context tool:a2a "write a hello
   world for this"` attaches a tool-directory entry, and the agent can search
   more tools through the attached MCP server.
 - **Plan your day with an agent.** The agent can call `talks`, `speaker`, `now`
@@ -35,10 +37,10 @@ config.
 ## Command shape
 
 ```text
-ae code [--agent NAME | --agent-command "CMD ARGS"] [--cwd DIR]
+agenteng code [--agent NAME | --agent-command "CMD ARGS"] [--cwd DIR]
         [--context ID ...] [--no-mcp] [--npx] [--show-thoughts]
         [--allow-always-option] [--chat] [--json] [PROMPT]
-ae code --list [--json]
+agenteng code --list [--json]
 ```
 
 | Option | Meaning |
@@ -58,16 +60,16 @@ How the mode is picked:
 
 | You run | Mode |
 | --- | --- |
-| `ae code PROMPT` | One turn, then exit (as before). |
-| `ae code` in a terminal | Chat. |
-| `ae code --chat [PROMPT]` in a terminal | Chat, with PROMPT as the first turn. |
-| `echo "..." \| ae code` | One turn: all of stdin is the prompt. |
-| `printf 'a\nb\n' \| ae code --chat` | One turn per stdin line, on one session, until EOF or `/exit`. |
-| `ae code --json PROMPT` (or stdin) | One turn of NDJSON. `--json` never starts chat by itself. |
-| `ae code --chat --json < prompts.txt` | NDJSON chat: one turn per stdin line. |
+| `agenteng code PROMPT` | One turn, then exit (as before). |
+| `agenteng code` in a terminal | Chat. |
+| `agenteng code --chat [PROMPT]` in a terminal | Chat, with PROMPT as the first turn. |
+| `echo "..." \| agenteng code` | One turn: all of stdin is the prompt. |
+| `printf 'a\nb\n' \| agenteng code --chat` | One turn per stdin line, on one session, until EOF or `/exit`. |
+| `agenteng code --json PROMPT` (or stdin) | One turn of NDJSON. `--json` never starts chat by itself. |
+| `agenteng code --chat --json < prompts.txt` | NDJSON chat: one turn per stdin line. |
 
 `--json` stays single-shot unless you add `--chat`, so scripts and other
-agents that already call `ae code --json` keep their behaviour. A driver that
+agents that already call `agenteng code --json` keep their behaviour. A driver that
 wants several turns pipes one prompt per line with `--chat --json`; each turn
 ends with its own `stop` event, and slash commands work there too.
 
@@ -86,7 +88,7 @@ turns, so the agent remembers earlier turns and its own edits.
   `cancelled`, as the spec requires. Ctrl-C on an empty prompt clears the line.
 - **Ctrl-D** or `/exit` ends the chat and stops the agent.
 - The agent runs in its own process session, so a terminal Ctrl-C reaches
-  `ae code` (which cancels politely) rather than killing the agent.
+  `agenteng code` (which cancels politely) rather than killing the agent.
 
 | Command | Does |
 | --- | --- |
@@ -100,9 +102,9 @@ new message, plus any records from `/context` or IDs detected in that message.
 
 ## Menu entry
 
-`ae` with no arguments opens the interactive menu. **Code with an agent (ACP, experimental)**:
+`agenteng` with no arguments opens the interactive menu. **Code with an agent (ACP, experimental)**:
 
-1. lists the ACP agents found on `PATH` (the same detection as `ae code
+1. lists the ACP agents found on `PATH` (the same detection as `agenteng code
    --list`). If none is installed, it shows the agent table with install
    commands and returns to the menu;
 2. asks whether to add a talk as context. **Pick a talk** uses the event
@@ -111,7 +113,7 @@ new message, plus any records from `/context` or IDs detected in that message.
 
 ## Supported agents
 
-`ae code --list` checks `PATH` only; it never installs or runs anything. Launch
+`agenteng code --list` checks `PATH` only; it never installs or runs anything. Launch
 commands come from the official
 [ACP registry](https://cdn.agentclientprotocol.com/registry/v1/latest/registry.json)
 ([about the registry](https://agentclientprotocol.com/get-started/registry))
@@ -135,14 +137,14 @@ npm packages are deprecated in favour of the `@agentclientprotocol/*`
 packages above. The registry lists about 40 agents; anything else works with
 `--agent-command`.
 
-Sign-in stays with each agent. `ae code` never reads, stores or forwards
+Sign-in stays with each agent. `agenteng code` never reads, stores or forwards
 credentials; it passes your environment to the agent process unchanged. If an
-agent needs sign-in (`auth_required`), `ae code` stops and tells you to sign in
+agent needs sign-in (`auth_required`), `agenteng code` stops and tells you to sign in
 with that agent's own CLI.
 
 ## How it works
 
-`ae code` uses the official Python SDK,
+`agenteng code` uses the official Python SDK,
 [`agent-client-protocol`](https://agentclientprotocol.github.io/python-sdk/)
 (pinned to 0.12.1, ACP protocol version 1), as the client side:
 
@@ -164,7 +166,7 @@ with that agent's own CLI.
     ```
 
     The ACP spec requires every agent to support stdio MCP servers and an
-    absolute command path, so `ae code` uses the running interpreter rather
+    absolute command path, so `agenteng code` uses the running interpreter rather
     than relying on the agent's `PATH`. `--remote` and `--catalogue` pass
     through to the MCP server.
 4. **[Prompt](https://agentclientprotocol.com/protocol/prompt-turn)** with
@@ -192,7 +194,7 @@ updates pass through under their own names).
 - Nothing is auto-approved, writes included. There is no allow-all flag.
 - The agent's "allow always" option is hidden by default, so each write
   needs a fresh decision. `--allow-always-option` shows it for that run.
-- Without a terminal (CI, pipes, another agent driving `ae code --json`), every
+- Without a terminal (CI, pipes, another agent driving `agenteng code --json`), every
   request is rejected and reported as a `permission` event. With `--json` in a
   terminal, the prompt is shown on stderr.
 - Rejection uses the agent's `reject_once` option, or the `cancelled` outcome
@@ -205,7 +207,7 @@ updates pass through under their own names).
 ACP tool calls can carry
 [diff content](https://agentclientprotocol.com/protocol/tool-calls#diffs)
 (`{"type": "diff", "path", "oldText", "newText"}`; `oldText` is null for a new
-file). `ae code` renders it as a coloured unified diff with a `+added -removed`
+file). `agenteng code` renders it as a coloured unified diff with a `+added -removed`
 summary:
 
 - **In permission prompts.** The diff is shown inside the prompt, where you
@@ -252,8 +254,8 @@ calling it, was rejected without a terminal, and returned the talk after
 your own sign-in, so test them locally:
 
 ```sh
-ae code --agent claude "summarise talk agenteng-london-2026-2 in three bullets"
-ae code --agent gemini --cwd ./demo "scaffold a demo of talk agenteng-london-2026-14"
+agenteng code --agent claude "summarise talk agenteng-london-2026-2 in three bullets"
+agenteng code --agent gemini --cwd ./demo "scaffold a demo of talk agenteng-london-2026-14"
 ```
 
 ## Effort
@@ -261,7 +263,7 @@ ae code --agent gemini --cwd ./demo "scaffold a demo of talk agenteng-london-202
 | Stage | Scope | Rough effort |
 | --- | --- | --- |
 | Spike | One prompt turn, agent catalogue, MCP attach, context blocks, permissions, rich and JSON output, fake-agent tests | Done |
-| Usable, part 1 | Chat loop with cancel and slash commands, `ae` menu entry, diffs in permission prompts and streams | Done |
+| Usable, part 1 | Chat loop with cancel and slash commands, `agenteng` menu entry, diffs in permission prompts and streams | Done |
 | Usable, part 2 | Session modes and model picker, better long-output rendering, slash commands advertised by the agent | 1 to 2 days |
 | Polished | Registry-driven discovery and install, `session/load` resume, optional read-only `fs/read_text_file`, workshop presets, Windows checks | 1 to 2 weeks |
 
@@ -277,7 +279,7 @@ ae code --agent gemini --cwd ./demo "scaffold a demo of talk agenteng-london-202
   `--cwd`. Permission prompts are the safety net; point `--cwd` at a scratch
   directory for demos.
 - **Agent differences.** Some agents only ask permission for some tools, or
-  apply their own approval modes. `ae code` can only gate what the agent asks
+  apply their own approval modes. `agenteng code` can only gate what the agent asks
   about.
 - **`--npx` runs downloaded code.** It is opt-in and prints nothing secret, but
   it is still remote code execution by design.
@@ -289,4 +291,4 @@ ae code --agent gemini --cwd ./demo "scaffold a demo of talk agenteng-london-202
 - Granting the agent client-side file or terminal access.
 - Persistent "always allow" rules across runs.
 - Hosted or remote agents (ACP over HTTP); stdio only.
-- Sending anything to AgentEng organizers. `ae code` is local only.
+- Sending anything to AgentEng organizers. `agenteng code` is local only.
