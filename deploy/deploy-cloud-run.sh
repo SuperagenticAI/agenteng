@@ -30,7 +30,7 @@ gcloud run deploy "$DEPLOY_SERVICE" \
   --no-invoker-iam-check --ingress=all --port=8080 \
   --min-instances=0 --max-instances=2 --concurrency=40 \
   --memory=512Mi --cpu=1 --cpu-throttling --timeout=60 --quiet \
-  --set-env-vars="AGENTENG_PUBLIC_URL=$public_url,AGENTENG_ALLOWED_ORIGINS=https://agentengineering.world,AGENTENG_ENABLE_STANDARD=0,AGENTENG_ENABLE_RLM=0,AGENTENG_ENABLE_INTAKE=0"
+  --update-env-vars="AGENTENG_PUBLIC_URL=$public_url,AGENTENG_ALLOWED_ORIGINS=https://agentengineering.world"
 
 if [ -z "${DEPLOY_PUBLIC_URL:-}" ]; then
   generated_url=$(gcloud run services describe "$DEPLOY_SERVICE" \

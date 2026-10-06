@@ -66,6 +66,7 @@ class Service:
         self.events = {e.id: e for e in self.catalogue.events}
         # Optional inference is serialized per process; it is operator-only.
         self._model_slot = threading.Lock()
+        self._chat_runtime = None
         self.participation = Participation(self)
 
     def authorized(self, token: str | None) -> bool:
@@ -185,6 +186,8 @@ class Service:
         return london.id if london else (day[0].id if day else None)
 
     def lookup(self, request: Request) -> Result:
+        if request.operation == "chat":
+            return self.lookup(Request(operation="ask", query=request.query, limit=request.limit))
         if request.operation in TOOL_OPERATIONS:
             return self.tool_directory.lookup(request, self.clock(), self.settings.max_age_hours)
         if request.event_id and request.event_id not in self.events:
@@ -874,6 +877,12 @@ class Service:
         )
 
     async def execute(self, request: Request, *, token: str | None = None) -> Result:
+        if request.operation == "chat":
+            from .public_chat import PublicChat
+
+            if self._chat_runtime is None:
+                self._chat_runtime = PublicChat(self)
+            return await self._chat_runtime.execute(request)
         if request.operation in PRIVATE_OPERATIONS:
             return await asyncio.to_thread(self.participation.execute, request, token)
         if request.engine in {"lookup", "auto"}:

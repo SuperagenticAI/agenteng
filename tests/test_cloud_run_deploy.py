@@ -81,9 +81,14 @@ def test_first_deployment_bootstraps_generated_origin(deployment):
     assert "--service-account=agenteng-runtime@example-project.iam.gserviceaccount.com" in deploy
     assert "--no-invoker-iam-check" in deploy
     assert "--min-instances=0" in deploy and "--max-instances=2" in deploy
-    env = next(c for c in deploy if c.startswith("--set-env-vars="))
-    for flag in ["STANDARD", "RLM", "INTAKE"]:
-        assert f"AGENTENG_ENABLE_{flag}=0" in env
+    env = next(c for c in deploy if c.startswith("--update-env-vars="))
+    assert not any(c.startswith("--set-env-vars=") for c in deploy)
+    assert "AGENTENG_ENABLE_" not in env
+    assert "AGENTENG_MODEL" not in env
+    assert not any(c.startswith(("--set-secrets=", "--clear-secrets")) for c in deploy)
+    dockerfile = (SCRIPT.parents[1] / "Dockerfile").read_text()
+    for flag in ["CHAT", "STANDARD", "RLM", "INTAKE"]:
+        assert f"AGENTENG_ENABLE_{flag}=0" in dockerfile
     updates = [c for c in calls if c[:3] == ["run", "services", "update"]]
     assert len(updates) == 1
     assert "--update-env-vars=AGENTENG_PUBLIC_URL=" + GENERATED_URL in updates[0]

@@ -32,6 +32,7 @@ class Settings:
     public_url: str = "https://a2a.agentengineering.world"
     catalogue_path: str | None = None
     enable_standard: bool = False
+    enable_chat: bool = False
     enable_rlm: bool = False
     operator_token: str = field(default="", repr=False)
     model_api_key: str = field(default="", repr=False)
@@ -67,6 +68,7 @@ class Settings:
             public_url=os.getenv("AGENTENG_PUBLIC_URL", cls.public_url).rstrip("/"),
             catalogue_path=os.getenv("AGENTENG_CATALOGUE"),
             enable_standard=os.getenv("AGENTENG_ENABLE_STANDARD") == "1",
+            enable_chat=os.getenv("AGENTENG_ENABLE_CHAT") == "1",
             enable_rlm=os.getenv("AGENTENG_ENABLE_RLM") == "1",
             operator_token=os.getenv("AGENTENG_OPERATOR_TOKEN", ""),
             model_api_key=os.getenv("AGENTENG_MODEL_API_KEY", ""),

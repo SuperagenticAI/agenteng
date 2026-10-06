@@ -217,6 +217,7 @@ def create_app(service: Service | None = None):
             "published_at": service.catalogue.published_at,
             "stale": service.result("").stale,
             "default_engine": "lookup",
+            "chat_enabled": service.settings.enable_chat,
             "standard_enabled": service.settings.enable_standard,
             "rlm_enabled": service.settings.enable_rlm,
             "private_intake_enabled": bool(service.participation.inbox),

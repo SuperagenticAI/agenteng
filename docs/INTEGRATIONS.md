@@ -137,9 +137,49 @@ Private operations are `proposal_prepare`, `proposal_submit`, `proposal_status` 
 
 The conference website's native **Talk to AgentEng A2A** panel discovers the
 agent card and sends A2A 1.0 JSON-RPC `SendMessage` requests. The service permits
-the `A2A-Version` header in browser CORS preflights. Public requests continue
-to use catalogue lookup with no model calls; adding a chat UI does not enable
-inference or private intake.
+the `A2A-Version` header in browser CORS preflights. Structured catalogue
+requests stay model-free. Free-text questions use `operation=chat` when the
+agent advertises the `agenteng-chat` skill; older agents still receive `ask`.
+
+### Enable OpenRouter in Cloud Run
+
+On the `agenteng` Cloud Run service, edit the revision's variables and secrets:
+
+| Variable | Value |
+| --- | --- |
+| `AGENTENG_ENABLE_CHAT` | `1` |
+| `AGENTENG_MODEL_BASE_URL` | `https://openrouter.ai/api/v1` |
+| `AGENTENG_MODEL` | `openrouter/free` or a compatible model ID |
+| `AGENTENG_MODEL_API_KEY` | Secret Manager reference containing the OpenRouter API key |
+| `AGENTENG_ENABLE_STANDARD` | `0` |
+| `AGENTENG_ENABLE_RLM` | `0` |
+| `AGENTENG_ENABLE_INTAKE` | `0` |
+
+Grant the Cloud Run runtime identity access to that specific secret, deploy the
+revision and route traffic to it. Public chat does not require or expose an
+operator token. `AGENTENG_ENABLE_CHAT` is separate from the operator-only
+standard/RLM engines. Never put a provider key in website `VITE_*` variables.
+The tag deployment script preserves these manually configured variables and
+secret references; container defaults keep optional capabilities off.
+
+Chat can make up to three model calls and four read-only catalogue lookups per
+question. It can read published events, speakers, talks, agendas and engineering
+tools. It cannot access private intake, local bookmarks, databases, arbitrary
+URLs, files or code execution. Source IDs must come from retrieved evidence;
+this validates attribution membership, not the factual quality of generated prose.
+
+If the key or flag is absent, the model is busy, provider limits/credits are
+exhausted, a provider call fails, output is invalid, or the request reaches its
+20-second deadline, the existing catalogue answer is returned automatically.
+Failures pause model attempts for five minutes per process before trying again.
+A process admits up to five model questions per minute and one concurrent model
+worker. Multi-instance hosting needs shared edge limits for larger traffic.
+
+The website sends at most six recent user/assistant messages, each up to 2,000
+characters, for follow-up questions. History is untrusted data, not instructions.
+The service does not retain it. Visitor questions and these recent replies are
+sent to the configured inference provider when chat is enabled; no private
+organizer records are included. Clear chat starts fresh.
 
 The default allowed browser origin is `https://agentengineering.world`.
 For a local website running at `http://localhost:8080`, configure the local
@@ -150,8 +190,4 @@ AGENTENG_PUBLIC_URL=http://127.0.0.1:8000 AGENTENG_ALLOWED_ORIGINS=http://localh
 ```
 
 Set `VITE_AGENTENG_A2A_URL=http://127.0.0.1:8000` in the website's `.env.local`.
-Use the actual browser origin if your development port differs. Deploy the
-service update before publishing the website chat. The browser retains only a
-page-local transcript; the current A2A adapter answers each question independently.
-Future model integration belongs in the service, with provider credentials
-kept out of browser configuration.
+Use the actual browser origin if your development port differs.

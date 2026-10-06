@@ -3,6 +3,14 @@ import pytest
 from agenteng.config import Settings
 
 
+def test_public_chat_is_separately_opted_in(monkeypatch):
+    monkeypatch.delenv("AGENTENG_ENABLE_CHAT", raising=False)
+    monkeypatch.setenv("AGENTENG_ENABLE_STANDARD", "1")
+    assert not Settings.from_env().enable_chat
+    monkeypatch.setenv("AGENTENG_ENABLE_CHAT", "1")
+    assert Settings.from_env().enable_chat
+
+
 @pytest.mark.parametrize(
     "url",
     [

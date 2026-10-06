@@ -32,7 +32,8 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
             "Use discover for featured events and interfaces; proposal_draft/preview/export prepare ideas without sending. "
             "Private intake requires organizer-issued participant access, proposal_prepare and explicit contributor "
             "confirmation before proposal_submit. London 2026 has an invited programme and no public CFP. "
-            "Default lookup and auto use no server-side model. Model engines are operator-only."
+            "Default lookup and auto use no server-side model. Standard and RLM engines are operator-only. "
+            "The separate opt-in chat operation uses bounded public catalogue tools and lookup fallback."
         ),
         streamable_http_path="/",
         stateless_http=True,
@@ -61,11 +62,14 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
             readOnlyHint=not service.settings.enable_intake,
             destructiveHint=service.settings.enable_intake,
             idempotentHint=not (
-                service.settings.enable_standard
+                service.settings.enable_chat
+                or service.settings.enable_standard
                 or service.settings.enable_rlm
                 or service.settings.enable_intake
             ),
-            openWorldHint=service.settings.enable_standard or service.settings.enable_rlm,
+            openWorldHint=service.settings.enable_chat
+            or service.settings.enable_standard
+            or service.settings.enable_rlm,
         ),
         structured_output=True,
     )

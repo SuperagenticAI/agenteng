@@ -296,6 +296,11 @@ class Catalogue(Model):
         return self
 
 
+class ChatTurn(Model):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=2000)
+
+
 class Request(Model):
     operation: Literal[
         "events",
@@ -324,6 +329,7 @@ class Request(Model):
         "search",
         "plan",
         "ask",
+        "chat",
         "participate",
         "discover",
         "disciplines",
@@ -342,6 +348,7 @@ class Request(Model):
     session_id: str | None = Field(default=None, max_length=128)
     city: str | None = Field(default=None, max_length=100)
     query: str = Field(default="", max_length=4000)
+    history: list[ChatTurn] = Field(default_factory=list, max_length=6)
     topic: str | None = Field(default=None, max_length=200)
     upcoming: bool = False
     past: bool = False
@@ -376,6 +383,18 @@ class Request(Model):
 
     @model_validator(mode="after")
     def validate_operation(self):
+        if self.history and self.operation != "chat":
+            raise ValueError("Conversation history only applies to chat")
+        if self.operation == "chat" and (
+            self.engine not in {"lookup", "auto"}
+            or self.event_id
+            or self.city
+            or self.topic
+            or self.interests
+            or self.upcoming
+            or self.past
+        ):
+            raise ValueError("Chat accepts a question and history, not engines or event filters")
         if self.section and not (
             (self.operation == "hq" and self.section in HQ_SECTIONS)
             or (self.operation == "about" and self.section in ABOUT_SECTIONS)
@@ -460,7 +479,7 @@ class Request(Model):
             raise ValueError("talk requires session_id, speaker_id or query")
         if self.operation in {"save", "unsave"} and not self.session_id and not self.speaker_id:
             raise ValueError(f"{self.operation} requires session_id or speaker_id")
-        if self.operation in {"ask", "search"} and not self.query.strip():
+        if self.operation in {"ask", "search", "chat"} and not self.query.strip():
             raise ValueError(f"{self.operation} requires query")
         if self.engine not in {"lookup", "auto"} and self.operation != "ask":
             raise ValueError("Model engines only apply to ask")

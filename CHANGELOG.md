@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.9 - 2026-10-06
+
+### Added
+
+- Opt-in public `chat` operation for the website and A2A, configured with `AGENTENG_ENABLE_CHAT=1` and the existing model provider variables. Supports OpenRouter-compatible chat completions, up to six recent conversation messages, and a bounded loop over public catalogue tools.
+- Automatic lookup fallback when chat is disabled, unconfigured, busy, quota-limited, slow, or returns invalid output. Provider failures trigger a five-minute per-process cooldown; each question uses at most three provider calls and four public lookups. At most five model questions per minute are admitted per process.
+- Website chat capability advertised in the A2A agent card and `chat_enabled` in health output. No server-side conversation retention, private operations, bookmarks, arbitrary network access or code execution in public chat.
+
+### Changed
+
+- Cloud Run tag deployments update the public origin without replacing operator-configured environment variables or secret references. Container defaults keep chat, standard inference, RLM and private intake disabled until explicitly enabled.
+- Standard and RLM engines remain operator-only. Public chat has its own explicit activation and never grants operator or participant access.
+
 ## 0.0.8 - 2026-10-06
 
 ### Changed

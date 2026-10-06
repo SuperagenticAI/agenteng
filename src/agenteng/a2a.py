@@ -59,7 +59,7 @@ def agent_card(service):
         )
     return AgentCard(
         name="Agent Engineering HQ: AgentEng Conference",
-        description="AgentEng, the Agent Engineering Conference, and Agent Engineering HQ technical events in London and San Francisco. Discover published dates, speakers, full talk abstracts, agendas, FAQ, venue, sponsors, code of conduct, registration links, proposal drafting and a tool directory across twelve agent-engineering disciplines. Anonymous requests use catalogue lookup with no model calls. London 2026 has an invited programme and no public CFP.",
+        description="AgentEng, the Agent Engineering Conference, and Agent Engineering HQ technical events in London and San Francisco. Discover published dates, speakers, full talk abstracts, agendas, FAQ, venue, sponsors, code of conduct, registration links, proposal drafting and a tool directory across twelve agent-engineering disciplines. Catalogue lookups use no model calls. The opt-in chat operation uses public catalogue tools and falls back to lookup when inference is unavailable. London 2026 has an invited programme and no public CFP.",
         version="1.0",
         provider=AgentProvider(
             organization="Agent Engineering HQ", url="https://agentengineering.world"
@@ -79,6 +79,15 @@ def agent_card(service):
         default_output_modes=["application/json", "text/plain"],
         security_schemes=security_schemes,
         skills=[
+            AgentSkill(
+                id="agenteng-chat",
+                name="Public AgentEng chat",
+                description="Ask a question with optional recent history. When enabled by the "
+                "operator, chat uses a model with bounded public catalogue lookups. Disabled "
+                "or unavailable inference returns the existing catalogue answer automatically.",
+                tags=["chat", "public-catalogue", "lookup-fallback"],
+                examples=['{"operation":"chat","query":"Who is speaking in London?"}'],
+            ),
             AgentSkill(
                 id="agenteng",
                 name="AgentEng London and San Francisco events",
