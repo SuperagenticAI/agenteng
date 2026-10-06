@@ -78,7 +78,7 @@ exclude_docs: |
 nav:
   - 🚀 Start here: index.md
   - 🤖 MCP & A2A: INTEGRATIONS.md
-  - 🤝 ACP client (spike): ACP.md
+  - 🤝 ACP client (experimental): ACP.md
   - 🧰 Tool directory: TOOLS.md
   - 💡 Participate: PARTICIPATION.md
   - 📚 Reference:

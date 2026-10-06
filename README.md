@@ -158,9 +158,9 @@ The official host is live at `https://a2a.agentengineering.world` (health, agent
 
 For Google Cloud Run, the [console setup guide](deploy/README.md) connects this repository through Cloud Build with **Push new tag**, regex `^v.*$` and configuration file `cloudbuild.yaml`. Version tags deploy the public server and separately trigger PyPI publishing; ordinary commits do not deploy either release.
 
-## Drive a coding agent (ACP spike)
+## Drive a coding agent (experimental ACP client)
 
-`ae code` launches an [Agent Client Protocol](https://agentclientprotocol.com) coding agent you already use (Claude Code, Codex, Gemini CLI, Copilot, Cursor, OpenCode and more), attaches the AgentEng MCP server and streams its work. Every permission request is asked in your terminal; nothing is auto-approved.
+`ae code` launches an [Agent Client Protocol](https://agentclientprotocol.com) coding agent you already use (Claude Code, Codex, Gemini CLI, Copilot, Cursor, OpenCode and more), attaches the AgentEng MCP server and streams its work. Every permission request is asked in your terminal; nothing is auto-approved. `ae code` is **experimental**: its options and output may change between releases.
 
 ```sh
 uv tool install 'agenteng[acp]'
@@ -169,7 +169,7 @@ ae code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
 ae code --agent claude    # chat: /help, /context ID, /agent, /exit
 ```
 
-With no prompt in a terminal (or with `--chat`), `ae code` opens a chat on one session: Ctrl-C cancels the current turn, Ctrl-D or `/exit` ends it. File edits show as coloured diffs in the permission prompt. In the `ae` menu, **Code with an agent (ACP)** picks an installed agent and, optionally, a talk as context. Sign-in stays with each agent. See the [ACP design note](docs/ACP.md).
+With no prompt in a terminal (or with `--chat`), `ae code` opens a chat on one session: Ctrl-C cancels the current turn, Ctrl-D or `/exit` ends it. File edits show as coloured diffs in the permission prompt. In the `ae` menu, **Code with an agent (ACP, experimental)** picks an installed agent and, optionally, a talk as context. Sign-in stays with each agent. See the [ACP design note](docs/ACP.md).
 
 ## Optional model engines
 

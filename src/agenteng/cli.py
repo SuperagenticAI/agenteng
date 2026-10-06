@@ -770,7 +770,7 @@ def code(
     chat_flag,
     json_events,
 ):
-    """Drive an ACP coding agent with AgentEng context (install [acp]).
+    """Experimental: drive an ACP coding agent with AgentEng context (install [acp]).
 
     Spawns the agent over the Agent Client Protocol, attaches the AgentEng MCP
     server and streams its reply. Every permission request is asked in the

@@ -324,7 +324,7 @@ def run_menu(ctx) -> None:
                     Choice("My bookmarked agenda", "my_agenda"),
                     Choice("Browse the tool directory", "tools"),
                     Choice("Draft a talk or event idea", "draft"),
-                    Choice("Code with an agent (ACP)", "code"),
+                    Choice("Code with an agent (ACP, experimental)", "code"),
                     Choice("Connect a coding agent", "connect"),
                     Choice("Discover (welcome)", "discover"),
                     Choice("Quit", "quit"),

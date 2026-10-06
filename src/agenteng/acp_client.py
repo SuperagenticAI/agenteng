@@ -1,4 +1,4 @@
-"""ACP client spike: drive a coding agent with AgentEng context (install [acp]).
+"""Experimental ACP client: drive a coding agent with AgentEng context (install [acp]).
 
 ``ae code`` spawns an Agent Client Protocol agent over stdio, initializes it,
 opens a session with the AgentEng MCP server attached, sends one prompt and

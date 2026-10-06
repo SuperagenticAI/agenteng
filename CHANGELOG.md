@@ -4,9 +4,9 @@
 
 ### Added
 
-- `ae code` ACP client spike (optional `agenteng[acp]` extra): launch an Agent Client Protocol coding agent (Claude Code and Codex adapters, Gemini CLI, Copilot, Cursor, OpenCode, goose, Qwen Code, fast-agent, Kimi, or any `--agent-command`), attach the AgentEng MCP server to the session, add talk, event, speaker or tool records named in the prompt, and stream messages, tool calls and plans as rich output or `--json` events. Permission requests are always asked in the terminal and rejected without one; nothing is auto-approved. `ae code --list` shows which agents are on `PATH`. See `docs/ACP.md`.
+- Experimental `ae code` ACP client (optional `agenteng[acp]` extra): launch an Agent Client Protocol coding agent (Claude Code and Codex adapters, Gemini CLI, Copilot, Cursor, OpenCode, goose, Qwen Code, fast-agent, Kimi, or any `--agent-command`), attach the AgentEng MCP server to the session, add talk, event, speaker or tool records named in the prompt, and stream messages, tool calls and plans as rich output or `--json` events. Permission requests are always asked in the terminal and rejected without one; nothing is auto-approved. `ae code --list` shows which agents are on `PATH`. See `docs/ACP.md`.
 - `ae code` chat mode: with no prompt in a terminal, or with `--chat`, keep one ACP session open across turns. Ctrl-C sends `session/cancel` (also at a permission prompt), Ctrl-D or `/exit` ends the chat, and `/help`, `/context ID` and `/agent` are available. `--chat` with piped stdin runs one turn per line; `--json` alone stays single-shot.
-- "Code with an agent (ACP)" in the `ae` menu: pick an installed agent (or see install hints) and optionally a talk, then chat.
+- "Code with an agent (ACP, experimental)" in the `ae` menu: pick an installed agent (or see install hints) and optionally a talk, then chat.
 - `ae code` renders ACP diff content as coloured unified diffs in permission prompts and tool-call streams, truncated after 40 lines with a "view the full diff" option; `--json` permission events add a `diffs` summary.
 
 ### Fixed

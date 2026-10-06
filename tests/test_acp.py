@@ -554,7 +554,7 @@ def test_menu_lists_code_with_an_agent(monkeypatch):
     monkeypatch.setattr(interactive, "_select", fake_select)
     monkeypatch.setattr(interactive, "stdin_is_tty", lambda: True, raising=False)
     interactive.run_menu(_menu_ctx())
-    assert "Code with an agent (ACP)" in seen[0]
+    assert "Code with an agent (ACP, experimental)" in seen[0]
 
 
 def _menu_ctx():

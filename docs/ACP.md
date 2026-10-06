@@ -1,17 +1,17 @@
-# 🤝 ACP client: `ae code` (spike)
+# 🤝 ACP client: `ae code` (experimental)
 
 `ae code` lets AgentEng drive a coding agent you already use (Claude Code,
 Codex, Gemini CLI, Copilot, Cursor, OpenCode and others) through the
 [Agent Client Protocol](https://agentclientprotocol.com) (ACP), with AgentEng
-conference data attached. It is an **optional extra** and a **spike**: the
-command shape and defaults may change.
+conference data attached. It is an **optional extra** and **experimental**:
+the command shape, defaults and output may change between releases.
 
 ```sh
 uv tool install 'agenteng[acp]'
 ae code --list
 ae code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
 ae code --agent claude          # chat: many turns on one session
-ae                              # menu: "Code with an agent (ACP)"
+ae                              # menu: "Code with an agent (ACP, experimental)"
 ```
 
 ## Why
@@ -100,7 +100,7 @@ new message, plus any records from `/context` or IDs detected in that message.
 
 ## Menu entry
 
-`ae` with no arguments opens the interactive menu. **Code with an agent (ACP)**:
+`ae` with no arguments opens the interactive menu. **Code with an agent (ACP, experimental)**:
 
 1. lists the ACP agents found on `PATH` (the same detection as `ae code
    --list`). If none is installed, it shows the agent table with install
