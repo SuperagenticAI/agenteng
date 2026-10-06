@@ -67,7 +67,7 @@ def test_installer_is_valid_posix_shell():
     assert "agentengineering.world/releases/" not in text
     assert "AGENTENG_EXTRAS" in text
     assert "AGENTENG_VERSION" in text
-    assert "ae discover" in text
+    assert "agenteng discover" in text
     assert 'ln -sf "$agenteng_bin" "$ae_bin"' in text or "ae_bin=" in text
 
 
@@ -86,8 +86,8 @@ def test_installer_uses_uv_tool_install_latest_with_server_extras(tmp_path: Path
     assert result.returncode == 0, result.stderr
     assert "agenteng, version 0.test" in result.stdout
     assert "AgentEng is installed" in result.stdout
-    assert "ae discover" in result.stdout
-    assert "ae events --upcoming" in result.stdout
+    assert "agenteng discover" in result.stdout
+    assert "agenteng events --upcoming" in result.stdout
     assert "a2a.agentengineering.world" in result.stdout
     assert (tool_bin / "ae").is_symlink() or (tool_bin / "ae").is_file()
     uv_calls = uv_log.read_text(encoding="utf-8")

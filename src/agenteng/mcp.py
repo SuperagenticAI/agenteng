@@ -28,7 +28,7 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
             "AgentEng is the Agent Engineering Conference, organized by Agent Engineering HQ in London and San Francisco. "
             "Use about for the organiser, chair and connection details, hq for the manifesto, "
             "mindset and further reading, live for a now/next venue-screen snapshot (at overrides the clock), "
-            "and bingo for a reproducible talk bingo card (seed, size 4 or 5, format text/svg/html). "
+            "and bingo for a reproducible talk bingo card in data (seed, size 4 or 5; format text, svg or html adds a printable copy in artifact). "
             "Use discover for featured events and interfaces; proposal_draft/preview/export prepare ideas without sending. "
             "Private intake requires organizer-issued participant access, proposal_prepare and explicit contributor "
             "confirmation before proposal_submit. London 2026 has an invited programme and no public CFP. "

@@ -57,6 +57,7 @@ extra_css:
 exclude_docs: |
   **
   !/index.md
+  !/COMMANDS.md
   !/INTEGRATIONS.md
   !/ACP.md
   !/TOOLS.md
@@ -78,6 +79,7 @@ exclude_docs: |
 
 nav:
   - 🚀 Start here: index.md
+  - ⌨️ Commands: COMMANDS.md
   - 🤖 MCP & A2A: INTEGRATIONS.md
   - 🤝 ACP client (experimental): ACP.md
   - 🧰 Tool directory: TOOLS.md

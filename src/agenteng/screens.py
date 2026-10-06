@@ -96,7 +96,7 @@ def about(service: Service, request: Request) -> Result:
         "llms_txt_url": origin + "/llms.txt",
         "local_mcp": "agenteng mcp",
         "connect_commands": [
-            f"ae connect {c}" for c in ("claude-code", "codex", "cursor", "generic")
+            f"agenteng connect {c}" for c in ("claude-code", "codex", "cursor", "generic")
         ],
     }
     hq = service.catalogue.hq
@@ -323,7 +323,7 @@ def bingo(service: Service, request: Request) -> Result:
         "size": size,
         "seed": seed,
         "card_id": f"{event_id}/{size}x{size}/{seed}",
-        "command": f"ae bingo --event {event_id} --size {size} --seed {seed}",
+        "command": f"agenteng bingo --event {event_id} --size {size} --seed {seed}",
         "grid": [[cell["label"] for cell in row] for row in grid],
         "squares": squares,
         "pool_size": len(pool),

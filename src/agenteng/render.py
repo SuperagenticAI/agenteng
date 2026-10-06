@@ -381,7 +381,7 @@ def render_themes(console: Console, result: Result) -> None:
     for row in rows:
         body = Text()
         if row.get("command"):
-            body.append(f"ae theme hint: {row['command']}\n", style="ae.accent")
+            body.append(f"Website keyword: {row['command']}\n", style="ae.accent")
         body.append(display_text(row.get("description") or ""))
         console.print(_panel(row.get("title") or "Theme", body, border=BLUE))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
@@ -742,7 +742,7 @@ def render_generic(console: Console, result: Result) -> None:
 
 
 def render_acp_agents(rows: list[dict], registry: str, console: Console | None = None) -> None:
-    """Table for `ae code --list`: known ACP agents and whether they are on PATH."""
+    """Table for `agenteng code --list`: known ACP agents and whether they are on PATH."""
     console = console or make_console()
     table = Table(
         title="ACP coding agents",
@@ -769,7 +769,7 @@ def render_acp_agents(rows: list[dict], registry: str, console: Console | None =
     console.print(table)
     installed = sum(1 for row in rows if row["installed"])
     console.print(
-        f"[ae.meta]{installed} of {len(rows)} installed. Use `ae code --agent NAME PROMPT`, "
+        f"[ae.meta]{installed} of {len(rows)} installed. Use `agenteng code --agent NAME PROMPT`, "
         f"or --agent-command for any other ACP agent. Registry: {registry}[/]"
     )
 
@@ -778,7 +778,14 @@ def render_result(result: Result, operation: str, console: Console | None = None
     """Render a service Result for humans. Does not change JSON shapes."""
     console = console or make_console()
     if result.status != "ok":
-        style = "ae.err" if result.status in {"error", "not_found"} else "ae.warn"
+        from .output import empty_but_valid
+
+        if empty_but_valid(result, operation):
+            style = "ae.meta"
+        elif result.status in {"error", "not_found"}:
+            style = "ae.err"
+        else:
+            style = "ae.warn"
         console.print(Text(display_text(result.answer), style=style))
         if result.data:
             console.print_json(data=result.data)
@@ -1083,7 +1090,7 @@ def _talk_lines(talk: dict, *, title_style: str) -> Text:
 
 
 def live_board(result: Result):
-    """One full-screen frame for `ae live`."""
+    """One full-screen frame for `agenteng live`."""
     from rich.layout import Layout
     from rich.progress_bar import ProgressBar
 
@@ -1166,7 +1173,9 @@ def live_board(result: Result):
         padding=(0, 2),
     )
     footer = Text(
-        "agentengineering.world  ·  ae live  ·  Ctrl-C to exit", style="ae.meta", justify="center"
+        "agentengineering.world  ·  agenteng live  ·  Ctrl-C to exit",
+        style="ae.meta",
+        justify="center",
     )
 
     layout = Layout()

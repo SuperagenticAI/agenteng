@@ -356,7 +356,7 @@ def test_bingo_is_reproducible(service):
     first = card(service, seed=42).data
     assert card(service, seed=42).data["grid"] == first["grid"]
     assert card(service, seed=43).data["grid"] != first["grid"]
-    assert first["command"] == f"ae bingo --event {LONDON} --size 5 --seed 42"
+    assert first["command"] == f"agenteng bingo --event {LONDON} --size 5 --seed 42"
 
 
 def test_bingo_without_seed_reports_its_seed(service):

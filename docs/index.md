@@ -78,24 +78,53 @@ and mirrored at [a2a.agentengineering.world/install.sh](https://a2a.agentenginee
 ```sh title="Install AgentEng"
 curl -fsSL https://agentengineering.world/install.sh | sh
 # Or: uv tool install --upgrade 'agenteng[server]'
-ae                 # interactive menu on a TTY
-ae discover
-ae events --upcoming
-ae --json events   # Result JSON for agents
-ae connect cursor
+agenteng                                # interactive menu on a TTY
+agenteng discover
+agenteng events --upcoming
+agenteng --json events                  # Result JSON for agents
+agenteng connect cursor
 ```
+
+### Installer options
+
+The installer reads these optional environment variables. Put them before `sh`:
+
+```sh
+curl -fsSL https://agentengineering.world/install.sh | AGENTENG_VERSION=0.0.7 sh
+```
+
+| Variable | Default | What it does |
+| --- | --- | --- |
+| `AGENTENG_VERSION` | latest on PyPI | Pin a PyPI version, for example `0.0.7`. |
+| `AGENTENG_EXTRAS` | `server` | Extras to install (`server` is MCP + A2A). Set it empty for the CLI only, or add `acp` as in `server,acp`. |
+| `AGENTENG_INSTALL_VERBOSE` | `0` | Set to `1` to stream package manager output instead of writing it to a log. |
+| `AGENTENG_UV_INSTALLER_URL` | `https://astral.sh/uv/install.sh` | Alternate uv installer URL, used only when uv is missing. |
+| `AGENTENG_INSTALL_DIR` | `$XDG_DATA_HOME/agenteng`, else `~/.local/share/agenteng` | Virtualenv location for the pip fallback. |
+| `AGENTENG_BIN_DIR` | `~/.local/bin` | Where the pip fallback links `agenteng` and `ae`. |
+| `AGENTENG_PYTHON` | first Python 3.12+ on `PATH` | Python used by the pip fallback. |
+
+`NO_COLOR` turns off the animated, coloured output. The installer never uses sudo.
+
+### CLI environment
+
+| Variable | What it does |
+| --- | --- |
+| `AGENTENG_OUTPUT=json` | Always print Result JSON, as `--json` does. |
+| `AGENTENG_CONFIG_DIR` | Folder for local bookmarks and `agenteng code` logs. Default `$XDG_CONFIG_HOME/agenteng`, else `~/.config/agenteng`. |
 
 **Your first result:** published London and San Francisco events as readable cards
 (or Result JSON for agents), with supporting source links. The CLI uses its bundled
 snapshot, so event lookup, tool browsing and local drafting work offline with
 **zero model calls** and no provider key.
 
-On a terminal, `ae` opens an interactive menu and commands render tables and cards.
+On a terminal, `agenteng` opens an interactive menu and commands render tables and cards.
 Pass `--json`, set `AGENTENG_OUTPUT=json`, or pipe stdout to get the shared Result
-JSON used by MCP and A2A. The package is named `agenteng`. The CLI commands are
-`agenteng` and the short alias `ae`. This source tracks the **0.0.7 alpha** release.
-Run `ae --help` to explore commands, or `ae COMMAND --help` for options.
+JSON used by MCP and A2A. This source tracks the **0.0.7 alpha** release.
+Run `agenteng --help` to explore commands, or `agenteng COMMAND --help` for options.
+Every command, flag and exit code is listed in the [command reference](COMMANDS.md).
 Installing the CLI does not start or publish a hosted service.
+
+The installer also adds `ae`, a short alias for developers: `ae talks` is the same as `agenteng talks`.
 
 ## 📅 Explore events { #explore-events }
 
@@ -103,29 +132,29 @@ Find an event, then use its returned ID to explore the agenda, speakers or ticke
 terms. Put global options such as `--json` before the command.
 
 ```sh title="Find your next event"
-ae events --city London --upcoming
-ae events --city 'San Francisco'
-ae ask 'When is the next London conference?'
-ae --json events
+agenteng events --city London --upcoming
+agenteng events --city 'San Francisco'
+agenteng ask 'When is the next London conference?'
+agenteng --json events
 ```
 
 ```sh title="Explore a published programme"
-ae speakers --city London
-ae speaker samuel-colvin
-ae talks --search memory
-ae talk samuel-colvin
-ae agenda agenteng-london-2026 --topic memory
-ae agenda agenteng-london-2026 --format ics --output london.ics
-ae faq --search tickets
-ae venue agenteng-london-2026
-ae sponsors
-ae conduct
-ae themes
-ae now agenteng-london-2026
-ae next agenteng-london-2026
-ae save samuel-colvin
-ae my-agenda
-ae tickets agenteng-london-2026
+agenteng speakers --city London
+agenteng speaker samuel-colvin
+agenteng talks --search memory
+agenteng talk samuel-colvin
+agenteng agenda agenteng-london-2026 --topic memory
+agenteng agenda agenteng-london-2026 --format ics --output london.ics
+agenteng faq --search tickets
+agenteng venue agenteng-london-2026
+agenteng sponsors
+agenteng conduct
+agenteng themes
+agenteng now agenteng-london-2026
+agenteng next agenteng-london-2026
+agenteng save samuel-colvin
+agenteng my-agenda
+agenteng tickets agenteng-london-2026
 ```
 
 The catalogue is a dated snapshot. Follow the event's official registration link
@@ -134,19 +163,19 @@ for current availability and details. See [data and attribution](DATA.md).
 ## 🎉 At the event { #at-the-event }
 
 ```sh title="Venue screens, bingo and the HQ"
-ae live                      # full-screen now/next board; Ctrl-C exits
-ae live --at 10:40 --refresh 15   # demo the board at a time on the event day
-ae now --screen              # same as ae live
-ae bingo --seed 7            # talk bingo from published talk terms
-ae bingo --size 4 --format html --output bingo.html   # printable (text, svg, html)
-ae bingo --play              # mark squares in the terminal
-ae about                     # definition, organiser, chair, links, how to connect agents
-ae about --connect           # install line, MCP URL and agent card only
-ae hq                        # manifesto, mindset and further reading
-ae hq manifesto
+agenteng live                           # full-screen now/next board; Ctrl-C exits
+agenteng live --at 10:40 --refresh 15   # demo the board at a time on the event day
+agenteng now --screen                   # same as agenteng live
+agenteng bingo --seed 7                 # talk bingo from published talk terms
+agenteng bingo --size 4 --format html --output bingo.html  # printable (text, svg, html)
+agenteng bingo --play                   # mark squares in the terminal
+agenteng about                          # definition, organiser, chair, links, how to connect agents
+agenteng about --connect                # install line, MCP URL and agent card only
+agenteng hq                             # manifesto, mindset and further reading
+agenteng hq manifesto
 ```
 
-`ae live` shows the current talk with a progress bar, what is next and what comes
+`agenteng live` shows the current talk with a progress bar, what is next and what comes
 later, with the venue, track and a large clock. Piped or with `--json` it prints a
 single Result JSON snapshot, the same one agents get from `{"operation":"live"}`.
 Bingo cards only use terms that appear in the event's published talk titles,

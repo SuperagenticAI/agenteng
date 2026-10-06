@@ -2,7 +2,7 @@
 
 Launch commands follow the official ACP registry
 (https://cdn.agentclientprotocol.com/registry/v1/latest/registry.json) and each
-agent's own ACP documentation. ``ae code --list`` only checks ``PATH``; it never
+agent's own ACP documentation. ``agenteng code --list`` only checks ``PATH``; it never
 installs or runs an agent.
 """
 
@@ -180,7 +180,7 @@ def default_agent() -> AgentSpec:
     found = installed_agents()
     if not found:
         raise LookupError(
-            "No ACP coding agent found on PATH. Run `ae code --list` for install commands, "
+            "No ACP coding agent found on PATH. Run `agenteng code --list` for install commands, "
             "or pass --agent-command."
         )
     return found[0]

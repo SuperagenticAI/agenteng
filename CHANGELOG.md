@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- `docs/COMMANDS.md`: a full command reference for every visible command and subcommand, with options, examples, the Result JSON fields, the commands that print other output, and exit codes. A test keeps it complete.
+- Every visible option now has `--help` text, and commands with arguments explain them.
+- User-facing copy says `agenteng` instead of `ae` (about `connect_commands`, the bingo `command` and card footer, `now --screen` help, the save error, the live board footer, `agenteng code` messages and the installer's next steps). `ae` remains the short developer alias.
+- Empty but valid results (no bookmarks in `my-agenda`, nothing on in `now`, zero `search` hits, an empty `talks --search`) now exit `0` in the CLI. Unknown IDs still exit `1`. The Result JSON is unchanged, so MCP, A2A and HTTP clients see the same `status`.
+- Docs: installer environment variables, `AGENTENG_OUTPUT` and `AGENTENG_CONFIG_DIR` in `.env.example`, `agenteng` in doc examples, and the bingo skill text now says the card is in `data` with printable formats in `artifact`.
+
 ## 0.0.7 - 2026-10-06
 
 ### Added
