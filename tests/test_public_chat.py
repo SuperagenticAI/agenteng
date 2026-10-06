@@ -259,7 +259,7 @@ async def test_provider_call_budget_falls_back_for_endless_tool_requests():
 
     provider = Endless()
     result = await chat_service(provider).execute(Request(operation="chat", query="memory"))
-    assert result.engine == "lookup" and len(provider.calls) <= 3
+    assert result.engine == "lookup" and len(provider.calls) == 2
 
 
 @pytest.mark.parametrize(

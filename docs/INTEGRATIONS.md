@@ -162,7 +162,7 @@ standard/RLM engines. Never put a provider key in website `VITE_*` variables.
 The tag deployment script preserves these manually configured variables and
 secret references; container defaults keep optional capabilities off.
 
-Chat can make up to three model calls and four read-only catalogue lookups per
+Chat can make up to two model calls and two read-only catalogue lookups per
 question. It can read published events, speakers, talks, agendas and engineering
 tools. It cannot access private intake, local bookmarks, databases, arbitrary
 URLs, files or code execution. Source IDs must come from retrieved evidence;
@@ -171,7 +171,7 @@ this validates attribution membership, not the factual quality of generated pros
 If the key or flag is absent, the model is busy, provider limits/credits are
 exhausted, a provider call fails, output is invalid, or the request reaches its
 20-second deadline, the existing catalogue answer is returned automatically.
-Failures pause model attempts for five minutes per process before trying again.
+Provider failures pause model attempts for five minutes per process before trying again; invalid output pauses them for 30 seconds.
 A process admits up to five model questions per minute and one concurrent model
 worker. Multi-instance hosting needs shared edge limits for larger traffic.
 
@@ -197,3 +197,5 @@ AGENTENG_PUBLIC_URL=http://127.0.0.1:8000 AGENTENG_ALLOWED_ORIGINS=http://localh
 
 Set `VITE_AGENTENG_A2A_URL=http://127.0.0.1:8000` in the website's `.env.local`.
 Use the actual browser origin if your development port differs.
+
+Public chat supplies brief, sourced protocol introductions rather than searching broad FAQs for basic MCP/A2A/ACP questions. Greetings use no model; a simple “tell me more” follow-up uses recent user context. The model may perform one additional public lookup round (at most two lookups), then must answer. Cards follow cited lookup results, not the last tool call. Provider exceptions never appear in replies; `usage.fallback_reason` is a bounded code (`disabled`, `unconfigured`, `busy`, `provider_limit`, `provider_unavailable`, or `invalid_response`). Invalid output has a 30-second cooldown; provider limits/outages use five minutes.

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.11 - 2026-10-06
+
+### Fixed
+
+- Public chat prioritizes the question's existing evidence, uses a smaller overview, and limits missing-fact lookups to one round instead of repeatedly searching broad FAQs.
+- Reply cards come from the records actually cited, so a final unrelated lookup cannot replace the speaker or tool cards supporting an answer.
+- Reviewed, attributed MCP, A2A and ACP explanations remain useful without a model. Greetings need no model calls, and short follow-ups reuse the recent question.
+- Accept JSON fenced by a model while keeping source membership and privacy checks. Invalid model output gets a short cooldown; provider quota and outage cooldowns remain conservative.
+- Static fallback includes only a bounded reason code, never provider exception text, prompts or credentials.
+
 ## 0.0.10 - 2026-10-06
 
 ### Fixed
