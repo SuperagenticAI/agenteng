@@ -1,243 +1,180 @@
-<img src="https://raw.githubusercontent.com/SuperagenticAI/agenteng/main/docs/assets/logo.png" alt="Agent Engineering HQ" width="96" height="96">
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SuperagenticAI/agenteng/main/docs/assets/logo.png" alt="Agent Engineering HQ" width="128" height="128">
+</p>
 
-# AgentEng · Agent Engineering HQ
+<h1 align="center">AgentEng</h1>
 
-Find the Agent Engineering Conference and Agent Engineering HQ events in **London and San Francisco**, explore the speakers, and participate from your coding agent or terminal.
+<p align="center">
+  <strong>Conference CLI and agent tool for Agent Engineering</strong><br>
+  London and San Francisco conferences, meetups and events
+</p>
 
-AgentEng provides an offline-capable Python CLI, a single-tool MCP server and an A2A 1.0 agent over one public catalogue. Default requests use **zero server-side model calls**. Optional model synthesis and bounded RLM are included, disabled by default.
+<p align="center">
+  <a href="https://pypi.org/project/agenteng/"><img src="https://img.shields.io/pypi/v/agenteng.svg" alt="PyPI"></a>
+  <a href="https://pypi.org/project/agenteng/"><img src="https://img.shields.io/pypi/pyversions/agenteng.svg" alt="Python versions"></a>
+  <a href="https://github.com/SuperagenticAI/agenteng/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/SuperagenticAI/agenteng/ci.yml?branch=main&label=CI" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/pypi/l/agenteng.svg" alt="License"></a>
+  <a href="https://docs.agentengineering.world"><img src="https://img.shields.io/badge/docs-docs.agentengineering.world-0A7EA4" alt="Docs"></a>
+</p>
 
-[Source](https://github.com/SuperagenticAI/agenteng) · [Issues](https://github.com/SuperagenticAI/agenteng/issues) · [Documentation](docs/index.md) · [Getting started](#getting-started) · [Coding-agent integrations](docs/INTEGRATIONS.md) · [Participation](docs/PARTICIPATION.md) · [Contribute](CONTRIBUTING.md) · [Security](SECURITY.md)
+<p align="center">
+  <a href="https://agentengineering.world">Website</a>
+  ·
+  <a href="https://docs.agentengineering.world">Docs</a>
+  ·
+  <a href="https://a2a.agentengineering.world">A2A host</a>
+  ·
+  <a href="https://a2a.agentengineering.world/mcp/">MCP</a>
+  ·
+  <a href="https://pypi.org/project/agenteng/">PyPI</a>
+  ·
+  <a href="https://github.com/SuperagenticAI/agenteng">Source</a>
+</p>
 
-## What it does
+## What it is
 
-- Discover public London and San Francisco events, speakers, agendas and recordings.
-- Browse 456 tool/model/infrastructure listings across twelve disciplines, with search, filters, pagination and source links.
-- Read published ticket prices and follow the official registration link.
-- Search attributed public sources, select sessions by topic and export a UTC calendar.
-- Use the same typed requests from the CLI, MCP, A2A or HTTP.
-- See source links, snapshot freshness, date precision and timezone-aware event state.
-- Prepare reusable local talk, workshop and event-idea drafts, with preview and Markdown export.
-- Run an optional, credentialed private intake pilot for one organizer, disabled by default.
+**AgentEng** is the offline-capable Python CLI, MCP server and A2A agent for the [Agent Engineering](https://agentengineering.world) conference, meetups and events in **London** and **San Francisco**.
 
-The catalogue is a snapshot. It does not verify live ticket availability or registration approval. Unknown historical dates and session times remain unknown. Consult the linked organizer/registration page for current details. See [data and attribution](docs/DATA.md).
+Use it from a terminal or from a coding agent to browse events, speakers, agendas, tickets, FAQ and the tool directory. Default requests use the bundled catalogue with **no server-side model calls**.
 
-## Getting started
+| Surface | Where |
+| --- | --- |
+| Website | [agentengineering.world](https://agentengineering.world) |
+| Docs | [docs.agentengineering.world](https://docs.agentengineering.world) |
+| A2A agent | [a2a.agentengineering.world](https://a2a.agentengineering.world) |
+| MCP (remote) | [a2a.agentengineering.world/mcp/](https://a2a.agentengineering.world/mcp/) |
+| PyPI | [pypi.org/project/agenteng](https://pypi.org/project/agenteng/) |
 
-Install the latest AgentEng from [PyPI](https://pypi.org/project/agenteng/) (CLI plus MCP and A2A extras; RLM stays optional and is not included):
+The catalogue is a snapshot. It does not verify live ticket availability. See [data and attribution](docs/DATA.md).
+
+## Install
 
 ```sh
-# One-liner
+# One-liner (CLI + MCP + A2A extras)
 curl -fsSL https://agentengineering.world/install.sh | sh
 
-# Or install directly with uv
+# Or with uv / pip
 uv tool install --upgrade 'agenteng[server]'
+pip install -U 'agenteng[server]'
 ```
 
-Pin a version with `AGENTENG_VERSION=0.0.7`, change extras with `AGENTENG_EXTRAS=mcp`, or re-run the installer to upgrade. The installer bootstraps [uv](https://docs.astral.sh/uv/) when needed, never uses sudo, and falls back to a user virtualenv with pip if uv tool install fails.
+Pin a version with `AGENTENG_VERSION=0.0.7`. The installer bootstraps [uv](https://docs.astral.sh/uv/) when needed and never uses sudo.
 
-Then try (`ae` is a short alias for `agenteng`):
+`ae` is a short alias for `agenteng` (handy for developers). Commands on the website and in docs always use `agenteng`.
+
+## Quickstart
 
 ```sh
-ae                 # interactive menu (TTY)
-ae discover
-ae events --upcoming
-ae --json events   # same Result JSON agents, MCP and A2A use
-ae connect cursor
+agenteng                         # interactive menu (TTY)
+agenteng discover                # London / SF overview
+agenteng events --upcoming
+agenteng talks
+agenteng speakers --city London
+agenteng agenda agenteng-london-2026
+agenteng tickets agenteng-london-2026
+agenteng --json events           # shared Result JSON for agents and pipes
 ```
 
-On a terminal, commands print cards and tables. Agents should use `--json`, set
-`AGENTENG_OUTPUT=json`, or pipe the output; non-TTY stdout always returns the
-shared Result JSON contract.
+On a terminal, commands print cards and tables. Agents should use `--json` (before the command), set `AGENTENG_OUTPUT=json`, or pipe stdout. Non-TTY stdout always returns the shared Result JSON.
 
-From a source checkout for development:
+Put global flags before the command: `agenteng --json events --city London`.
+
+## For agents
+
+### MCP (local)
+
+```json
+{
+  "mcpServers": {
+    "agenteng": {
+      "command": "agenteng",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+`agenteng connect cursor` (also `claude-code`, `codex`) prints setup for that client. See [integrations](https://docs.agentengineering.world/INTEGRATIONS/).
+
+### A2A
+
+- Agent card: `https://a2a.agentengineering.world/.well-known/agent-card.json`
+- JSON-RPC: `https://a2a.agentengineering.world/` with header `A2A-Version: 1.0`
+- MCP Streamable HTTP: `https://a2a.agentengineering.world/mcp/`
+
+### JSON output
+
+```sh
+agenteng --json discover
+agenteng --json talks
+AGENTENG_OUTPUT=json agenteng events --upcoming
+```
+
+The same typed request works from CLI, MCP, A2A and HTTP (`/v1/query`). Full operation list: [architecture](docs/ARCHITECTURE.md).
+
+## Event day
+
+```sh
+agenteng live                    # full-screen now/next board (Ctrl-C exits)
+agenteng live --at 10:40         # preview the board at a given time
+agenteng bingo --seed 7          # talk bingo; same seed, same card
+agenteng bingo --format html --output bingo.html
+agenteng about                   # what Agent Engineering is
+agenteng hq                      # manifesto, mindset, reading
+agenteng agenda agenteng-london-2026
+agenteng talks
+agenteng speakers --city London
+```
+
+Piped or with `--json`, `agenteng live` prints one Result JSON snapshot (`agenteng --json live --once`). Website command wording is tracked in [docs/SITE-SYNC.md](docs/SITE-SYNC.md).
+
+## Experimental: drive a coding agent (`agenteng code`)
+
+`agenteng code` launches an [ACP](https://agentclientprotocol.com) coding agent you already use, attaches the AgentEng MCP server and streams its work. Every permission is asked in your terminal. Options and output may change between releases.
+
+```sh
+uv tool install 'agenteng[acp]'
+agenteng code --list
+agenteng code --agent claude "summarise talk agenteng-london-2026-14"
+```
+
+Details: [ACP design note](docs/ACP.md) and [docs](https://docs.agentengineering.world/ACP/).
+
+## Privacy
+
+- **No personal data** about users, and none is collected.
+- **No telemetry.** The CLI stays offline unless you pass `--remote URL`.
+- **Local files stay local.** Bookmarks and `agenteng code` logs live under your config directory and are never uploaded.
+- The public host keeps no conversations or request bodies.
+
+Full policy: [Privacy in DATA.md](docs/DATA.md#privacy).
+
+## Docs
+
+| Topic | Link |
+| --- | --- |
+| Start here | [docs.agentengineering.world](https://docs.agentengineering.world) |
+| Coding-agent integrations | [INTEGRATIONS](https://docs.agentengineering.world/INTEGRATIONS/) |
+| Tool directory | [TOOLS](https://docs.agentengineering.world/TOOLS/) |
+| ACP client | [ACP](https://docs.agentengineering.world/ACP/) |
+| Participation drafts | [PARTICIPATION](https://docs.agentengineering.world/PARTICIPATION/) |
+| Data and privacy | [DATA](https://docs.agentengineering.world/DATA/) |
+| Architecture | [ARCHITECTURE](docs/ARCHITECTURE.md) |
+| Releases | [RELEASING](docs/RELEASING.md) |
+| Changelog | [CHANGELOG.md](CHANGELOG.md) |
+
+## Contributing
+
+Code, docs and source-backed data improvements are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md), the [Code of Conduct](CODE_OF_CONDUCT.md) and [SECURITY.md](SECURITY.md).
 
 ```sh
 git clone https://github.com/SuperagenticAI/agenteng.git
 cd agenteng
-uv sync --frozen
-uv run --frozen agenteng events --upcoming
-uv run --frozen agenteng disciplines
-uv run --frozen agenteng tools --discipline memory
-uv run --frozen agenteng tool langgraph
-uv run --frozen agenteng tickets agenteng-london-2026
-uv run --frozen agenteng agenda agenteng-london-2026 --topic memory
-uv run --frozen agenteng speaker samuel-colvin
-uv run --frozen agenteng talks --search memory
-uv run --frozen agenteng talk samuel-colvin
-uv run --frozen agenteng faq --search tickets
-uv run --frozen agenteng venue agenteng-london-2026
-uv run --frozen agenteng sponsors
-uv run --frozen agenteng conduct
-uv run --frozen agenteng themes
-uv run --frozen agenteng now agenteng-london-2026
-uv run --frozen agenteng save samuel-colvin
-uv run --frozen agenteng my-agenda
-uv run --frozen agenteng agenda agenteng-london-2026 --format ics --output london.ics
-uv run --frozen agenteng ask 'When is the next London conference?'
-uv run --frozen agenteng participate
-uv run --frozen agenteng plan agenteng-london-2026 --interest evaluation --format ics --output agenda.ics
-```
-
-This source tracks the **0.0.7 alpha** release. The published package is on [PyPI](https://pypi.org/project/agenteng/).
-
-The CLI uses its bundled catalogue offline. Put global options before the command:
-
-```sh
-ae --json events --city London
-ae events --city London
-ae --remote https://YOUR_HOST events --upcoming
-ae --catalogue ./my-catalogue.json speakers --city san-francisco   # your own export, see below
-ae query '{"operation":"events","upcoming":true}'
-```
-
-`--catalogue` reads a catalogue you exported yourself (see
-[Updating the catalogue](#updating-the-catalogue)); without it the CLI uses the
-bundled snapshot. Run `agenteng --help` or `agenteng COMMAND --help` for command options.
-
-### At the event
-
-```sh
-ae live                      # full-screen now/next board for venue screens (Ctrl-C exits)
-ae live --at 10:40           # demo the board at a given time on the event day
-ae bingo --seed 7            # talk bingo from published talk terms; same seed, same card
-ae bingo --format html --output bingo.html   # printable card (also text, svg)
-ae bingo --play              # mark squares as you hear them
-ae about                     # what Agent Engineering is, organiser, chair, how to connect agents
-ae hq manifesto              # Agent Engineering HQ: manifesto, mindset, reading
-```
-
-`ae now --screen` is the same as `ae live`. Piped or with `--json`, `ae live` prints
-one Result JSON snapshot. The website's command wording also works where a real
-command exists (`ae events --london --next`, `ae --list-disciplines`,
-`ae inspect --speaker SLUG`); [docs/SITE-SYNC.md](docs/SITE-SYNC.md) tracks every
-command shown on agentengineering.world.
-
-Draft an idea without sending it:
-
-```sh
-agenteng engage --city London --output draft.json
-agenteng proposal preview draft.json
-agenteng proposal export draft.json --format markdown --output draft.md
-```
-
-## Tool directory
-
-The directory covers all 461 entries in the imported SuperRadar snapshot, normalized into 456 listings after duplicate merges and separating Graphiti from Zep. Browse alphabetically across the website's twelve disciplines; there is no fixed category quota. Listings provide attributed names and links, not popularity rankings or integrations. Source Hold/deprecated entries remain accessible with `--status all` and are omitted from default browse results.
-
-```sh
-agenteng tools --discipline inference --kind runtime
-agenteng tools --search 'Gemini CLI'
-agenteng --json tools --limit 100 --offset 100 --status all
-agenteng tool letta-memory
-```
-
-Repeat filters with the returned `next_offset` to retrieve every matching listing. All directory operations work offline with zero model calls. See [directory usage, provenance and contribution policy](docs/TOOLS.md).
-
-## Connect an agent
-
-Local MCP exposes exactly one typed `agenteng` tool:
-
-```sh
-uv run --frozen --extra mcp agenteng mcp
-```
-
-`agenteng connect codex`, `agenteng connect claude-code` and `agenteng connect cursor` print local setup instructions. Add `--transport http --url https://YOUR_HOST` for a running remote service. They do not modify editor settings. See [integration examples](docs/INTEGRATIONS.md).
-
-After a tool install, a stdio client can use:
-
-```json
-{"mcpServers":{"agenteng":{"command":"agenteng","args":["mcp"]}}}
-```
-
-Run the combined HTTP, MCP and A2A service:
-
-```sh
-uv run --frozen --extra server agenteng serve --host 127.0.0.1 --port 8000
-```
-
-| Interface | Route |
-| --- | --- |
-| MCP Streamable HTTP | `/mcp/` |
-| A2A 1.0 discovery | `/.well-known/agent-card.json` |
-| A2A JSON-RPC | `/` with `A2A-Version: 1.0` |
-| Typed HTTP query | `/v1/query` |
-| Catalogue / health | `/catalogue.json`, `/health` |
-| Crawlable discovery | `/`, `/events/EVENT_ID`, `/events.json`, `/tools`, `/tools/TOOL_ID` |
-| Full tool directory feed | `/tools.json` |
-| Crawler / agent guides | `/llms.txt`, `/robots.txt`, `/sitemap.xml` |
-
-MCP call example:
-
-```json
-{"name":"agenteng","arguments":{"request":{"operation":"tickets","event_id":"agenteng-london-2026"}}}
-```
-
-Public operations are `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `save`, `unsave`, `my_agenda`, `tickets`, `recordings`, `search`, `plan`, `ask` and `participate`. Draft operations are `proposal_draft`, `proposal_preview` and `proposal_export`. Begin with `discover` for featured London/San Francisco events and interfaces, or `events` for published IDs. The same request can be an A2A JSON data part or an HTTP body; plain A2A text uses question routing or public-source search. Responses include supporting sources and snapshot metadata. A2A returns immediate messages and advertises no streaming or push notifications.
-
-The official host is live at `https://a2a.agentengineering.world` (health, agent card, catalogue, A2A JSON-RPC and MCP `/mcp/`). To self-host, set `AGENTENG_PUBLIC_URL` to your HTTPS origin and configure allowed origins. See [deployment](deploy/README.md), [architecture](docs/ARCHITECTURE.md) and the [HTTP MCP config](deploy/mcp-http.json).
-
-For Google Cloud Run, the [console setup guide](deploy/README.md) connects this repository through Cloud Build with **Push new tag**, regex `^v.*$` and configuration file `cloudbuild.yaml`. Version tags deploy the public server and separately trigger PyPI publishing; ordinary commits do not deploy either release.
-
-## Drive a coding agent (experimental ACP client)
-
-`ae code` launches an [Agent Client Protocol](https://agentclientprotocol.com) coding agent you already use (Claude Code, Codex, Gemini CLI, Copilot, Cursor, OpenCode and more), attaches the AgentEng MCP server and streams its work. Every permission request is asked in your terminal; nothing is auto-approved. `ae code` is **experimental**: its options and output may change between releases.
-
-```sh
-uv tool install 'agenteng[acp]'
-ae code --list
-ae code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
-ae code --agent claude    # chat: /help, /context ID, /agent, /exit
-```
-
-With no prompt in a terminal (or with `--chat`), `ae code` opens a chat on one session: Ctrl-C cancels the current turn, Ctrl-D or `/exit` ends it. File edits show as coloured diffs in the permission prompt. In the `ae` menu, **Code with an agent (ACP, experimental)** picks an installed agent and, optionally, a talk as context. Sign-in stays with each agent. See the [ACP design note](docs/ACP.md).
-
-## Optional model engines
-
-`lookup` and `auto` remain model-free. `standard` performs one provider request. `rlm` offers a persistent Monty sandbox with one model-visible `run_code` tool and scoped evidence reads. The root can make **one child OR leaf delegation total**, at **maximum depth 1**. Children cannot delegate. All calls share model-call, token-reservation and deadline limits.
-
-Install the RLM extra and configure an operator environment only when you intend to test it:
-
-```sh
-uv sync --frozen --extra rlm
-# Configure the enable flag, operator credential, provider key and model in your environment.
-uv run --frozen --extra rlm agenteng ask 'Compare memory sessions' --engine rlm --event agenteng-london-2026
-```
-
-Use `.env.example` as a variable reference; it is not loaded automatically. `AGENTENG_ENABLE_STANDARD=1` and `AGENTENG_ENABLE_RLM=1` enable the respective paths. Both require `AGENTENG_OPERATOR_TOKEN`, `AGENTENG_MODEL_API_KEY` and an operator-selected `AGENTENG_MODEL`; remote callers must supply the operator bearer credential. An OpenAI-compatible provider can be selected with `AGENTENG_MODEL_BASE_URL` and must support the required tool/JSON features.
-
-Defaults cap requests at 6 model calls, 1,200 output tokens per call, 12,000 conservatively reserved tokens and 45 seconds. One recursion can involve several model calls. These are per-request limits, not a daily spending cap. Model code cannot access host files, network or environment callbacks. Citation checks enforce source membership, not the truth of generated prose. Live-provider answer quality and billing are not yet validated; tests use scripted providers. The public container omits the RLM runtime and keeps both engines disabled.
-
-## Participate and contribute
-
-Have an idea for a talk, workshop or future event in London or San Francisco? See [Community participation](docs/COMMUNITY.md) and [draft/intake usage](docs/PARTICIPATION.md). Private proposals go only to Agent Engineering HQ; public event discussions are opt-in. An idea or submission does not guarantee review, acceptance, a response or an event. **London 2026 has an invited programme and no public CFP.**
-
-`agenteng participate` (or a typed `{"operation":"participate"}` agent request) returns the public organizer contact, a proposal checklist and the current capability limits. It sends no message and creates no submission receipt.
-
-Offline drafting is available now. Optional private intake requires persistent storage, an operator-approved privacy notice and separate participant credentials. `proposal_prepare` previews the exact draft; `proposal_submit` requires explicit confirmation and returns a receipt after storage. Authors can inspect status or withdraw. The organizer reviews through local private-store administration. The pilot does not provide public signup, notifications or automatic publication. An enabled intake advertises write behavior through MCP; the default service stays read-only. The supplied Cloud Run deployment keeps intake disabled.
-
-Code, documentation and source-backed data improvements are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and use private [security reporting](SECURITY.md) for vulnerabilities.
-
-```sh
 uv sync --frozen --all-extras
 uv run --frozen pytest -q
 uv run --frozen ruff check src tests scripts
-uv run --frozen python scripts/check-public-release.py
 ```
-
-### Updating the catalogue
-
-The website is the event-data source. Updating its public catalogue requires a website checkout with TypeScript installed (`npm ci` in that checkout):
-
-```sh
-node scripts/export-website.mjs /path/to/agent-engineering-summit                      # bundled catalogue
-node scripts/export-website.mjs /path/to/agent-engineering-summit ./my-catalogue.json  # your own copy
-ae --catalogue ./my-catalogue.json events
-```
-
-The export reads literal data and page text from the website source (events, speakers, agenda, FAQ, Agent Engineering HQ manifesto, mindset and reading, and the organiser card) without running website code, and fails on drift instead of guessing.
-
-Exports record their source revision/content hash and publication time. Changed event content requires a refreshed build; no background synchronization is claimed. Version tags trigger verified PyPI publishing and a GitHub release once the repository publishing secret is configured. See [release verification and publisher setup](docs/RELEASING.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-Source code and original documentation are licensed under [Apache-2.0](LICENSE). Third-party event/speaker material and linked recordings retain their own rights; see [NOTICE](NOTICE) and [DATA.md](docs/DATA.md).
+Source code and original documentation are licensed under [Apache-2.0](LICENSE). Third-party event and speaker material retains its own rights; see [NOTICE](NOTICE) and [DATA.md](docs/DATA.md).

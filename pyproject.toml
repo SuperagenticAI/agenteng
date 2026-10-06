@@ -27,7 +27,7 @@ dependencies = [
 Homepage = "https://agentengineering.world"
 Repository = "https://github.com/SuperagenticAI/agenteng"
 Issues = "https://github.com/SuperagenticAI/agenteng/issues"
-Documentation = "https://superagenticai.github.io/agenteng/"
+Documentation = "https://docs.agentengineering.world"
 Changelog = "https://github.com/SuperagenticAI/agenteng/blob/main/CHANGELOG.md"
 
 [project.scripts]
