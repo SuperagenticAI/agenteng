@@ -1,13 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.0.7 - 2026-10-06
 
 ### Added
 
-- `ae live` (also `ae now --screen`): a full-screen, auto-refreshing now/next board for venue screens with the event title, venue and track, a large clock, the current talk with a progress bar, next up and later sessions. `--event`, `--refresh SECONDS`, `--at` (ISO time or `HH:MM` on the event day; the clock runs forward from it) and `--once`. Piped or with `--json` it prints one Result JSON snapshot. New `live` operation for MCP, A2A and HTTP; `now` and `next` also accept `at`.
-- `ae bingo`: talk bingo cards (5x5 with a free centre, or 4x4) built only from terms that appear in the event's published talk titles, abstracts and agenda, plus the speakers' published disciplines. `--seed` makes cards reproducible and is printed on every card; `--format text|svg|html` and `--output` give printable cards; `--play` marks squares in the terminal and calls bingo. New `bingo` operation; local only, nothing is sent.
-- `ae about` (organiser, conference chair, links and how to connect agents: install line, remote MCP URL, agent card) and `ae hq [manifesto|mindset|reading]` (Agent Engineering HQ content). Both come from published website data, exported by `scripts/export-website.mjs` into new `about` and `hq` catalogue records with source evidence.
-- Website command wording: city slugs (`--city san-francisco`, `sf`, `london`) for every city filter including MCP and A2A requests, `events [CITY]`, `events --next` / `--history` / `--previous`, hidden `--london` / `--sf` shortcuts, city names as event IDs (`ae agenda london`), `ae --list-disciplines`, `ae --themes`, `ae --list-cities`, `ae --info`, `ae inspect --speaker SLUG` and `ae whoami --chair`. Existing commands and JSON are unchanged.
+- `agenteng live` (also `agenteng now --screen`): a full-screen, auto-refreshing now/next board for venue screens with the event title, venue and track, a large clock, the current talk with a progress bar, next up and later sessions. `--event`, `--refresh SECONDS`, `--at` (ISO time or `HH:MM` on the event day; the clock runs forward from it) and `--once`. Piped or with `--json` it prints one Result JSON snapshot. New `live` operation for MCP, A2A and HTTP; `now` and `next` also accept `at`.
+- `agenteng bingo`: talk bingo cards (5x5 with a free centre, or 4x4) built only from terms that appear in the event's published talk titles, abstracts and agenda, plus the speakers' published disciplines. `--seed` makes cards reproducible and is printed on every card; `--format text|svg|html` and `--output` give printable cards; `--play` marks squares in the terminal and calls bingo. New `bingo` operation; local only, nothing is sent.
+- `agenteng about` (organiser, conference chair, links and how to connect agents: install line, remote MCP URL, agent card) and `agenteng hq [manifesto|mindset|reading]` (Agent Engineering HQ content). Both come from published website data, exported by `scripts/export-website.mjs` into new `about` and `hq` catalogue records with source evidence.
+- Website command wording: city slugs (`--city san-francisco`, `sf`, `london`) for every city filter including MCP and A2A requests, `events [CITY]`, `events --next` / `--history` / `--previous`, hidden `--london` / `--sf` shortcuts, city names as event IDs (`agenteng agenda london`), `agenteng --list-disciplines`, `agenteng --themes`, `agenteng --list-cities`, `agenteng --info`, `agenteng inspect --speaker SLUG` and `agenteng whoami --chair`. Existing commands and JSON are unchanged. The short `ae` alias works the same for local developer convenience; website copy always shows `agenteng`.
 - `docs/SITE-SYNC.md` and `tests/fixtures/site_commands.tsv`: all 45 commands shown on agentengineering.world with their status; CI runs every row. 17 run after this change (3 in 0.0.6).
 - Menu entries for the live board, talk bingo, about and Agent Engineering HQ; an `agenteng-event-day` A2A skill.
 
@@ -16,7 +16,11 @@
 - The remote MCP server reports the agenteng version in `serverInfo` instead of the MCP SDK version.
 - `--remote` requests omit default fields so a newer CLI keeps working against an older server.
 - Privacy: a new config directory and `acp-logs/` are created `0700`; bookmarks are written `0600` from the start (atomic replace). `agenteng serve` no longer writes per-request access lines (client address, path) unless `--access-log` is passed. New privacy section in `docs/DATA.md`.
-- README and docs: `ae --json events` (global options go before the command) and a working `--catalogue` example with export instructions.
+- README and docs: `agenteng --json events` (global options go before the command) and a working `--catalogue` example with export instructions.
+
+### Documentation
+
+- Site sync guide: conference website command examples always use `agenteng`, never the `ae` alias.
 
 ## 0.0.6 - 2026-10-06
 

@@ -93,7 +93,7 @@ snapshot, so event lookup, tool browsing and local drafting work offline with
 On a terminal, `ae` opens an interactive menu and commands render tables and cards.
 Pass `--json`, set `AGENTENG_OUTPUT=json`, or pipe stdout to get the shared Result
 JSON used by MCP and A2A. The package is named `agenteng`. The CLI commands are
-`agenteng` and the short alias `ae`. This source tracks the **0.0.6 alpha** release.
+`agenteng` and the short alias `ae`. This source tracks the **0.0.7 alpha** release.
 Run `ae --help` to explore commands, or `ae COMMAND --help` for options.
 Installing the CLI does not start or publish a hosted service.
 
