@@ -21,7 +21,15 @@ import httpx
 
 from .contracts import Model
 from .chat_privacy import PRIVACY_REPLY, SECRET, has_sensitive_input, identifiers
-from .chat_context import PROTOCOLS, chat_fallback, cited_data, resolved_question
+from .chat_context import (
+    PROTOCOLS,
+    TOOLING,
+    attendance_question,
+    chat_fallback,
+    cited_data,
+    focused_search,
+    resolved_question,
+)
 from .engines import Budget, HTTPProvider, validated
 from .models import Request
 from .tool_directory import DisciplineID
@@ -210,7 +218,7 @@ class PublicChat:
 
         initial = evidence(fallback)
         discovery = evidence(service.lookup(Request(operation="about")), cards=False)
-        sources.update({source.id: source for source in PROTOCOLS.values()})
+        sources.update({source.id: source for source in [*PROTOCOLS.values(), TOOLING]})
         # History stays data inside the user payload, never a model instruction role.
         messages = [
             {"role": "system", "content": INSTRUCTION},
@@ -226,20 +234,33 @@ class PublicChat:
                         "protocol_basics": [
                             source.model_dump(mode="json") for source in PROTOCOLS.values()
                         ],
+                        "agenteng_tooling": TOOLING.model_dump(mode="json"),
                     }
                 ),
             },
         ]
+        allow_faq = attendance_question(resolved_question(request))
+        parameters = PublicLookup.model_json_schema()
+        if not allow_faq:
+            operations = parameters["properties"]["operation"]["enum"]
+            operations.remove("faq")
         tool = {
             "type": "function",
             "function": {
                 "name": "lookup_public",
                 "description": "Read published AgentEng event and engineering-tool catalogue records.",
-                "parameters": PublicLookup.model_json_schema(),
+                "parameters": parameters,
             },
         }
         for round_number in range(2):
-            message = budget.call(provider, messages, tools=[tool] if round_number == 0 else None)
+            # A supported answer already has its evidence. Request final JSON directly,
+            # so small models don't wander into tools or return unconstrained plain text.
+            needs_lookup = fallback.status != "ok"
+            message = budget.call(
+                provider,
+                messages,
+                tools=[tool] if round_number == 0 and needs_lookup else None,
+            )
             calls = message.get("tool_calls")
             if not calls:
                 content = message.get("content")
@@ -281,8 +302,25 @@ class PublicChat:
                     if call["function"]["name"] != "lookup_public":
                         raise ValueError("Unsupported tool")
                     arguments = PublicLookup.model_validate_json(call["function"]["arguments"])
+                    if arguments.operation == "faq" and not allow_faq:
+                        raise ValueError("FAQ is only for attendance questions")
                     lookup = Request.model_validate(arguments.model_dump(exclude_none=True))
-                    public_result = service.lookup(lookup)
+                    if lookup.operation in {"ask", "search"}:
+                        public_result = focused_search(
+                            service,
+                            lookup.query,
+                            lookup.limit,
+                            allow_faq=allow_faq,
+                        )
+                    elif lookup.operation == "faq":
+                        public_result = focused_search(
+                            service,
+                            resolved_question(request),
+                            lookup.limit,
+                            allow_faq=True,
+                        )
+                    else:
+                        public_result = service.lookup(lookup)
                     result = evidence(public_result)
                 except (ValueError, KeyError, TypeError):
                     result = {

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.12 - 2026-10-06
+
+### Fixed
+
+- Conversational questions such as "How are you?" and thanks receive direct replies without catalogue searches or inference. Identity, agent engineering definitions and setup questions have focused public fallback answers.
+- General chat search ignores conversational filler, requires meaningful source overlap, and excludes attendance FAQs unless the visitor asks an attendance question. Fallback returns concise evidence rather than an unrelated search-card dump.
+- When the question already has supporting evidence, request a final JSON answer directly instead of enabling unnecessary tool calls. Missing-evidence questions retain a bounded lookup round; FAQ is absent from their tool schema unless relevant and irrelevant FAQ calls are rejected.
+- Source citation, unpublished-contact and credential checks, provider privacy settings, model budgets and outage fallback remain enforced.
+
 ## 0.0.11 - 2026-10-06
 
 ### Fixed

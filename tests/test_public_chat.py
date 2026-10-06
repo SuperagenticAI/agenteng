@@ -8,6 +8,7 @@ import httpx
 import pytest
 from pydantic import ValidationError
 
+from agenteng.chat_context import chat_fallback
 from agenteng.config import Settings
 from agenteng.models import Request
 from agenteng.server import create_app
@@ -176,7 +177,7 @@ async def test_timeout_and_malformed_provider_output_return_lookup(failure):
     service = chat_service(provider)
     request = Request(operation="chat", query="memory")
     result = await service.execute(request)
-    expected = service.lookup(request)
+    expected = chat_fallback(service, request)
     assert result.answer == expected.answer and result.sources == expected.sources
     assert result.engine == "lookup" and "private-error" not in result.answer
 

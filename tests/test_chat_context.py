@@ -149,3 +149,118 @@ async def test_fenced_output_still_rejects_unknown_citations():
     )
     assert result.engine == "lookup" and result.usage["fallback_reason"] == "invalid_response"
     assert "Invented answer" not in result.answer
+
+
+@pytest.mark.parametrize("question", ["How are you?", "Hi there!", "Hello AgentEng", "Thanks!"])
+@pytest.mark.asyncio
+async def test_small_talk_never_searches_faq_or_calls_provider(question):
+    class Unexpected:
+        def complete(self, *args, **kwargs):
+            pytest.fail("Small talk must not need inference")
+
+    result = await Service(Settings(enable_chat=True), provider=Unexpected()).execute(
+        Request(operation="chat", query=question)
+    )
+    assert result.status == "ok" and result.data == {} and result.sources == []
+    assert "source excerpts" not in result.answer and "FAQ" not in result.answer
+
+
+@pytest.mark.parametrize("question", ["Who are you?", "What can you do?", "What is AgentEng?"])
+def test_identity_fallback_explains_agent_infrastructure_without_event_dump(question):
+    result = chat_fallback(Service(Settings()), Request(operation="chat", query=question))
+    assert "open-source agent infrastructure" in result.answer
+    assert "MCP" in result.answer and "A2A" in result.answer and "ACP" in result.answer
+    assert result.data == {} and [source.id for source in result.sources] == ["agenteng-tooling"]
+
+
+def test_agent_engineering_definition_is_a_direct_public_answer():
+    result = chat_fallback(
+        Service(Settings()), Request(operation="chat", query="What is agent engineering?")
+    )
+    assert "designing, building, evaluating" in result.answer
+    assert result.data == {} and [source.id for source in result.sources] == ["about"]
+
+
+def test_conversational_filler_cannot_match_unrelated_faqs():
+    result = chat_fallback(
+        Service(Settings()), Request(operation="chat", query="Could you give me some more?")
+    )
+    assert result.status == "not_found" and result.data == {} and result.sources == []
+
+
+def test_practical_attendance_question_still_gets_published_invoice_answer():
+    result = chat_fallback(
+        Service(Settings()), Request(operation="chat", query="How do I get an invoice?")
+    )
+    assert "Download Invoice" in result.answer
+    assert result.sources and any(source.id == "faq-6" for source in result.sources)
+    assert result.data == {}
+
+
+@pytest.mark.asyncio
+async def test_supplied_protocol_evidence_requests_final_json_without_tools():
+    class Provider:
+        def complete(self, messages, **kwargs):
+            assert kwargs["tools"] is None
+            return {
+                "message": {
+                    "content": json.dumps(
+                        {
+                            "answer": "MCP connects agents to tools and data.",
+                            "source_ids": ["protocol-mcp"],
+                        }
+                    )
+                }
+            }
+
+    result = await Service(Settings(enable_chat=True), provider=Provider()).execute(
+        Request(operation="chat", query="What is MCP?")
+    )
+    assert result.engine == "chat" and result.data == {}
+
+
+@pytest.mark.asyncio
+async def test_model_faq_call_is_rejected_for_non_attendance_question():
+    class Provider:
+        calls = 0
+
+        def complete(self, messages, **kwargs):
+            self.calls += 1
+            if self.calls == 1:
+                assert (
+                    "faq"
+                    not in kwargs["tools"][0]["function"]["parameters"]["properties"]["operation"][
+                        "enum"
+                    ]
+                )
+                return {
+                    "message": {
+                        "tool_calls": [
+                            {
+                                "id": "irrelevant-faq",
+                                "function": {
+                                    "name": "lookup_public",
+                                    "arguments": '{"operation":"faq"}',
+                                },
+                            }
+                        ]
+                    }
+                }
+            tool_result = json.loads(messages[-1]["content"])
+            assert "error" in tool_result and "data" not in tool_result
+            return {
+                "message": {
+                    "content": json.dumps(
+                        {
+                            "answer": "I can help explain MCP, which connects AI applications to tools and data.",
+                            "source_ids": ["protocol-mcp"],
+                        }
+                    )
+                }
+            }
+
+    result = await Service(Settings(enable_chat=True), provider=Provider()).execute(
+        Request(operation="chat", query="Can you help me with zyzzyva?")
+    )
+    assert result.engine == "chat" and result.data == {}
+    assert all(not source.id.startswith("faq-") for source in result.sources)
