@@ -18,6 +18,7 @@ from typing import Literal
 from pydantic import Field
 
 from .contracts import Model
+from .chat_privacy import PRIVACY_REPLY, SECRET, has_sensitive_input, identifiers
 from .engines import Budget, HTTPProvider, validated
 from .models import Request
 from .tool_directory import DisciplineID
@@ -67,6 +68,7 @@ INSTRUCTION = (
     "available. Return a JSON object with answer (string) and source_ids (nonempty list of "
     "supporting source IDs you actually received). Keep the answer concise and conversational. "
     "Avoid em dashes. You may use at most two lookup rounds before your final answer."
+    " Never provide personal contact details unless they appear in the supplied published evidence."
 )
 
 
@@ -88,9 +90,27 @@ class PublicChat:
         self.service = service
         self.calls = deque()
         self.cooldown_until = 0.0
+        self.public_identifiers = identifiers(json.dumps(service.catalogue.model_dump(mode="json")))
 
     async def execute(self, request):
         service = self.service
+        visitor_text = [
+            request.query,
+            *[turn.content for turn in request.history if turn.role == "user"],
+        ]
+        assistant_text = [turn.content for turn in request.history if turn.role == "assistant"]
+        configured_secrets = [service.settings.model_api_key, service.settings.operator_token]
+        if any(
+            has_sensitive_input(text, self.public_identifiers)
+            or any(value and value in text for value in configured_secrets)
+            for text in visitor_text
+        ) or any(
+            SECRET.search(text)
+            or identifiers(text) - self.public_identifiers
+            or any(value and value in text for value in configured_secrets)
+            for text in assistant_text
+        ):
+            return service.result(PRIVACY_REPLY, status="unavailable")
         fallback = service.lookup(request)
         configured = service.provider or (service.settings.model and service.settings.model_api_key)
         if not service.settings.enable_chat or not configured:
@@ -139,7 +159,7 @@ class PublicChat:
             request_timeout=18,
         )
         budget = Budget(settings, cancelled)
-        provider = service.provider or HTTPProvider(settings)
+        provider = service.provider or HTTPProvider(settings, public_chat=True)
         sources = {}
         display_data = fallback.data
 
@@ -186,6 +206,21 @@ class PublicChat:
             calls = message.get("tool_calls")
             if not calls:
                 final = validated(message.get("content"), set(sources))
+                published = self.public_identifiers | identifiers(
+                    " ".join(sources[sid].text for sid in final["source_ids"])
+                )
+                if (
+                    SECRET.search(final["answer"])
+                    or identifiers(final["answer"]) - published
+                    or any(
+                        value and value in final["answer"]
+                        for value in (
+                            settings.model_api_key,
+                            settings.operator_token,
+                        )
+                    )
+                ):
+                    raise ValueError("Unpublished contact details in model output")
                 return fallback.model_copy(
                     update={
                         "answer": final["answer"],

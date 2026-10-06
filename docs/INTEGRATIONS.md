@@ -179,7 +179,13 @@ The website sends at most six recent user/assistant messages, each up to 2,000
 characters, for follow-up questions. History is untrusted data, not instructions.
 The service does not retain it. Visitor questions and these recent replies are
 sent to the configured inference provider when chat is enabled; no private
-organizer records are included. Clear chat starts fresh.
+organizer records are included. Common unpublished contact identifiers,
+credentials, explicit self-disclosures and requests for private records are
+refused before a model call. This is not a complete personal-data detector.
+OpenRouter calls require `provider.data_collection=deny` and `provider.zdr=true`;
+unavailable eligible endpoints use static answers without relaxing these rules.
+Disable gateway prompt logging and training opt-ins in your OpenRouter account
+privacy settings. See [privacy details](DATA.md). Clear chat starts fresh.
 
 The default allowed browser origin is `https://agentengineering.world`.
 For a local website running at `http://localhost:8080`, configure the local

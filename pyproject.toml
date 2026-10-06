@@ -1,6 +1,6 @@
 [project]
 name = "agenteng"
-version = "0.0.9"
+version = "0.0.10"
 description = "AgentEng conferences and events in London and San Francisco: CLI, MCP and A2A for Agent Engineering HQ"
 readme = "README.md"
 license = "Apache-2.0"

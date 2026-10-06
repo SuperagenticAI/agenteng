@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import threading
 import time
+from urllib.parse import urlsplit
 from dataclasses import dataclass, field
 from typing import Protocol
 
@@ -33,8 +34,9 @@ class Provider(Protocol):
 
 
 class HTTPProvider:
-    def __init__(self, settings):
+    def __init__(self, settings, *, public_chat=False):
         self.settings = settings
+        self.public_chat = public_chat
 
     def complete(self, messages, *, tools, max_tokens, timeout):
         body = {
@@ -42,6 +44,12 @@ class HTTPProvider:
             "messages": messages,
             "max_completion_tokens": max_tokens,
         }
+        if self.public_chat and urlsplit(self.settings.model_base_url).hostname in {
+            "openrouter.ai",
+            "eu.openrouter.ai",
+        }:
+            # Do not relax these filters if a free endpoint is unavailable.
+            body["provider"] = {"data_collection": "deny", "zdr": True}
         if tools:
             body["tools"] = tools
         else:

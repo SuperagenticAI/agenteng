@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.10 - 2026-10-06
+
+### Fixed
+
+- Public chat refuses requests containing common unpublished email/phone identifiers, credential patterns, self-disclosed personal details or requests for private records before any provider call. Checks recent user/assistant history as well. These checks are not a complete personal-data detector.
+- Reject model output containing unpublished email/phone identifiers or credentials even when its source IDs pass citation validation. Published organizer contact details remain available.
+- OpenRouter public-chat calls require `provider.data_collection=deny` and `provider.zdr=true`. If no eligible free endpoint is available, the existing lookup fallback remains in use; privacy requirements are never relaxed.
+- Verify public A2A and captured model requests against a synthetic private proposal database, including malicious private receipt requests. Private records remain unchanged and absent from public responses and model prompts.
+
+### Documentation
+
+- Correct the privacy guide to describe chat processing, external providers, hosting-platform request metadata, common-identifier checks and their limitations. No blanket claim that all free-text personal data can be detected.
+
 ## 0.0.9 - 2026-10-06
 
 ### Added
