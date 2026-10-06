@@ -1,15 +1,19 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SuperagenticAI/agenteng/main/docs/assets/logo.png" alt="Agent Engineering HQ" width="128" height="128">
+  <a href="https://agentengineering.world">
+    <img src="https://raw.githubusercontent.com/SuperagenticAI/agenteng/main/docs/assets/logo.png" alt="Agent Engineering HQ logo" width="256" height="256">
+  </a>
 </p>
 
-<h1 align="center">AgentEng</h1>
+<h1 align="center">AgentEng: Agent Engineering HQ</h1>
 
 <p align="center">
-  <strong>Conference CLI and agent tool for Agent Engineering</strong><br>
-  London and San Francisco conferences, meetups and events
+  <strong>The home of the agent engineering discipline.</strong><br>
+  Discover events, people and tools — from your terminal to your coding agent.<br>
+  London &amp; San Francisco · CLI · MCP · A2A
 </p>
 
 <p align="center">
+  <a href="https://agentengineering.world"><img src="https://img.shields.io/badge/website-agentengineering.world-0A7EA4" alt="Website: agentengineering.world"></a>
   <a href="https://pypi.org/project/agenteng/"><img src="https://img.shields.io/pypi/v/agenteng.svg" alt="PyPI"></a>
   <a href="https://pypi.org/project/agenteng/"><img src="https://img.shields.io/pypi/pyversions/agenteng.svg" alt="Python versions"></a>
   <a href="https://github.com/SuperagenticAI/agenteng/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/SuperagenticAI/agenteng/ci.yml?branch=main&label=CI" alt="CI"></a>
@@ -31,58 +35,108 @@
   <a href="https://github.com/SuperagenticAI/agenteng">Source</a>
 </p>
 
-## What it is
+<p align="center">
+  <a href="#quickstart">Quickstart</a>
+  ·
+  <a href="#explore-the-tool-directory">Tool directory</a>
+  ·
+  <a href="#connect-your-agent">Connect your agent</a>
+  ·
+  <a href="#contributing">Contribute</a>
+</p>
 
-**AgentEng** is the offline-capable Python CLI, MCP server and A2A agent for the [Agent Engineering](https://agentengineering.world) conference, meetups and events in **London** and **San Francisco**.
+## Why AgentEng?
 
-Use it from a terminal or from a coding agent to browse events, speakers, agendas, tickets, FAQ and the tool directory. Default requests use the bundled catalogue with **no server-side model calls**.
+**AgentEng** brings [Agent Engineering HQ](https://agentengineering.world) to your terminal and coding agent. It is an offline-capable Python CLI, MCP server and A2A agent for conferences, meetups and events in **London** and **San Francisco**, with a directory of tools across **12 agent engineering disciplines**.
 
-| Surface | Where |
+Explore the bundled catalogue with **no provider key or model calls**. Read cards and tables in your terminal, or use the same structured results through CLI JSON, MCP, A2A and HTTP.
+
+| What you can do | How AgentEng helps |
 | --- | --- |
-| Website | [agentengineering.world](https://agentengineering.world) |
-| Docs | [docs.agentengineering.world](https://docs.agentengineering.world) |
-| A2A agent | [a2a.agentengineering.world](https://a2a.agentengineering.world) |
-| MCP (remote) | [a2a.agentengineering.world/mcp/](https://a2a.agentengineering.world/mcp/) |
-| PyPI | [pypi.org/project/agenteng](https://pypi.org/project/agenteng/) |
+| **Find your next event** | Browse events, speakers, talks, agendas and official ticket links. |
+| **Explore the discipline** | Search tools, models and infrastructure across 12 disciplines, with source attribution. |
+| **Bring your coding agent** | Connect Codex, Claude Code or Cursor through MCP; use A2A or HTTP for other clients. |
+| **Make the most of event day** | Save sessions, build your agenda, follow the live now/next board and play talk bingo. |
+| **Shape a future event** | Prepare and preview local talk, workshop or event proposal drafts. |
 
-The catalogue is a snapshot. It does not verify live ticket availability. See [data and attribution](docs/DATA.md).
-
-## Install
-
-```sh
-# One-liner (CLI + MCP + A2A extras)
-curl -fsSL https://agentengineering.world/install.sh | sh
-
-# Or with uv / pip
-uv tool install --upgrade 'agenteng[server]'
-pip install -U 'agenteng[server]'
-```
-
-Pin a version with `AGENTENG_VERSION=0.0.7`. The installer bootstraps [uv](https://docs.astral.sh/uv/) when needed and never uses sudo.
-
-`ae` is a short alias for `agenteng` (handy for developers). Commands on the website and in docs always use `agenteng`.
+The catalogue is a snapshot. Follow official event and registration links for current details and ticket availability. See [data and attribution](docs/DATA.md).
 
 ## Quickstart
 
+### 1. Install
+
+AgentEng requires **Python 3.12+**. The installer includes the CLI, MCP and A2A extras, bootstraps [uv](https://docs.astral.sh/uv/) when needed and never uses sudo.
+
 ```sh
-agenteng                         # interactive menu (TTY)
-agenteng discover                # London / SF overview
+curl -fsSL https://agentengineering.world/install.sh | sh
+```
+
+Prefer a package manager? Choose either:
+
+```sh
+# uv
+uv tool install --upgrade 'agenteng[server]'
+
+# pip
+pip install -U 'agenteng[server]'
+```
+
+To pin the installer to a release, pass the version to `sh`:
+
+```sh
+curl -fsSL https://agentengineering.world/install.sh | AGENTENG_VERSION=0.0.7 sh
+```
+
+### 2. Discover an event
+
+```sh
+agenteng                            # interactive menu (TTY)
+agenteng discover                   # London / San Francisco overview
 agenteng events --upcoming
 agenteng event agenteng-london-2026
-agenteng talks
 agenteng speakers --city London
 agenteng agenda agenteng-london-2026
 agenteng tickets agenteng-london-2026
-agenteng --json talks           # --json goes before the subcommand
 ```
 
-On a terminal, commands print cards and tables. Agents should use `--json` **before** the subcommand (`agenteng --json talks`), set `AGENTENG_OUTPUT=json`, or pipe stdout. Non-TTY stdout always returns the shared Result JSON.
+Use the IDs returned by `agenteng events` to explore other published events. Run `agenteng --help` or `agenteng COMMAND --help` for options. The short alias `ae` also works: `ae talks` is equivalent to `agenteng talks`.
 
-Also useful: `agenteng search 'memory'`, `agenteng recordings`, `agenteng save SESSION`, `agenteng unsave SESSION`, `agenteng my-agenda`. Full CLI reference: [docs/COMMANDS.md](docs/COMMANDS.md).
+### 3. Get structured results
 
-## For agents
+```sh
+agenteng --json discover
+agenteng --json talks
+AGENTENG_OUTPUT=json agenteng events --upcoming
+```
+
+Place `--json` **before** the subcommand. Non-TTY stdout also returns the shared Result JSON automatically, so commands work naturally in pipes and agent workflows.
+
+Full commands, flags and exit codes: [CLI reference](docs/COMMANDS.md).
+
+## Explore the tool directory
+
+Browse tools, models and infrastructure by discipline, kind or search term. Listings include source links and work offline.
+
+```sh
+agenteng disciplines
+agenteng tools --discipline memory
+agenteng tools --discipline inference --kind runtime
+agenteng tools --search 'Gemini CLI'
+agenteng tool langgraph
+agenteng --json tools --discipline code --limit 25
+```
+
+**The 12 disciplines:** Prompt · Context · Harness · Eval · Memory · Inference · Loop · Agentic · Code · Protocol · Graph · Search.
+
+See the [tool directory guide](docs/TOOLS.md) for filters, pagination and attribution.
+
+## Connect your agent
+
+Give your coding agent access to events and tools. Try asking: **“Find the next London conference”** or **“List memory tools.”**
 
 ### MCP (local)
+
+After installing `agenteng[server]`, add this to your client's MCP configuration:
 
 ```json
 {
@@ -95,13 +149,19 @@ Also useful: `agenteng search 'memory'`, `agenteng recordings`, `agenteng save S
 }
 ```
 
-`agenteng connect cursor` (also `claude-code`, `codex`) prints setup for that client. See [integrations](https://docs.agentengineering.world/INTEGRATIONS/).
+For client-specific setup:
 
-### A2A and HTTP
+```sh
+agenteng connect codex
+agenteng connect claude-code
+agenteng connect cursor
+```
 
-- Agent card: `https://a2a.agentengineering.world/.well-known/agent-card.json`
-- JSON-RPC: `https://a2a.agentengineering.world/` with header `A2A-Version: 1.0`
-- MCP Streamable HTTP: `https://a2a.agentengineering.world/mcp/`
+See the [integration guide](docs/INTEGRATIONS.md) for local and hosted connections.
+
+### Hosted MCP, A2A and HTTP
+
+Base URL: **[a2a.agentengineering.world](https://a2a.agentengineering.world)**. Use the hosted service to connect without a local MCP process.
 
 | Interface | Route |
 | --- | --- |
@@ -109,41 +169,60 @@ Also useful: `agenteng search 'memory'`, `agenteng recordings`, `agenteng save S
 | A2A 1.0 discovery | `/.well-known/agent-card.json` |
 | A2A JSON-RPC | `/` with `A2A-Version: 1.0` |
 | Typed HTTP query | `/v1/query` |
+
+The same typed request works as an A2A JSON data part or an HTTP body. Request shapes and architecture: [ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+<details>
+<summary><strong>Additional HTTP endpoints</strong></summary>
+
+| Interface | Route |
+| --- | --- |
 | Catalogue / health | `/catalogue.json`, `/health` |
 | OpenAPI / Swagger / ReDoc | `/openapi.json`, `/docs`, `/redoc` |
 | Crawlable discovery | `/`, `/events/EVENT_ID`, `/events.json`, `/tools`, `/tools/TOOL_ID` |
 | Full tool directory feed | `/tools.json` |
 | Crawler / agent guides | `/llms.txt`, `/robots.txt`, `/sitemap.xml` |
 
-### JSON output
+</details>
 
-```sh
-agenteng --json discover
-agenteng --json talks
-AGENTENG_OUTPUT=json agenteng events --upcoming
-```
-
-### Public operations
+<details>
+<summary><strong>Public operations across CLI, MCP, A2A and HTTP</strong></summary>
 
 Public operations (CLI, MCP, A2A, HTTP) include: `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `live`, `bingo`, `about`, `hq`, `save`, `unsave`, `my_agenda`, `tickets`, `recordings`, `search`, `plan`, `ask` and `participate`. Draft operations are `proposal_draft`, `proposal_preview` and `proposal_export`.
 
-Begin with `discover` for featured London/San Francisco events, or `events` for published IDs. The same typed request works as an A2A JSON data part or an HTTP body. Full command and flag reference: [docs/COMMANDS.md](docs/COMMANDS.md). Architecture and request shapes: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Begin with `discover` for featured London/San Francisco events, or `events` for published IDs. Full command and flag reference: [docs/COMMANDS.md](docs/COMMANDS.md).
+
+</details>
 
 ## Event day
 
 ```sh
 agenteng live                    # full-screen now/next board (Ctrl-C exits)
-agenteng live --at 10:40         # preview the board at a given time
-agenteng bingo --seed 7          # talk bingo; same seed, same card
+agenteng live --at 10:40          # preview the board at a given time
+agenteng bingo --seed 7           # talk bingo; same seed, same card
 agenteng bingo --format html --output bingo.html
 agenteng about                   # what Agent Engineering is
 agenteng hq                      # manifesto, mindset, reading
-agenteng agenda agenteng-london-2026
-agenteng talks
-agenteng speakers --city London
+agenteng save SESSION_ID          # bookmark a session from the catalogue
+agenteng my-agenda
+agenteng unsave SESSION_ID
+agenteng recordings
 ```
 
 Piped or with `--json` before the subcommand, `agenteng live` prints one Result JSON snapshot (`agenteng --json live --once`). Website command wording is tracked in [docs/SITE-SYNC.md](docs/SITE-SYNC.md).
+
+## Shape a future event
+
+Have a talk, workshop or event idea? Create a local draft, preview it and export it to share with the organizer.
+
+```sh
+agenteng engage --city London --output draft.json
+agenteng proposal preview draft.json
+agenteng proposal export draft.json --format markdown --output draft.md
+agenteng participate
+```
+
+Drafting and exporting do not send a proposal. See [participation](docs/PARTICIPATION.md) and [community](docs/COMMUNITY.md) for organizer contacts and event-specific guidance.
 
 ## Experimental: drive a coding agent (`agenteng code`)
 
@@ -159,14 +238,14 @@ Details: [ACP design note](docs/ACP.md) and [docs](https://docs.agentengineering
 
 ## Privacy
 
-- **No personal data** about users, and none is collected.
-- **No telemetry.** The CLI stays offline unless you pass `--remote URL`.
-- **Local files stay local.** Bookmarks and `agenteng code` logs live under your config directory and are never uploaded.
-- The public host keeps no conversations or request bodies.
+- **No telemetry.** Catalogue lookups run offline by default; `--remote URL` sends requests to your chosen host.
+- **Local storage.** Bookmarks and `agenteng code` logs stay in your config directory. Proposal drafts are saved where you choose.
+- **Your chosen coding agent.** `agenteng code` sends prompts to the coding agent you launch and its provider.
+- **No stored conversations.** The public AgentEng application keeps no conversations or request bodies; the hosting platform maintains standard request logs.
 
 Full policy: [Privacy in DATA.md](docs/DATA.md#privacy).
 
-## Docs
+## Documentation
 
 | Topic | Link |
 | --- | --- |
@@ -176,6 +255,7 @@ Full policy: [Privacy in DATA.md](docs/DATA.md#privacy).
 | Tool directory | [TOOLS](https://docs.agentengineering.world/TOOLS/) |
 | ACP client | [ACP](https://docs.agentengineering.world/ACP/) |
 | Participation drafts | [PARTICIPATION](https://docs.agentengineering.world/PARTICIPATION/) |
+| Community | [COMMUNITY.md](docs/COMMUNITY.md) |
 | Data and privacy | [DATA](https://docs.agentengineering.world/DATA/) |
 | Architecture | [ARCHITECTURE](docs/ARCHITECTURE.md) |
 | Releases | [RELEASING](docs/RELEASING.md) |
@@ -183,7 +263,7 @@ Full policy: [Privacy in DATA.md](docs/DATA.md#privacy).
 
 ## Contributing
 
-Code, docs and source-backed data improvements are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md), the [Code of Conduct](CODE_OF_CONDUCT.md) and [SECURITY.md](SECURITY.md).
+Help improve the code, documentation or source-backed event and tool data. Start with [CONTRIBUTING.md](CONTRIBUTING.md) or [open an issue](https://github.com/SuperagenticAI/agenteng/issues).
 
 ```sh
 git clone https://github.com/SuperagenticAI/agenteng.git
@@ -191,7 +271,10 @@ cd agenteng
 uv sync --frozen --all-extras
 uv run --frozen pytest -q
 uv run --frozen ruff check src tests scripts
+uv run --frozen ruff format --check src tests scripts
 ```
+
+Follow the [Code of Conduct](CODE_OF_CONDUCT.md). To report a vulnerability, use [SECURITY.md](SECURITY.md).
 
 ## License
 
