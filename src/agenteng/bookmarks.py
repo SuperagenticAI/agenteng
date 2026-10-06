@@ -16,7 +16,8 @@ def config_dir() -> Path:
         xdg = os.environ.get("XDG_CONFIG_HOME")
         root = Path(xdg).expanduser() if xdg else Path.home() / ".config"
         path = root / "agenteng"
-    path.mkdir(parents=True, exist_ok=True)
+    # Bookmarks and ACP agent logs are personal; a new folder is private to the user.
+    path.mkdir(mode=0o700, parents=True, exist_ok=True)
     return path
 
 
@@ -48,10 +49,16 @@ def save_bookmarks(session_ids: list[str]) -> list[str]:
             unique.append(item)
             seen.add(item)
     path = bookmarks_path()
-    path.write_text(
-        json.dumps({"session_ids": unique}, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    # Create the file 0600 from the start, then replace atomically: no window in
+    # which another local user could read it.
+    temp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    fd = os.open(temp, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as file:
+            file.write(json.dumps({"session_ids": unique}, indent=2) + "\n")
+        os.replace(temp, path)
+    finally:
+        temp.unlink(missing_ok=True)
     try:
         os.chmod(path, 0o600)
     except OSError:

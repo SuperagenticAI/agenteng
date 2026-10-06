@@ -1181,14 +1181,21 @@ def raw_query(ctx, payload):
 @main.command()
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=8000, type=click.IntRange(1, 65535))
-def serve(host, port):
+@click.option(
+    "--access-log/--no-access-log",
+    default=False,
+    show_default=True,
+    help="Per-request access lines (client address, path, status). Off: the host's own "
+    "request log is enough, and AgentEng adds none.",
+)
+def serve(host, port, access_log):
     """Run the combined HTTP, MCP and A2A server (install [server])."""
     try:
         import uvicorn
         from .server import create_app
     except ImportError as exc:
         raise click.ClickException("Install agenteng[server] for hosted transports.") from exc
-    uvicorn.run(create_app(), host=host, port=port)
+    uvicorn.run(create_app(), host=host, port=port, access_log=access_log)
 
 
 @main.command("mcp")
