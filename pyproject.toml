@@ -5,7 +5,7 @@ description = "AgentEng conferences and events in London and San Francisco: CLI,
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
-keywords = ["agent-engineering", "agenteng", "conferences", "london", "san-francisco", "coding-agents", "events", "cli", "mcp", "a2a"]
+keywords = ["agent-engineering", "agenteng", "conferences", "london", "san-francisco", "coding-agents", "events", "cli", "mcp", "a2a", "acp"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Console",
@@ -39,6 +39,7 @@ mcp = ["mcp==1.27.1"]
 a2a = ["a2a-sdk[fastapi]==1.1.2", "uvicorn>=0.34,<1"]
 server = ["mcp==1.27.1", "a2a-sdk[fastapi]==1.1.2", "uvicorn>=0.34,<1"]
 rlm = ["pydantic-monty==1.0.0"]
+acp = ["agent-client-protocol==0.12.1", "mcp==1.27.1"]
 
 [dependency-groups]
 dev = ["pytest>=8,<10", "pytest-asyncio>=0.24,<2", "ruff>=0.11,<1", "build>=1,<2"]
@@ -55,7 +56,7 @@ packages = ["src/agenteng"]
 include = [
   "/src", "/tests", "/scripts", "/deploy", "/experiments", "/.github",
   "/docs/ARCHITECTURE.md", "/docs/COMMUNITY.md", "/docs/DATA.md", "/docs/RELEASING.md",
-  "/docs/INTEGRATIONS.md", "/docs/PARTICIPATION.md", "/docs/TOOLS.md",
+  "/docs/INTEGRATIONS.md", "/docs/ACP.md", "/docs/PARTICIPATION.md", "/docs/TOOLS.md",
   "/docs/index.md", "/docs/assets/logo.png", "/docs/assets/favicon.png",
   "/docs/stylesheets/extra.css", "/mkdocs.yml", "/requirements-docs.txt",
   "/README.md", "/CONTRIBUTING.md", "/CODE_OF_CONDUCT.md", "/SECURITY.md",
