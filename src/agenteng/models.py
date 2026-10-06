@@ -4,7 +4,9 @@ from datetime import date as calendar_date, datetime
 from typing import Annotated, Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import Field, HttpUrl, StrictBool, model_validator
+import re
+
+from pydantic import Field, HttpUrl, StrictBool, field_validator, model_validator
 
 from .contracts import Model
 from .participation import Draft, DRAFT_OPERATIONS, PRIVATE_OPERATIONS
@@ -159,6 +161,73 @@ class Theme(Model):
     description: str
 
 
+class Link(Model):
+    label: str
+    url: HttpUrl
+
+
+class Principle(Model):
+    title: str
+    description: str
+
+
+class Reading(Model):
+    title: str
+    date: str
+    url: HttpUrl
+
+
+class HQ(Model):
+    """Agent Engineering HQ page content, exported verbatim from the website."""
+
+    url: HttpUrl
+    summary: str
+    cities: str = ""
+    manifesto: list[str] = Field(default_factory=list)
+    mindset: list[Principle] = Field(default_factory=list)
+    further_reading_intro: str = ""
+    further_reading: list[Reading] = Field(default_factory=list)
+    source_ids: list[str]
+
+
+class Organiser(Model):
+    name: str
+    url: HttpUrl
+    blurb: str = ""
+
+
+class Chair(Model):
+    name: str
+    title: str
+    bio: str = ""
+    links: list[Link] = Field(default_factory=list)
+
+
+class About(Model):
+    """Published definition, organiser and chair card from the website."""
+
+    definition: str
+    organiser: Organiser | None = None
+    chair: Chair | None = None
+    contact_email: str | None = None
+    source_ids: list[str]
+
+
+CITY_ALIASES = {"london": "London", "san francisco": "San Francisco", "sf": "San Francisco"}
+
+
+def canonical_city(value: str | None) -> str | None:
+    """Accept website slugs such as ``san-francisco``; unknown cities pass through."""
+    if value is None:
+        return None
+    key = re.sub(r"[-_\s]+", " ", value.strip().casefold())
+    return CITY_ALIASES.get(key, value)
+
+
+HQ_SECTIONS = ("manifesto", "mindset", "reading")
+ABOUT_SECTIONS = ("organiser", "chair", "connect")
+
+
 class Catalogue(Model):
     schema_version: Literal[1] = 1
     version: str
@@ -172,6 +241,8 @@ class Catalogue(Model):
     sponsors: list[Sponsor] = Field(default_factory=list)
     support_options: list[SupportOption] = Field(default_factory=list)
     themes: list[Theme] = Field(default_factory=list)
+    hq: HQ | None = None
+    about: About | None = None
     sources: list[Source]
 
     @model_validator(mode="after")
@@ -193,9 +264,10 @@ class Catalogue(Model):
         events, speakers, sources = (
             {r.id for r in rows} for rows in [self.events, self.speakers, self.sources]
         )
-        for row in [*self.events, *self.speakers, *self.sessions, *self.faqs]:
+        evidenced = [*self.events, *self.speakers, *self.sessions, *self.faqs]
+        for row in evidenced + [r for r in (self.hq, self.about) if r]:
             if not row.source_ids or not set(row.source_ids) <= sources:
-                raise ValueError(f"Missing evidence for {row.id}")
+                raise ValueError(f"Missing evidence for {getattr(row, 'id', type(row).__name__)}")
         for row in self.faqs:
             if row.event_id is not None and row.event_id not in events:
                 raise ValueError("FAQ references an unknown event")
@@ -238,8 +310,12 @@ class Request(Model):
         "sponsors",
         "conduct",
         "themes",
+        "about",
+        "hq",
         "now",
         "next",
+        "live",
+        "bingo",
         "save",
         "unsave",
         "my_agenda",
@@ -272,7 +348,13 @@ class Request(Model):
     interests: list[Annotated[str, Field(max_length=200)]] = Field(
         default_factory=list, max_length=20
     )
-    format: Literal["json", "ics"] = "json"
+    format: Literal["json", "ics", "text", "svg", "html"] = "json"
+    section: Literal["manifesto", "mindset", "reading", "organiser", "chair", "connect"] | None = (
+        None
+    )
+    at: datetime | None = None
+    seed: int | None = Field(default=None, ge=0, le=2**53)
+    size: Literal[4, 5] = 5
     engine: Literal["lookup", "auto", "standard", "rlm"] = "lookup"
     limit: int = Field(default=20, ge=1, le=100)
     tool_id: str | None = Field(default=None, min_length=1, max_length=128)
@@ -287,8 +369,27 @@ class Request(Model):
     receipt: str | None = Field(default=None, min_length=32, max_length=32, pattern="^[a-f0-9]+$")
     confirmed: StrictBool = False
 
+    @field_validator("city")
+    @classmethod
+    def normalise_city(cls, value):
+        return canonical_city(value)
+
     @model_validator(mode="after")
     def validate_operation(self):
+        if self.section and not (
+            (self.operation == "hq" and self.section in HQ_SECTIONS)
+            or (self.operation == "about" and self.section in ABOUT_SECTIONS)
+        ):
+            raise ValueError(
+                "section applies to hq (manifesto, mindset, reading) "
+                "or about (organiser, chair, connect)"
+            )
+        if self.at and self.operation not in {"now", "next", "live"}:
+            raise ValueError("at only applies to now, next or live")
+        if (self.seed is not None or self.size != 5) and self.operation != "bingo":
+            raise ValueError("seed and size only apply to bingo")
+        if self.format in {"text", "svg", "html"} and self.operation != "bingo":
+            raise ValueError("text, svg and html output are only supported for bingo")
         if self.operation == "tool" and not self.tool_id:
             raise ValueError("tool requires tool_id")
         if self.tool_id and self.operation != "tool":

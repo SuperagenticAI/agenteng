@@ -11,7 +11,7 @@ from pydantic import ValidationError
 
 from . import __version__
 from .config import Settings
-from .models import Request, Result
+from .models import Request, Result, canonical_city
 from .service import Service
 from .discovery import connection, validate_origin
 from .participation import Draft, Inbox, PRIVATE_OPERATIONS
@@ -35,8 +35,12 @@ from typing import get_args
     is_flag=True,
     help="Print the shared structured Result JSON (also used when stdout is not a TTY).",
 )
+@click.option("--list-disciplines", "site_shortcut", flag_value="disciplines", hidden=True)
+@click.option("--themes", "site_shortcut", flag_value="themes", hidden=True)
+@click.option("--list-cities", "site_shortcut", flag_value="discover", hidden=True)
+@click.option("--info", "site_shortcut", flag_value="about", hidden=True)
 @click.pass_context
-def main(ctx, catalogue, remote, as_json):
+def main(ctx, catalogue, remote, as_json, site_shortcut):
     """Agent Engineering HQ events, CLI, MCP and A2A.
 
     Run with no arguments in a terminal to open the interactive menu.
@@ -45,6 +49,10 @@ def main(ctx, catalogue, remote, as_json):
     """
     ctx.ensure_object(dict)
     ctx.obj.update(catalogue=catalogue, remote=remote, as_json=as_json)
+    if ctx.invoked_subcommand is None and site_shortcut:
+        # Website wording (`agenteng --list-disciplines`) runs the real command.
+        ctx.invoke(main.commands[site_shortcut])
+        return
     if ctx.invoked_subcommand is None:
         if stdout_is_tty() and stdin_is_tty():
             from .interactive import run_menu
@@ -54,32 +62,36 @@ def main(ctx, catalogue, remote, as_json):
             click.echo(ctx.get_help())
 
 
+def execute(ctx, request: Request) -> Result:
+    """Run one request locally or against --remote; raises transport errors."""
+    token = os.getenv(
+        "AGENTENG_PARTICIPANT_TOKEN"
+        if request.operation in PRIVATE_OPERATIONS
+        else "AGENTENG_OPERATOR_TOKEN",
+        "",
+    )
+    if ctx.obj["remote"]:
+        headers = {"Authorization": "Bearer " + token} if token else {}
+        response = httpx.post(
+            validate_origin(ctx.obj["remote"]) + "/v1/query",
+            json=request.model_dump(mode="json", exclude_defaults=True),
+            headers=headers,
+            timeout=50,
+        )
+        response.raise_for_status()
+        return Result.model_validate(response.json())
+    settings = Settings.from_env()
+    if ctx.obj["catalogue"]:
+        from dataclasses import replace
+
+        settings = replace(settings, catalogue_path=ctx.obj["catalogue"])
+    return asyncio.run(Service(settings).execute(request, token=token))
+
+
 def dispatch(ctx, payload, output=None, *, quiet=False):
     try:
         request = Request.model_validate(payload)
-        token = os.getenv(
-            "AGENTENG_PARTICIPANT_TOKEN"
-            if request.operation in PRIVATE_OPERATIONS
-            else "AGENTENG_OPERATOR_TOKEN",
-            "",
-        )
-        if ctx.obj["remote"]:
-            headers = {"Authorization": "Bearer " + token} if token else {}
-            response = httpx.post(
-                validate_origin(ctx.obj["remote"]) + "/v1/query",
-                json=request.model_dump(mode="json"),
-                headers=headers,
-                timeout=50,
-            )
-            response.raise_for_status()
-            result = Result.model_validate(response.json())
-        else:
-            settings = Settings.from_env()
-            if ctx.obj["catalogue"]:
-                from dataclasses import replace
-
-                settings = replace(settings, catalogue_path=ctx.obj["catalogue"])
-            result = asyncio.run(Service(settings).execute(request, token=token))
+        result = execute(ctx, request)
     except (ValidationError, ValueError, OSError, httpx.HTTPError) as exc:
         raise click.ClickException(str(exc)) from exc
     if quiet and result.status == "ok":
@@ -203,23 +215,62 @@ def write_private(path, text):
         file.write(text)
 
 
+def city_shortcuts(command):
+    """Hidden ``--london`` and ``--sf`` flags, as written on the website, for ``--city``."""
+    command = click.option("--london", "city", flag_value="London", hidden=True)(command)
+    return click.option("--sf", "--san-francisco", "city", flag_value="San Francisco", hidden=True)(
+        command
+    )
+
+
+def city_event_id(ctx, city: str) -> str:
+    """Pick a city's event: the next upcoming one, else the most recent."""
+    result = dispatch(ctx, dict(operation="events", city=city), quiet=True)
+    rows = result.data if result.status == "ok" and isinstance(result.data, list) else []
+    if not rows:
+        raise click.ClickException(f"No published events in {city}.")
+    ahead = sorted(
+        (e for e in rows if e.get("state") in {"ongoing", "upcoming"}),
+        key=lambda e: (e.get("state") != "ongoing", e.get("date") or ""),
+    )
+    if ahead:
+        return ahead[0]["id"]
+    return max(rows, key=lambda e: e.get("date") or "")["id"]
+
+
+def event_or_city(ctx, event_id: str | None, city: str | None = None) -> str | None:
+    """An EVENT_ID argument may also be a city (``london``, ``san-francisco``)."""
+    if event_id:
+        named = canonical_city(event_id)
+        if named in {"London", "San Francisco"}:
+            return city_event_id(ctx, named)
+        return event_id
+    if city:
+        return city_event_id(ctx, canonical_city(city))
+    return None
+
+
 @main.command()
-@click.option("--city")
-@click.option("--upcoming", is_flag=True)
-@click.option("--past", is_flag=True)
+@click.argument("where", metavar="[CITY]", required=False)
+@click.option("--city", help="London or San Francisco (slugs such as san-francisco work).")
+@city_shortcuts
+@click.option("--upcoming", "--next", is_flag=True, help="Only upcoming events.")
+@click.option("--past", "--history", "--previous", is_flag=True, help="Only past events.")
 @click.pass_context
-def events(ctx, city, upcoming, past):
+def events(ctx, where, city, upcoming, past):
     """List events with published date precision and current state."""
-    dispatch(ctx, dict(operation="events", city=city, upcoming=upcoming, past=past))
+    dispatch(ctx, dict(operation="events", city=city or where, upcoming=upcoming, past=past))
 
 
 @main.command()
 @click.argument("event_id", required=False)
+@city_shortcuts
 @click.pass_context
-def event(ctx, event_id):
-    """Read one event by its published ID."""
+def event(ctx, event_id, city=None):
+    """Read one event by its published ID (or a city: london, san-francisco)."""
     from .interactive import require_event_id
 
+    event_id = event_or_city(ctx, event_id, city)
     dispatch(ctx, dict(operation="event", event_id=require_event_id(ctx, event_id)))
 
 
@@ -230,11 +281,13 @@ def event(ctx, event_id):
 @click.option(
     "--output", type=click.Path(dir_okay=False), help="Write an .ics calendar when --format ics."
 )
+@city_shortcuts
 @click.pass_context
-def agenda(ctx, event_id, topic, output_format, output):
+def agenda(ctx, event_id, topic, output_format, output, city=None):
     """Read an event's public agenda; optionally export .ics."""
     from .interactive import require_event_id
 
+    event_id = event_or_city(ctx, event_id, city)
     dispatch(
         ctx,
         dict(
@@ -250,6 +303,7 @@ def agenda(ctx, event_id, topic, output_format, output):
 @main.command()
 @click.option("--event", "event_id")
 @click.option("--city")
+@city_shortcuts
 @click.option("--search", "query", default="", help="Match name, company, talk title or abstract.")
 @click.pass_context
 def speakers(ctx, event_id, city, query):
@@ -264,6 +318,15 @@ def speakers(ctx, event_id, city, query):
 def speaker_detail(ctx, speaker_id, event_id):
     """Read one speaker: bio fields, links, projects, disciplines and full abstract."""
     dispatch(ctx, dict(operation="speaker", speaker_id=speaker_id, event_id=event_id))
+
+
+@main.command("inspect", hidden=True)
+@click.option("--speaker", "speaker_id", required=True, help="Speaker ID, as on the website.")
+@click.option("--event", "event_id")
+@click.pass_context
+def inspect_speaker(ctx, speaker_id, event_id):
+    """Website wording for `ae speaker SPEAKER_ID`."""
+    ctx.invoke(speaker_detail, speaker_id=speaker_id, event_id=event_id)
 
 
 @main.command()
@@ -308,16 +371,19 @@ def faq(ctx, event_id, query):
 
 @main.command()
 @click.argument("event_id", required=False)
+@city_shortcuts
 @click.pass_context
-def venue(ctx, event_id):
+def venue(ctx, event_id, city=None):
     """Read venue address, tour link, track and accessibility notes."""
     from .interactive import require_event_id
 
+    event_id = event_or_city(ctx, event_id, city)
     dispatch(ctx, dict(operation="venue", event_id=require_event_id(ctx, event_id)))
 
 
 @main.command()
 @click.option("--city")
+@city_shortcuts
 @click.pass_context
 def sponsors(ctx, city):
     """List published sponsors and London support options."""
@@ -338,20 +404,90 @@ def themes(ctx):
     dispatch(ctx, dict(operation="themes"))
 
 
+AT_HELP = "Pretend it is this time: ISO (2026-10-16T10:15) or HH:MM on the event day."
+
+
 @main.command("now")
 @click.argument("event_id", required=False)
+@click.option("--at", "at", help=AT_HELP)
+@click.option("--screen", is_flag=True, help="Full-screen venue display; same as `ae live`.")
+@city_shortcuts
 @click.pass_context
-def now_cmd(ctx, event_id):
+def now_cmd(ctx, event_id, at, screen, city=None):
     """Show what is on now from the published timed agenda."""
-    dispatch(ctx, dict(operation="now", event_id=event_id))
+    event_id = event_or_city(ctx, event_id, city)
+    if screen:
+        ctx.invoke(live_cmd, event_id=event_id, at=at)
+        return
+    dispatch(ctx, dict(operation="now", event_id=event_id, at=resolve_at(ctx, at, event_id)))
 
 
 @main.command("next")
 @click.argument("event_id", required=False)
+@click.option("--at", "at", help=AT_HELP)
+@city_shortcuts
 @click.pass_context
-def next_cmd(ctx, event_id):
+def next_cmd(ctx, event_id, at, city=None):
     """Show the next published session from the timed agenda."""
-    dispatch(ctx, dict(operation="next", event_id=event_id))
+    event_id = event_or_city(ctx, event_id, city)
+    dispatch(ctx, dict(operation="next", event_id=event_id, at=resolve_at(ctx, at, event_id)))
+
+
+def resolve_at(ctx, at: str | None, event_id: str | None):
+    """Parse --at. HH:MM uses the event's own date; no offset means event local time."""
+    if not at:
+        return None
+    import re
+    from datetime import datetime
+
+    if re.fullmatch(r"\d{1,2}:\d{2}", at.strip()):
+        snapshot = dispatch(ctx, dict(operation="live", event_id=event_id), quiet=True)
+        day = (
+            (snapshot.data.get("event") or {}).get("date")
+            if isinstance(snapshot.data, dict)
+            else None
+        )
+        if not day:
+            raise click.ClickException("--at HH:MM needs an event with a published date.")
+        at = f"{day}T{int(at.split(':')[0]):02d}:{at.split(':')[1]}"
+    try:
+        return datetime.fromisoformat(at.strip()).isoformat()
+    except ValueError as exc:
+        raise click.ClickException("--at must be ISO time (2026-10-16T10:15) or HH:MM.") from exc
+
+
+@main.command("live")
+@click.option("--event", "event_id", help="Event ID or city; defaults to the live conference.")
+@click.option(
+    "--refresh",
+    type=click.IntRange(1, 3600),
+    default=30,
+    show_default=True,
+    help="Seconds between screen refreshes.",
+)
+@click.option("--at", "at", help=AT_HELP + " The clock then runs forward from it.")
+@click.option("--once", is_flag=True, help="Draw one frame and exit (no full screen).")
+@city_shortcuts
+@click.pass_context
+def live_cmd(ctx, event_id=None, refresh=30, at=None, once=False, city=None):
+    """Full-screen now/next board for venue screens. Ctrl-C exits.
+
+    Piped or with --json it prints one Result JSON snapshot instead.
+    """
+    from .output import use_json
+
+    event_id = event_or_city(ctx, event_id, city)
+    start_at = resolve_at(ctx, at, event_id)
+    payload = dict(operation="live", event_id=event_id, at=start_at)
+    if use_json(ctx):
+        dispatch(ctx, payload)
+        return
+    from .render import run_live_screen
+
+    try:
+        run_live_screen(ctx, payload, refresh=refresh, once=once)
+    except (ValidationError, ValueError, OSError, httpx.HTTPError) as exc:
+        raise click.ClickException(str(exc)) from exc
 
 
 @main.command("save")
@@ -395,17 +531,20 @@ def my_agenda(ctx, event_id, output_format, output):
 
 @main.command()
 @click.argument("event_id", required=False)
+@city_shortcuts
 @click.pass_context
-def tickets(ctx, event_id):
+def tickets(ctx, event_id, city=None):
     """Read published prices and the official registration link."""
     from .interactive import require_event_id
 
+    event_id = event_or_city(ctx, event_id, city)
     dispatch(ctx, dict(operation="tickets", event_id=require_event_id(ctx, event_id)))
 
 
 @main.command()
 @click.option("--event", "event_id")
 @click.option("--city")
+@city_shortcuts
 @click.pass_context
 def recordings(ctx, event_id, city):
     """Find published recordings."""
@@ -439,11 +578,13 @@ def ask(ctx, query, event_id, engine):
 @click.option("--interest", "interests", multiple=True)
 @click.option("--format", "output_format", type=click.Choice(["json", "ics"]), default="json")
 @click.option("--output", type=click.Path(dir_okay=False))
+@city_shortcuts
 @click.pass_context
-def plan(ctx, event_id, interests, output_format, output):
+def plan(ctx, event_id, interests, output_format, output, city=None):
     """Select sessions by published text and optionally export a calendar."""
     from .interactive import require_event_id
 
+    event_id = event_or_city(ctx, event_id, city)
     dispatch(
         ctx,
         dict(
@@ -463,12 +604,97 @@ def participate(ctx):
     dispatch(ctx, dict(operation="participate"))
 
 
+def city_choice(ctx, param, value):
+    if value is None:
+        return None
+    named = canonical_city(value)
+    if named not in {"London", "San Francisco"}:
+        raise click.BadParameter("choose London or San Francisco (or london, san-francisco, sf)")
+    return named
+
+
 @main.command()
-@click.option("--city", type=click.Choice(["London", "San Francisco"]))
+@click.option("--city", callback=city_choice, help="London or San Francisco.")
+@city_shortcuts
 @click.pass_context
 def discover(ctx, city):
     """Find AgentEng London/San Francisco events and agent connection details."""
     dispatch(ctx, dict(operation="discover", city=city))
+
+
+@main.command()
+@click.option("--chair", "section", flag_value="chair", help="Only the conference chair.")
+@click.option(
+    "--organiser", "--organizer", "section", flag_value="organiser", help="Only the organiser."
+)
+@click.option("--connect", "section", flag_value="connect", help="Only how to connect agents.")
+@click.pass_context
+def about(ctx, section):
+    """What Agent Engineering is, who runs it, and how to connect your agent."""
+    dispatch(ctx, dict(operation="about", section=section))
+
+
+@main.command("whoami", hidden=True)
+@click.option("--chair", is_flag=True, help="Show the conference chair (website wording).")
+@click.pass_context
+def whoami(ctx, chair):
+    """Website wording for `ae about --chair`."""
+    ctx.invoke(about, section="chair")
+
+
+@main.command()
+@click.argument("section", required=False, type=click.Choice(["manifesto", "mindset", "reading"]))
+@click.pass_context
+def hq(ctx, section):
+    """Agent Engineering HQ: the manifesto, the mindset and further reading."""
+    dispatch(ctx, dict(operation="hq", section=section))
+
+
+@main.command()
+@click.option("--event", "event_id", help="Event ID or city; defaults to the London conference.")
+@click.option("--size", type=click.Choice(["4", "5"]), default="5", show_default=True)
+@click.option(
+    "--seed", type=click.IntRange(0, 2**53), help="Same seed, same card. Printed on every card."
+)
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["text", "svg", "html", "json"]),
+    help="Printable text, SVG or HTML. Default: a card in the terminal, JSON when piped.",
+)
+@click.option("--output", type=click.Path(dir_okay=False), help="Write the card to a file.")
+@click.option("--play", is_flag=True, help="Mark squares as you hear them (terminal only).")
+@city_shortcuts
+@click.pass_context
+def bingo(ctx, event_id, size, seed, output_format, output, play, city=None):
+    """Talk bingo from published talk terms. Local only; nothing is sent."""
+    event_id = event_or_city(ctx, event_id, city)
+    if output and not output_format:
+        suffix = Path(output).suffix.lower()
+        output_format = {".svg": "svg", ".html": "html", ".htm": "html"}.get(suffix, "text")
+    payload = dict(
+        operation="bingo",
+        event_id=event_id,
+        size=int(size),
+        seed=seed,
+        format=output_format or "json",
+    )
+    if play:
+        if not (stdout_is_tty() and stdin_is_tty()):
+            raise click.ClickException(
+                "--play needs a terminal; use --format text to print a card."
+            )
+        result = dispatch(ctx, {**payload, "format": "json"}, quiet=True)
+        if result.status != "ok":
+            dispatch(ctx, payload)
+            return
+        from .render import play_bingo
+
+        play_bingo(result)
+        return
+    result = dispatch(ctx, payload, output)
+    if output and result.artifact:
+        click.echo(f"Wrote {output}", err=True)
 
 
 @main.command()

@@ -636,7 +636,13 @@ class Service:
                 source_ids,
                 status="ok" if rows else "not_found",
             )
+        if request.operation in {"about", "hq", "live", "bingo"}:
+            from . import screens
+
+            return getattr(screens, request.operation)(self, request)
         if request.operation in {"now", "next"}:
+            from .screens import local_now
+
             event_id = self.default_live_event_id(request)
             if not event_id:
                 return self.result(
@@ -644,7 +650,7 @@ class Service:
                     status="unavailable",
                 )
             event = self.events[event_id]
-            now = self.clock().astimezone(ZoneInfo(event.timezone))
+            now = local_now(self, request, event.timezone)
             timed = [
                 s for s in self.catalogue.sessions if s.event_id == event_id and s.start and s.end
             ]

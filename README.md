@@ -41,7 +41,7 @@ Then try (`ae` is a short alias for `agenteng`):
 ae                 # interactive menu (TTY)
 ae discover
 ae events --upcoming
-ae events --json   # same Result JSON agents, MCP and A2A use
+ae --json events   # same Result JSON agents, MCP and A2A use
 ae connect cursor
 ```
 
@@ -86,11 +86,31 @@ The CLI uses its bundled catalogue offline. Put global options before the comman
 ae --json events --city London
 ae events --city London
 ae --remote https://YOUR_HOST events --upcoming
-ae --catalogue ./catalogue.json speakers --city 'San Francisco'
+ae --catalogue ./my-catalogue.json speakers --city san-francisco   # your own export, see below
 ae query '{"operation":"events","upcoming":true}'
 ```
 
-Run `agenteng --help` or `agenteng COMMAND --help` for command options.
+`--catalogue` reads a catalogue you exported yourself (see
+[Updating the catalogue](#updating-the-catalogue)); without it the CLI uses the
+bundled snapshot. Run `agenteng --help` or `agenteng COMMAND --help` for command options.
+
+### At the event
+
+```sh
+ae live                      # full-screen now/next board for venue screens (Ctrl-C exits)
+ae live --at 10:40           # demo the board at a given time on the event day
+ae bingo --seed 7            # talk bingo from published talk terms; same seed, same card
+ae bingo --format html --output bingo.html   # printable card (also text, svg)
+ae bingo --play              # mark squares as you hear them
+ae about                     # what Agent Engineering is, organiser, chair, how to connect agents
+ae hq manifesto              # Agent Engineering HQ: manifesto, mindset, reading
+```
+
+`ae now --screen` is the same as `ae live`. Piped or with `--json`, `ae live` prints
+one Result JSON snapshot. The website's command wording also works where a real
+command exists (`ae events --london --next`, `ae --list-disciplines`,
+`ae inspect --speaker SLUG`); [docs/SITE-SYNC.md](docs/SITE-SYNC.md) tracks every
+command shown on agentengineering.world.
 
 Draft an idea without sending it:
 
@@ -204,11 +224,17 @@ uv run --frozen ruff check src tests scripts
 uv run --frozen python scripts/check-public-release.py
 ```
 
-The website is the event-data source. Updating its public catalogue requires a website checkout with TypeScript installed:
+### Updating the catalogue
+
+The website is the event-data source. Updating its public catalogue requires a website checkout with TypeScript installed (`npm ci` in that checkout):
 
 ```sh
-node scripts/export-website.mjs /path/to/agent-engineering-summit
+node scripts/export-website.mjs /path/to/agent-engineering-summit                      # bundled catalogue
+node scripts/export-website.mjs /path/to/agent-engineering-summit ./my-catalogue.json  # your own copy
+ae --catalogue ./my-catalogue.json events
 ```
+
+The export reads literal data and page text from the website source (events, speakers, agenda, FAQ, Agent Engineering HQ manifesto, mindset and reading, and the organiser card) without running website code, and fails on drift instead of guessing.
 
 Exports record their source revision/content hash and publication time. Changed event content requires a refreshed build; no background synchronization is claimed. Version tags trigger verified PyPI publishing and a GitHub release once the repository publishing secret is configured. See [release verification and publisher setup](docs/RELEASING.md) and [CHANGELOG.md](CHANGELOG.md).
 

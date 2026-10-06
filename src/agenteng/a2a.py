@@ -104,6 +104,21 @@ def agent_card(service):
                 ],
             ),
             AgentSkill(
+                id="agenteng-event-day",
+                name="AgentEng event day and about",
+                description="Venue-screen now/next snapshots (live, with an optional at time), "
+                "reproducible talk bingo cards from published talk terms (bingo with seed, size 4 "
+                "or 5, format json/text/svg/html), the organiser and chair card (about) and the "
+                "Agent Engineering HQ manifesto, mindset and further reading (hq). Model-free.",
+                tags=["live", "now-next", "bingo", "about", "manifesto", "Agent Engineering HQ"],
+                examples=[
+                    '{"operation":"live","event_id":"agenteng-london-2026"}',
+                    '{"operation":"bingo","seed":2026,"size":5}',
+                    '{"operation":"about","section":"connect"}',
+                    '{"operation":"hq","section":"manifesto"}',
+                ],
+            ),
+            AgentSkill(
                 id="agenteng-tools",
                 name="Agent-engineering tool directory",
                 description="Browse public tool names and links across twelve disciplines using "

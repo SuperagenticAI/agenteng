@@ -63,6 +63,7 @@ exclude_docs: |
   !/PARTICIPATION.md
   !/COMMUNITY.md
   !/DATA.md
+  !/SITE-SYNC.md
   !/ARCHITECTURE.md
   !/RELEASING.md
   !/assets/
@@ -84,6 +85,7 @@ nav:
   - 📚 Reference:
       - 🤝 Community: COMMUNITY.md
       - 📖 Data & attribution: DATA.md
+      - 🔁 Site command sync: SITE-SYNC.md
       - 🏗️ Architecture & optional RLM: ARCHITECTURE.md
       - 📦 Releases & documentation: RELEASING.md
   - 🌍 Event website: https://agentengineering.world

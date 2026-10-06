@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-3bfc652b57aa",
-  "published_at": "2026-10-05T19:21:11.960Z",
-  "source_commit": "17d84812e681625708cd798660cb65fb91c81de0",
-  "source_hash": "3bfc652b57aa313966868bae46fe4830fc3a57a8d51726abd77e3953a2032e58",
+  "version": "website-1d9afb536a13",
+  "published_at": "2026-10-06T09:17:24.301Z",
+  "source_commit": "36a29130471aa673a7507e25add3c5cbf518d8d4",
+  "source_hash": "1d9afb536a13f504a1894bf690187b552efa3e45a78c55516323cd98b1591ec0",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -1373,6 +1373,103 @@
       "description": "Defining the business models for agentic AI. Does SaaS still work, or is FDE the only way forward? Explore and share business models."
     }
   ],
+  "hq": {
+    "url": "https://agentengineering.world/agent-engineering-hq",
+    "summary": "Agent Engineering HQ runs the AgentEng conference and technical events in London and San Francisco, and publishes the Agent Engineering manifesto.",
+    "cities": "Agent Engineering HQ runs San Francisco. London events run with London Agentic AI. Both hold the same standard of technical depth.",
+    "manifesto": [
+      "Agents are not features. They are long-running systems with their own development lifecycle, and they need their own engineering discipline.",
+      "Agentic systems behave differently from traditional software. A response can look successful and still fail the task. Behaviour drifts. Trajectories matter as much as outputs. These properties demand a dedicated Agent Development Lifecycle (ADLC), distinct from the traditional software development lifecycle.",
+      "The ADLC covers building, testing, deploying, and monitoring agents in production, with iteration and governance running as continuous layers throughout. Production signals feed back into evaluation. Traces drive improvement. Governance keeps the system trustworthy.",
+      "Agent Engineering is the practice of designing, building, evaluating, and operating AI agents across that lifecycle. It applies to every category of agent, from coding and research agents to customer-facing, domain-specific, and autonomous multi-agent systems.",
+      "AgentEng exists to define and advance this discipline. We bring together the practitioners building the tools, frameworks, and supporting infrastructure that make every phase of the ADLC work in production."
+    ],
+    "mindset": [
+      {
+        "title": "Non-Determinism",
+        "description": "Agent systems do not behave deterministically, so reliability has to be engineered around variance in output rather than assumed from the code path."
+      },
+      {
+        "title": "Intelligent Specification",
+        "description": "Agent behaviour follows the specification it is given. Precise task definitions and planning up front produce more predictable results at runtime."
+      },
+      {
+        "title": "Every Input is an Edge Case",
+        "description": "Users can submit any input, so conventional test coverage does not hold. Behaviour is better understood through evaluation against production traffic."
+      },
+      {
+        "title": "Resource Allocation",
+        "description": "Compute, budget and human review are finite resources, and allocating them across agent runs is a core operational concern at scale."
+      },
+      {
+        "title": "The Reviewer Framework",
+        "description": "Engineering work shifts from writing code towards designing the reviewers that check it, using validation loops and automated pull request gates."
+      },
+      {
+        "title": "Agent Networking",
+        "description": "Agents working together need defined communication patterns, with parallel and sequential workflows arranged to avoid conflicting or duplicated work."
+      }
+    ],
+    "further_reading_intro": "Agent Engineering surfaced independently across practitioner communities, platforms, and research.",
+    "further_reading": [
+      {
+        "title": "Why Agent Engineering",
+        "date": "March 2025",
+        "url": "https://www.latent.space/p/agent"
+      },
+      {
+        "title": "Agent Engineering: A New Discipline",
+        "date": "December 2025",
+        "url": "https://blog.langchain.com/agent-engineering-a-new-discipline/"
+      },
+      {
+        "title": "Reliable Agent Engineering",
+        "date": "December 2025",
+        "url": "https://arxiv.org/abs/2512.07665"
+      },
+      {
+        "title": "Agent Engineering as a Core Practice",
+        "date": "June 2025",
+        "url": "https://super-agentic.ai/resources/super-posts/agent-engineering-orchestrating-and-architecting-intelligent-ai-agents"
+      }
+    ],
+    "source_ids": [
+      "hq-manifesto",
+      "hq-mindset",
+      "hq-further-reading"
+    ]
+  },
+  "about": {
+    "definition": "Agent Engineering is the discipline of designing, building, evaluating, and operating AI agents. It covers prompt, context, harness, inference, memory, evaluation, and code.",
+    "organiser": {
+      "name": "Superagentic AI",
+      "url": "https://super-agentic.ai/",
+      "blurb": "Advancing the Agent Engineering discipline and practice"
+    },
+    "chair": {
+      "name": "Shashi Jagtap",
+      "title": "Conference Chair & Curator · Ex-Apple Engineer (6 years) · Organizer, London Agentic AI & Agent Engineering HQ",
+      "bio": "Building the bridge from Developer Experience to Agent Experience. Transatlantic connections between London and Silicon Valley, with programming shaped by a broader technical community.",
+      "links": [
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/in/shashikantjagtap/"
+        },
+        {
+          "label": "X/Twitter",
+          "url": "https://x.com/Shashikant86"
+        },
+        {
+          "label": "Superagentic AI",
+          "url": "https://super-agentic.ai/"
+        }
+      ]
+    },
+    "contact_email": "events@agentengineering.world",
+    "source_ids": [
+      "about"
+    ]
+  },
   "sources": [
     {
       "id": "agenteng-london-2026",
@@ -1947,6 +2044,34 @@
       "text": "Sponsorship enquiry: events@agentengineering.world",
       "event_id": null,
       "kind": "sponsorship"
+    },
+    {
+      "id": "hq-manifesto",
+      "url": "https://agentengineering.world/agent-engineering-hq#manifesto",
+      "text": "Agents are not features. They are long-running systems with their own development lifecycle, and they need their own engineering discipline.\n\nAgentic systems behave differently from traditional software. A response can look successful and still fail the task. Behaviour drifts. Trajectories matter as much as outputs. These properties demand a dedicated Agent Development Lifecycle (ADLC), distinct from the traditional software development lifecycle.\n\nThe ADLC covers building, testing, deploying, and monitoring agents in production, with iteration and governance running as continuous layers throughout. Production signals feed back into evaluation. Traces drive improvement. Governance keeps the system trustworthy.\n\nAgent Engineering is the practice of designing, building, evaluating, and operating AI agents across that lifecycle. It applies to every category of agent, from coding and research agents to customer-facing, domain-specific, and autonomous multi-agent systems.\n\nAgentEng exists to define and advance this discipline. We bring together the practitioners building the tools, frameworks, and supporting infrastructure that make every phase of the ADLC work in production.",
+      "event_id": null,
+      "kind": "hq"
+    },
+    {
+      "id": "hq-mindset",
+      "url": "https://agentengineering.world/agent-engineering-hq#mindset",
+      "text": "Non-Determinism: Agent systems do not behave deterministically, so reliability has to be engineered around variance in output rather than assumed from the code path.\nIntelligent Specification: Agent behaviour follows the specification it is given. Precise task definitions and planning up front produce more predictable results at runtime.\nEvery Input is an Edge Case: Users can submit any input, so conventional test coverage does not hold. Behaviour is better understood through evaluation against production traffic.\nResource Allocation: Compute, budget and human review are finite resources, and allocating them across agent runs is a core operational concern at scale.\nThe Reviewer Framework: Engineering work shifts from writing code towards designing the reviewers that check it, using validation loops and automated pull request gates.\nAgent Networking: Agents working together need defined communication patterns, with parallel and sequential workflows arranged to avoid conflicting or duplicated work.",
+      "event_id": null,
+      "kind": "hq"
+    },
+    {
+      "id": "hq-further-reading",
+      "url": "https://agentengineering.world/agent-engineering-hq",
+      "text": "March 2025 Why Agent Engineering https://www.latent.space/p/agent\nDecember 2025 Agent Engineering: A New Discipline https://blog.langchain.com/agent-engineering-a-new-discipline/\nDecember 2025 Reliable Agent Engineering https://arxiv.org/abs/2512.07665\nJune 2025 Agent Engineering as a Core Practice https://super-agentic.ai/resources/super-posts/agent-engineering-orchestrating-and-architecting-intelligent-ai-agents",
+      "event_id": null,
+      "kind": "hq"
+    },
+    {
+      "id": "about",
+      "url": "https://agentengineering.world/",
+      "text": "Agent Engineering is the discipline of designing, building, evaluating, and operating AI agents. It covers prompt, context, harness, inference, memory, evaluation, and code.\nOrganised by Superagentic AI: Advancing the Agent Engineering discipline and practice\nShashi Jagtap, Conference Chair & Curator · Ex-Apple Engineer (6 years) · Organizer, London Agentic AI & Agent Engineering HQ. Building the bridge from Developer Experience to Agent Experience. Transatlantic connections between London and Silicon Valley, with programming shaped by a broader technical community.",
+      "event_id": null,
+      "kind": "about"
     }
   ]
 }

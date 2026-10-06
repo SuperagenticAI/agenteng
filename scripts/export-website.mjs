@@ -12,12 +12,14 @@ const require = createRequire(path.join(root, 'package.json'));
 const ts = require('typescript');
 const definitions = new Map();
 const values = new Map();
+const trees = new Map();
 const hash = crypto.createHash('sha256');
 function read(file) {
   const text = fs.readFileSync(path.join(root, file), 'utf8');
   hash.update(file).update(text);
   const tree = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true,
     file.endsWith('tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+  trees.set(file, tree);
   for (const statement of tree.statements) {
     if (ts.isVariableStatement(statement)) for (const d of statement.declarationList.declarations) {
       if (ts.isIdentifier(d.name) && d.initializer) definitions.set(d.name.text, d.initializer);
@@ -54,6 +56,63 @@ function evaluate(n) {
     return array.join(n.arguments.length ? evaluate(n.arguments[0]) : ',');
   }
   throw new Error(`Unsupported expression in public export: ${ts.SyntaxKind[n.kind]}`);
+}
+// JSX prose (manifesto, chair card) is read as text nodes only; markup is dropped.
+function walk(node, visit) { visit(node); ts.forEachChild(node, child => walk(child, visit)); }
+function tagName(n) {
+  const open = ts.isJsxElement(n) ? n.openingElement : ts.isJsxSelfClosingElement(n) ? n : null;
+  return open ? open.tagName.getText() : null;
+}
+function jsxText(n) {
+  if (ts.isJsxText(n)) return n.text;
+  if (ts.isJsxExpression(n)) return n.expression && (ts.isStringLiteral(n.expression) ||
+    ts.isNoSubstitutionTemplateLiteral(n.expression)) ? n.expression.text : '';
+  if (ts.isJsxElement(n) || ts.isJsxFragment(n)) return n.children.map(jsxText).join('');
+  return '';
+}
+const prose = text => text.replace(/\s+/g, ' ').replace(/\s+([.,;:])/g, '$1').trim();
+function jsxTexts(file, tag) {
+  const out = [];
+  walk(trees.get(file), n => { if (tagName(n) === tag) out.push(prose(jsxText(n))); });
+  return out;
+}
+function jsxAttribute(file, tag, key, keyValue, wanted) {
+  let found = null;
+  walk(trees.get(file), n => {
+    const open = ts.isJsxElement(n) ? n.openingElement : ts.isJsxSelfClosingElement(n) ? n : null;
+    if (!open || open.tagName.getText() !== tag) return;
+    const attrs = Object.fromEntries(open.attributes.properties.filter(ts.isJsxAttribute)
+      .filter(a => a.initializer && ts.isStringLiteral(a.initializer))
+      .map(a => [a.name.getText(), a.initializer.text]));
+    if (attrs[key] === keyValue && attrs[wanted]) found = attrs[wanted];
+  });
+  if (!found) throw new Error(`Missing ${tag} ${key}=${keyValue} in ${file}`);
+  return found;
+}
+// Evaluate only the named literal fields of an array of objects (icons are components).
+function pickFields(name, keys) {
+  return constant.definitionsOnly(name).elements.map(element => Object.fromEntries(keys.map(key => {
+    const prop = element.properties.find(p => ts.isPropertyAssignment(p) && p.name.text === key);
+    if (!prop) throw new Error(`Missing ${key} in ${name}`);
+    return [key, evaluate(prop.initializer)];
+  })));
+}
+constant.definitionsOnly = name => {
+  if (!definitions.has(name)) throw new Error(`Unknown public constant: ${name}`);
+  return definitions.get(name);
+};
+function nestedConstant(file, name) {
+  let found = null;
+  walk(trees.get(file), n => {
+    if (ts.isVariableDeclaration(n) && ts.isIdentifier(n.name) && n.name.text === name) found = n.initializer;
+  });
+  if (!found) throw new Error(`Missing ${name} in ${file}`);
+  return evaluate(found);
+}
+function only(rows, test, label) {
+  const hits = rows.filter(test);
+  if (hits.length !== 1) throw new Error(`Expected one ${label}, found ${hits.length}`);
+  return hits[0];
 }
 read('src/data/agenda.ts');
 read('src/data/speakers.ts');
@@ -206,10 +265,50 @@ for (const option of support_options) {
 source('hq',site+'/agent-engineering-hq','Agent Engineering HQ organises practitioner events on building, evaluating and operating production AI agents, with communities in San Francisco and London.',null);
 source('contact',site+'/',`Public organiser contact: ${constant('ORGANISER_EMAIL')}`,null);
 source('sponsor-contact',site+'/sponsorships',`Sponsorship enquiry: ${constant('ORGANISER_EMAIL')}`,null,'sponsorship');
+// Agent Engineering HQ page content and the published organiser card.
+read('src/pages/AgentEngineeringHQ.tsx');
+read('src/components/ManifestoSection.tsx');
+read('src/components/AgentEngineeringMindsetSection.tsx');
+read('src/components/FurtherReadingSection.tsx');
+read('src/components/WhatIsAgentEngSection.tsx');
+read('src/components/FounderCLISection.tsx');
+const hqUrl = site+'/agent-engineering-hq';
+const manifesto = jsxTexts('src/components/ManifestoSection.tsx', 'p');
+if (manifesto.length !== 5 || !manifesto[0].startsWith('Agents are not features')) throw new Error('Manifesto drift');
+const mindset = pickFields('mindsetPrinciples', ['title', 'description']);
+if (mindset.length < 1) throw new Error('Mindset drift');
+const further_reading = constant('readings').map(r => ({title:r.title, date:r.date, url:r.link}));
+const readingIntro = only(jsxTexts('src/components/FurtherReadingSection.tsx', 'p'),
+  t => t.startsWith('Agent Engineering surfaced'), 'further reading intro');
+const hqSummary = jsxAttribute('src/pages/AgentEngineeringHQ.tsx', 'meta', 'property', 'og:description', 'content');
+const citiesText = only(jsxTexts('src/pages/AgentEngineeringHQ.tsx', 'p'),
+  t => t.startsWith('Agent Engineering HQ runs San Francisco'), 'cities paragraph');
+const hqSources = {
+  manifesto: source('hq-manifesto', hqUrl+'#manifesto', manifesto.join('\n\n'), null, 'hq'),
+  mindset: source('hq-mindset', hqUrl+'#mindset', mindset.map(m => m.title+': '+m.description).join('\n'), null, 'hq'),
+  reading: source('hq-further-reading', hqUrl, further_reading.map(r => `${r.date} ${r.title} ${r.url}`).join('\n'), null, 'hq'),
+};
+const hq_content = {url:hqUrl, summary:hqSummary, cities:citiesText, manifesto, mindset,
+  further_reading_intro:readingIntro, further_reading, source_ids:Object.values(hqSources)};
+const definition = only(jsxTexts('src/components/WhatIsAgentEngSection.tsx', 'p'),
+  t => t.startsWith('Agent Engineering is the discipline'), 'definition');
+const founder = 'src/components/FounderCLISection.tsx';
+const chairName = only(jsxTexts(founder, 'h3'), t => /^\[ .+ \]$/.test(t), 'chair name').slice(2, -2);
+const chairTitle = only(jsxTexts(founder, 'p'), t => t.startsWith('Conference Chair'), 'chair title');
+const chairBio = only(jsxTexts(founder, 'div'), t => t.startsWith('Building the bridge'), 'chair bio');
+const organiserName = only(jsxTexts(founder, 'p'), t => t === 'Superagentic AI', 'organiser name');
+const organiserBlurb = only(jsxTexts(founder, 'p'), t => t.startsWith('Advancing the Agent Engineering'), 'organiser blurb');
+const chairLinks = nestedConstant(founder, 'links');
+const organiserUrl = only(chairLinks, l => l.label === organiserName, 'organiser link').url;
+const aboutSource = source('about', site+'/', [definition, `Organised by ${organiserName}: ${organiserBlurb}`,
+  `${chairName}, ${chairTitle}. ${chairBio}`].join('\n'), null, 'about');
+const about = {definition, organiser:{name:organiserName, url:organiserUrl, blurb:organiserBlurb},
+  chair:{name:chairName, title:chairTitle, bio:chairBio, links:chairLinks.map(l => ({label:l.label, url:l.url}))},
+  contact_email:constant('ORGANISER_EMAIL'), source_ids:[aboutSource]};
 const source_hash=hash.digest('hex');
 const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),published_at:new Date().toISOString(),
   source_commit:execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),source_hash,
-  events,speakers,sessions,faqs,sponsors,support_options,themes,sources};
+  events,speakers,sessions,faqs,sponsors,support_options,themes,hq:hq_content,about,sources};
 fs.mkdirSync(path.dirname(output),{recursive:true});
 fs.writeFileSync(output,JSON.stringify(catalogue,null,2)+'\n');
 console.log(`Exported ${events.length} events, ${speakers.length} speakers, ${sessions.length} sessions, ${faqs.length} faqs to ${output}`);
