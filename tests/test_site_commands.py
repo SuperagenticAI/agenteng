@@ -580,3 +580,39 @@ def test_menu_about_and_bingo_actions(monkeypatch):
     interactive.run_menu(ctx)
     assert shown == [{"operation": "about"}]
     assert invoked == [("bingo", {"play": False})]
+
+
+# --- privacy: local files ----------------------------------------------------------
+
+
+def test_local_files_are_private(tmp_path, monkeypatch):
+    import os
+    import stat
+
+    from agenteng.acp_client import stderr_log_path
+    from agenteng.bookmarks import config_dir, save_bookmarks
+
+    monkeypatch.setenv("AGENTENG_CONFIG_DIR", str(tmp_path / "cfg"))
+    old = os.umask(0o022)
+    try:
+        save_bookmarks(["agenteng-london-2026-4"])
+        log = stderr_log_path("claude")
+    finally:
+        os.umask(old)
+    mode = lambda p: stat.S_IMODE(os.stat(p).st_mode)  # noqa: E731
+    assert mode(config_dir()) == 0o700
+    assert mode(config_dir() / "bookmarks.json") == 0o600
+    assert mode(log.parent) == 0o700
+    assert mode(log) == 0o600
+    assert not list(config_dir().glob(".bookmarks.json.*"))
+
+
+def test_serve_access_log_is_off_by_default(monkeypatch):
+    calls = {}
+    import uvicorn
+
+    monkeypatch.setattr(uvicorn, "run", lambda app, **kw: calls.update(kw))
+    assert CliRunner().invoke(main, ["serve"]).exit_code == 0
+    assert calls["access_log"] is False
+    assert CliRunner().invoke(main, ["serve", "--access-log"]).exit_code == 0
+    assert calls["access_log"] is True

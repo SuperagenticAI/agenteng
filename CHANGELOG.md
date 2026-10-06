@@ -15,6 +15,7 @@
 
 - The remote MCP server reports the agenteng version in `serverInfo` instead of the MCP SDK version.
 - `--remote` requests omit default fields so a newer CLI keeps working against an older server.
+- Privacy: a new config directory and `acp-logs/` are created `0700`; bookmarks are written `0600` from the start (atomic replace). `agenteng serve` no longer writes per-request access lines (client address, path) unless `--access-log` is passed. New privacy section in `docs/DATA.md`.
 - README and docs: `ae --json events` (global options go before the command) and a working `--catalogue` example with export instructions.
 
 ## 0.0.6 - 2026-10-06

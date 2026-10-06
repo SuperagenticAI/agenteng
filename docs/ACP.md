@@ -148,7 +148,9 @@ with that agent's own CLI.
 
 1. **Spawn** the agent as a subprocess and speak JSON-RPC over its stdio. Agent
    stderr goes to a log file under the AgentEng config directory
-   (`acp-logs/`), so it never mixes with the conversation.
+   (`acp-logs/`), so it never mixes with the conversation. The folder is private (`0700`) and each log
+   is `0600`. Logs can echo prompts or paths; they are never uploaded and you can
+   delete `acp-logs/` at any time (see [privacy](DATA.md#privacy)).
 2. **[Initialize](https://agentclientprotocol.com/protocol/initialization)**
    with `clientInfo` `agenteng` and **no** file-system or terminal capability.
    The agent uses its own tools for files and commands, and those go through

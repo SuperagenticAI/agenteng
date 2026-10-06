@@ -627,8 +627,13 @@ class AgentError(RuntimeError):
 def stderr_log_path(label: str) -> Path:
     from .bookmarks import config_dir
 
+    # Agent stderr can echo prompts, file paths or account names: keep it private.
     folder = config_dir() / "acp-logs"
-    folder.mkdir(parents=True, exist_ok=True)
+    folder.mkdir(mode=0o700, parents=True, exist_ok=True)
+    try:
+        os.chmod(folder, 0o700)
+    except OSError:
+        pass
     safe = re.sub(r"[^A-Za-z0-9_.-]+", "-", label)[:40] or "agent"
     handle, name = tempfile.mkstemp(prefix=f"{safe}-", suffix=".log", dir=folder)
     os.close(handle)
