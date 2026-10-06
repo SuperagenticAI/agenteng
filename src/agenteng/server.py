@@ -93,7 +93,13 @@ def create_app(service: Service | None = None):
         CORSMiddleware,
         allow_origins=list(service.settings.allowed_origins),
         allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
-        allow_headers=["Content-Type", "Authorization", "MCP-Protocol-Version", "MCP-Session-Id"],
+        allow_headers=[
+            "Content-Type",
+            "Authorization",
+            "A2A-Version",
+            "MCP-Protocol-Version",
+            "MCP-Session-Id",
+        ],
         expose_headers=["MCP-Session-Id"],
     )
     app.add_middleware(

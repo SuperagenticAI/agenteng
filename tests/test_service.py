@@ -158,3 +158,23 @@ def test_participation_missing_contact_and_unimplemented_submit(service):
     assert service.lookup(Request(operation="participate")).status == "unavailable"
     with pytest.raises(ValidationError):
         Request(operation="submit")
+
+
+@pytest.mark.parametrize(
+    "query", ["Who's speaking in London?", "Who's speaking at AgentEng London?"]
+)
+def test_speaking_questions_return_speaker_records(service, query):
+    result = service.lookup(Request(operation="ask", query=query))
+    assert result.status == "ok"
+    expected = service.lookup(Request(operation="speakers", city="London"))
+    assert result.data == expected.data
+    assert len(result.data) > 5
+
+
+def test_speaking_question_preserves_company_filter(service):
+    company = service.lookup(Request(operation="speakers", city="London")).data[0]["company"]
+    result = service.lookup(
+        Request(operation="ask", query=f"Who's speaking from {company} in London?")
+    )
+    expected = service.lookup(Request(operation="speakers", city="London", query=company))
+    assert result.data == expected.data

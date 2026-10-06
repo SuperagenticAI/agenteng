@@ -272,3 +272,64 @@ async def test_participation_http_and_a2a_are_read_only(service):
             response = (await client.post("/", json=payload, headers={"A2A-Version": "1.0"})).json()
             assert response["result"]["message"]["parts"][1]["data"] == direct
             assert direct["data"]["automated_submission_available"] is False
+
+
+@pytest.mark.asyncio
+async def test_website_a2a_cors_preflight_and_message(service):
+    """The website can discover and query A2A 1.0 from an allowed origin."""
+    app = create_app(service)
+    origin = "https://agentengineering.world"
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app), base_url="http://localhost"
+        ) as client:
+            preflight = await client.options(
+                "/",
+                headers={
+                    "Origin": origin,
+                    "Access-Control-Request-Method": "POST",
+                    "Access-Control-Request-Headers": "content-type,a2a-version",
+                },
+            )
+            assert preflight.status_code == 200
+            assert preflight.headers["access-control-allow-origin"] == origin
+            assert "a2a-version" in preflight.headers["access-control-allow-headers"].lower()
+            card = await client.get("/.well-known/agent-card.json", headers={"Origin": origin})
+            assert card.status_code == 200
+            assert card.headers["access-control-allow-origin"] == origin
+            response = await client.post(
+                "/",
+                headers={"Origin": origin, "A2A-Version": "1.0"},
+                json={
+                    "jsonrpc": "2.0",
+                    "id": "website-chat",
+                    "method": "SendMessage",
+                    "params": {
+                        "message": {
+                            "messageId": "website-user-1",
+                            "contextId": "website-session-1",
+                            "role": "ROLE_USER",
+                            "parts": [
+                                {"data": {"operation": "tools", "discipline": "memory", "limit": 6}}
+                            ],
+                        }
+                    },
+                },
+            )
+            assert response.status_code == 200
+            assert response.headers["access-control-allow-origin"] == origin
+            payload = response.json()
+            assert "error" not in payload, payload
+            result = payload["result"]["message"]["parts"][1]["data"]
+            assert result["status"] == "ok"
+            assert result["data"]["items"]
+            denied = await client.options(
+                "/",
+                headers={
+                    "Origin": "https://untrusted.example",
+                    "Access-Control-Request-Method": "POST",
+                    "Access-Control-Request-Headers": "content-type,a2a-version",
+                },
+            )
+            assert denied.status_code == 403
+            assert "access-control-allow-origin" not in denied.headers

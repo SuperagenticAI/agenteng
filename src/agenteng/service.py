@@ -267,6 +267,7 @@ class Service:
                     "participate",
                     "speakers",
                     "speaker",
+                    "speaking",
                     "tickets",
                     "ticket",
                     "agenda",
@@ -324,6 +325,7 @@ class Service:
                         "schedule",
                         "speakers",
                         "speaker",
+                        "speaking",
                         "recordings",
                         "proposal",
                         "propose",
@@ -380,7 +382,7 @@ class Service:
                 operation = "tickets"
             elif query_terms & {"agenda", "schedule", "programme"}:
                 operation = "agenda"
-            elif query_terms & {"speakers", "speaker", "lineup"}:
+            elif query_terms & {"speakers", "speaker", "speaking", "lineup"}:
                 operation = "speakers"
             elif query_terms & {"recording", "recordings", "videos"}:
                 operation = "recordings"
@@ -408,6 +410,31 @@ class Service:
                         "upcoming": bool(query_terms & {"next", "upcoming"}),
                     }
                 )
+                if operation == "speakers":
+                    intent_words = {
+                        "who",
+                        "speakers",
+                        "speaker",
+                        "speaking",
+                        "lineup",
+                        "show",
+                        "list",
+                        "in",
+                        "at",
+                        "on",
+                        "from",
+                        "agenteng",
+                        "agent",
+                        "engineering",
+                        "conference",
+                    }
+                    routed = routed.model_copy(
+                        update={
+                            "query": " ".join(
+                                sorted(query_terms - intent_words - terms(city or ""))
+                            )
+                        }
+                    )
                 return self.lookup(routed)
         events = self.matching_events(request)
         ids = {e.id for e in events}

@@ -132,3 +132,26 @@ Local drafts use `proposal_draft`, `proposal_preview` and `proposal_export`. An 
 An enabled private pilot requires a distinct participant credential issued by the organizer. HTTP/A2A clients send it as an authorization bearer header; local stdio clients can use `AGENTENG_PARTICIPANT_TOKEN` through their client's supported secret/environment configuration. Never commit the credential to project configuration. Optional inference credentials are separate and do not authorize submissions.
 
 Private operations are `proposal_prepare`, `proposal_submit`, `proposal_status` and `proposal_withdraw`. Show the exact prepared draft, privacy terms and recipient to the contributor, obtain explicit confirmation, then submit the unchanged draft and preview reference. A broad tool serving an enabled intake advertises writes and withdrawal; it is not marked read-only. See [participation usage](PARTICIPATION.md).
+
+## Website A2A chat
+
+The conference website's native **Talk to AgentEng A2A** panel discovers the
+agent card and sends A2A 1.0 JSON-RPC `SendMessage` requests. The service permits
+the `A2A-Version` header in browser CORS preflights. Public requests continue
+to use catalogue lookup with no model calls; adding a chat UI does not enable
+inference or private intake.
+
+The default allowed browser origin is `https://agentengineering.world`.
+For a local website running at `http://localhost:8080`, configure the local
+service explicitly:
+
+```sh
+AGENTENG_PUBLIC_URL=http://127.0.0.1:8000 AGENTENG_ALLOWED_ORIGINS=http://localhost:8080 agenteng serve
+```
+
+Set `VITE_AGENTENG_A2A_URL=http://127.0.0.1:8000` in the website's `.env.local`.
+Use the actual browser origin if your development port differs. Deploy the
+service update before publishing the website chat. The browser retains only a
+page-local transcript; the current A2A adapter answers each question independently.
+Future model integration belongs in the service, with provider credentials
+kept out of browser configuration.
