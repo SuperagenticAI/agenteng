@@ -239,6 +239,75 @@ def _connect_agent(ctx) -> None:
         raise click.ClickException(str(exc)) from exc
 
 
+def pick_talk_id(ctx) -> str | None:
+    """Pick an event, then one of its talks. None when the user backs out."""
+    from .cli import dispatch
+
+    while True:
+        event_id = pick_event_id(ctx, prompt="Talks from which event?")
+        if not event_id:
+            return None
+        try:
+            result = dispatch(
+                ctx, dict(operation="talks", event_id=event_id, limit=100), quiet=True
+            )
+            rows = result.data if isinstance(result.data, list) else []
+        except click.exceptions.Exit:
+            rows = []
+        if not rows:
+            click.echo("That event has no published talks yet. Pick another.", err=True)
+            continue
+        choices = [
+            Choice(f"{row.get('title')} ({row.get('speaker_name') or 'TBA'})", row.get("id"))
+            for row in rows
+            if row.get("id")
+        ]
+        choices.append(Choice("Back", None))
+        talk_id = _select("Pick a talk", choices)
+        if talk_id:
+            return talk_id
+
+
+def _code_with_agent(ctx) -> None:
+    """Pick an installed ACP agent, optionally a talk, then chat (ae code)."""
+    from .acp_agents import AGENTS, REGISTRY_URL, installed_agents
+    from .render import render_acp_agents
+
+    found = installed_agents()
+    if not found:
+        render_acp_agents([spec.as_dict() for spec in AGENTS], REGISTRY_URL)
+        click.echo(
+            "No ACP coding agent is on PATH yet. Install one of the agents above, "
+            "then pick this option again.",
+            err=True,
+        )
+        return
+    choices = [Choice(f"{spec.title} ({spec.binary})", spec) for spec in found]
+    choices.append(Choice("Back", None))
+    spec = _select("Code with which agent?", choices)
+    if spec is None:
+        return
+    context = _select(
+        "Add a talk as context?",
+        [Choice("No, just chat", "none"), Choice("Pick a talk", "talk"), Choice("Back", None)],
+    )
+    if context is None:
+        return
+    context_ids: list[str] = []
+    if context == "talk":
+        talk_id = pick_talk_id(ctx)
+        if not talk_id:
+            return
+        context_ids.append(talk_id)
+    from .cli import run_code
+
+    try:
+        argv = spec.argv()
+    except LookupError as exc:
+        raise click.ClickException(str(exc)) from exc
+    run_code(ctx, argv, "", chat=True, context_ids=context_ids)
+
+
 def run_menu(ctx) -> None:
     """Top-level interactive loop. Ctrl-C or Quit exits cleanly."""
     click.echo("AgentEng interactive mode. Pick an option or press ctrl-c to quit.\n")
@@ -255,6 +324,7 @@ def run_menu(ctx) -> None:
                     Choice("My bookmarked agenda", "my_agenda"),
                     Choice("Browse the tool directory", "tools"),
                     Choice("Draft a talk or event idea", "draft"),
+                    Choice("Code with an agent (ACP)", "code"),
                     Choice("Connect a coding agent", "connect"),
                     Choice("Discover (welcome)", "discover"),
                     Choice("Quit", "quit"),
@@ -293,6 +363,8 @@ def run_menu(ctx) -> None:
                 _browse_tools(ctx)
             elif action == "draft":
                 _draft_proposal(ctx)
+            elif action == "code":
+                _code_with_agent(ctx)
             elif action == "connect":
                 _connect_agent(ctx)
             elif action == "discover":

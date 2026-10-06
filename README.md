@@ -166,9 +166,10 @@ For Google Cloud Run, the [console setup guide](deploy/README.md) connects this 
 uv tool install 'agenteng[acp]'
 ae code --list
 ae code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
+ae code --agent claude    # chat: /help, /context ID, /agent, /exit
 ```
 
-Sign-in stays with each agent. See the [ACP design note](docs/ACP.md).
+With no prompt in a terminal (or with `--chat`), `ae code` opens a chat on one session: Ctrl-C cancels the current turn, Ctrl-D or `/exit` ends it. File edits show as coloured diffs in the permission prompt. In the `ae` menu, **Code with an agent (ACP)** picks an installed agent and, optionally, a talk as context. Sign-in stays with each agent. See the [ACP design note](docs/ACP.md).
 
 ## Optional model engines
 

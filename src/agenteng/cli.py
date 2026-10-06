@@ -747,6 +747,12 @@ def revoke_access(ctx, credential_file):
     is_flag=True,
     help="Also offer the agent's 'allow always' choice in permission prompts (hidden by default).",
 )
+@click.option(
+    "--chat",
+    "chat_flag",
+    is_flag=True,
+    help="Keep one session open for several turns (default with no PROMPT in a terminal).",
+)
 @click.option("--json", "json_events", is_flag=True, help="Stream newline-delimited JSON events.")
 @click.pass_context
 def code(
@@ -761,6 +767,7 @@ def code(
     npx,
     show_thoughts,
     allow_always_option,
+    chat_flag,
     json_events,
 ):
     """Drive an ACP coding agent with AgentEng context (install [acp]).
@@ -769,9 +776,13 @@ def code(
     server and streams its reply. Every permission request is asked in the
     terminal; without a terminal it is rejected. Nothing is auto-approved.
 
+    With no PROMPT in a terminal (or with --chat) it opens a chat on one session:
+    /help, /context ID, /agent, /exit or Ctrl-D. Ctrl-C cancels the current turn.
+    With --chat and piped stdin, each line is one turn.
+
     Example: ae code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
     """
-    from .acp_agents import AGENTS, REGISTRY_URL, default_agent, find_agent
+    from .acp_agents import AGENTS, REGISTRY_URL
     from .output import use_json
 
     as_json = json_events or use_json(ctx)
@@ -785,31 +796,69 @@ def code(
             render_acp_agents(rows, REGISTRY_URL)
         return
     text = " ".join(prompt).strip()
-    if not text and not stdin_is_tty():
+    interactive = stdin_is_tty()
+    # Chat: --chat, or no prompt in a terminal. Piped stdin with --chat means one turn per line.
+    chat = chat_flag or (not text and interactive and not as_json)
+    if not chat and not text and not interactive:
         text = click.get_text_stream("stdin").read().strip()
-    if not text:
+    if not chat and not text:
         raise click.UsageError(
-            'Give a prompt, for example: ae code "explain talk agenteng-london-2026-2"'
+            'Give a prompt, for example: ae code "explain talk agenteng-london-2026-2", '
+            "or run ae code in a terminal (or with --chat) to chat."
         )
-    try:
-        from . import acp_client
-    except ImportError as exc:
-        raise click.ClickException("Install agenteng[acp] for ae code.") from exc
+    argv = resolve_agent_argv(agent_name, agent_command, npx)
+    run_code(
+        ctx,
+        argv,
+        text,
+        chat=chat,
+        cwd=cwd,
+        context_ids=list(context_ids),
+        no_mcp=no_mcp,
+        show_thoughts=show_thoughts,
+        allow_always=allow_always_option,
+        as_json=as_json,
+    )
+
+
+def resolve_agent_argv(agent_name=None, agent_command=None, npx=False) -> list[str]:
+    """Command line for --agent / --agent-command / the first installed agent."""
     import shlex
+    import shutil
+
+    from .acp_agents import default_agent, find_agent
 
     try:
         if agent_command:
             argv = shlex.split(agent_command)
             if not argv:
                 raise LookupError("--agent-command is empty.")
-            import shutil
-
             argv[0] = shutil.which(argv[0]) or argv[0]
-        else:
-            spec = find_agent(agent_name) if agent_name else default_agent()
-            argv = spec.argv(npx=npx)
+            return argv
+        spec = find_agent(agent_name) if agent_name else default_agent()
+        return spec.argv(npx=npx)
     except LookupError as exc:
         raise click.ClickException(str(exc)) from exc
+
+
+def run_code(
+    ctx,
+    argv: list[str],
+    text: str,
+    *,
+    chat: bool,
+    cwd: str | None = None,
+    context_ids: list[str] | None = None,
+    no_mcp: bool = False,
+    show_thoughts: bool = False,
+    allow_always: bool = False,
+    as_json: bool = False,
+) -> None:
+    """Single-shot turn or chat loop on one ACP session (shared by ae code and the menu)."""
+    try:
+        from . import acp_client
+    except ImportError as exc:
+        raise click.ClickException("Install agenteng[acp] for ae code.") from exc
 
     global_args = []
     if ctx.obj.get("remote"):
@@ -828,29 +877,52 @@ def code(
                 message="The mcp package is missing, so AgentEng tools are not attached. "
                 "Install agenteng[acp] (includes mcp) to attach them.",
             )
+    service = None if ctx.obj.get("remote") else local_service(ctx)
     records = []
-    if not ctx.obj.get("remote"):
-        records = acp_client.context_records(local_service(ctx), text, list(context_ids))
-    blocks = acp_client.build_prompt(text, records, mcp_attached=bool(mcp_servers))
-    if not stdin_is_tty():
+    if service is not None:
+        records = acp_client.context_records(service, text, list(context_ids or []))
+    interactive = stdin_is_tty()
+    if not interactive:
         prompter = None
     elif as_json:
-        prompter = acp_client.terminal_prompter(err=True)
+        prompter = acp_client.terminal_prompter(err=True, async_input=True)
     else:
-        prompter = acp_client.terminal_prompter(sink.console)
-    try:
-        outcome = asyncio.run(
-            acp_client.run_session(
-                argv,
-                blocks,
-                cwd=cwd or os.getcwd(),
-                sink=sink,
-                prompter=prompter,
-                mcp_servers=mcp_servers,
-                context_ids=[f"{r['kind']}:{r['id']}" for r in records],
-                allow_always=allow_always_option,
+        prompter = acp_client.terminal_prompter(sink.console, sink=sink, async_input=True)
+    session = acp_client.AgentSession(
+        argv,
+        cwd=cwd or os.getcwd(),
+        sink=sink,
+        prompter=prompter,
+        mcp_servers=mcp_servers,
+        context_ids=[f"{r['kind']}:{r['id']}" for r in records],
+        allow_always=allow_always,
+    )
+
+    async def go() -> str:
+        async with session:
+            if not chat:
+                blocks = acp_client.build_prompt(text, records, mcp_attached=bool(mcp_servers))
+                return await session.turn(blocks, handle_sigint=True)
+            if interactive and not as_json:
+                info = session.agent_info.get("agent_info") or {}
+                label = info.get("title") or info.get("name") or Path(argv[0]).name
+                sink.emit(
+                    "info", message="Chat started. /help for commands, /exit or Ctrl-D to end."
+                )
+                reader = acp_client.tty_reader(label)
+            else:
+                reader = acp_client.line_reader()
+            return await acp_client.run_chat(
+                session,
+                reader,
+                service=service,
+                mcp_attached=bool(mcp_servers),
+                first_prompt=text,
+                records=records,
             )
-        )
+
+    try:
+        stop_reason = asyncio.run(go())
     except acp_client.AgentError as exc:
         if as_json:
             sink.emit("error", message=str(exc))
@@ -858,9 +930,13 @@ def code(
         raise click.ClickException(str(exc)) from exc
     except KeyboardInterrupt:
         ctx.exit(130)
-    if outcome.stop_reason == "cancelled":
+    if chat:
+        if not as_json:
+            sink.emit("info", message=f"Chat ended after {session.turns} turn(s).")
+        return
+    if stop_reason == "cancelled":
         ctx.exit(130)
-    if outcome.stop_reason not in ("end_turn", "max_tokens", "max_turn_requests"):
+    if stop_reason not in ("end_turn", "max_tokens", "max_turn_requests"):
         ctx.exit(1)
 
 

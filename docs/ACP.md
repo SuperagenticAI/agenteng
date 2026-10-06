@@ -10,6 +10,8 @@ command shape and defaults may change.
 uv tool install 'agenteng[acp]'
 ae code --list
 ae code --agent claude "scaffold a demo of talk agenteng-london-2026-14"
+ae code --agent claude          # chat: many turns on one session
+ae                              # menu: "Code with an agent (ACP)"
 ```
 
 ## Why
@@ -35,7 +37,7 @@ config.
 ```text
 ae code [--agent NAME | --agent-command "CMD ARGS"] [--cwd DIR]
         [--context ID ...] [--no-mcp] [--npx] [--show-thoughts]
-        [--allow-always-option] [--json] PROMPT
+        [--allow-always-option] [--chat] [--json] [PROMPT]
 ae code --list [--json]
 ```
 
@@ -49,9 +51,63 @@ ae code --list [--json]
 | `--npx` | Launch a missing npm-distributed agent with `npx -y PACKAGE`. Opt-in, because it downloads and runs code. |
 | `--show-thoughts` | Show the agent's thought chunks. |
 | `--allow-always-option` | Also offer the agent's "allow always" choice in permission prompts. |
+| `--chat` | Keep the session open for more turns (see [Chat mode](#chat-mode)). PROMPT, if given, is the first turn. |
 | `--json` | Newline-delimited JSON events instead of rich output (also used when stdout is not a terminal). |
 
-The prompt can also come from stdin: `echo "..." | ae code --agent gemini`.
+How the mode is picked:
+
+| You run | Mode |
+| --- | --- |
+| `ae code PROMPT` | One turn, then exit (as before). |
+| `ae code` in a terminal | Chat. |
+| `ae code --chat [PROMPT]` in a terminal | Chat, with PROMPT as the first turn. |
+| `echo "..." \| ae code` | One turn: all of stdin is the prompt. |
+| `printf 'a\nb\n' \| ae code --chat` | One turn per stdin line, on one session, until EOF or `/exit`. |
+| `ae code --json PROMPT` (or stdin) | One turn of NDJSON. `--json` never starts chat by itself. |
+| `ae code --chat --json < prompts.txt` | NDJSON chat: one turn per stdin line. |
+
+`--json` stays single-shot unless you add `--chat`, so scripts and other
+agents that already call `ae code --json` keep their behaviour. A driver that
+wants several turns pipes one prompt per line with `--chat --json`; each turn
+ends with its own `stop` event, and slash commands work there too.
+
+## Chat mode
+
+Chat keeps one ACP session (one agent process, one `sessionId`) open across
+turns, so the agent remembers earlier turns and its own edits.
+
+- A prompt box (`you ›`) reads each message; a bottom bar lists the keys.
+- Each turn streams like a single-shot run and ends with its stop reason.
+- Permission prompts work exactly as in single-shot mode.
+- **Ctrl-C** during a turn sends `session/cancel`; the agent stops and the
+  turn ends `cancelled`, and you are back at the prompt. A second Ctrl-C
+  aborts the turn locally if the agent does not answer. **Ctrl-C at a
+  permission prompt** also cancels the turn: the request is answered
+  `cancelled`, as the spec requires. Ctrl-C on an empty prompt clears the line.
+- **Ctrl-D** or `/exit` ends the chat and stops the agent.
+- The agent runs in its own process session, so a terminal Ctrl-C reaches
+  `ae code` (which cancels politely) rather than killing the agent.
+
+| Command | Does |
+| --- | --- |
+| `/help` | List commands and keys. |
+| `/context ID` | Attach a talk, event or speaker record, or `tool:ID`, to your next message. |
+| `/agent` | Agent name and version, ACP version, session ID, cwd, MCP servers, turn count. |
+| `/exit`, `/quit` | End the chat. |
+
+The AgentEng preamble goes with the first turn only. Later turns send just the
+new message, plus any records from `/context` or IDs detected in that message.
+
+## Menu entry
+
+`ae` with no arguments opens the interactive menu. **Code with an agent (ACP)**:
+
+1. lists the ACP agents found on `PATH` (the same detection as `ae code
+   --list`). If none is installed, it shows the agent table with install
+   commands and returns to the menu;
+2. asks whether to add a talk as context. **Pick a talk** uses the event
+   picker, then the event's talks (events with no talks yet are skipped);
+3. opens chat mode on that agent, with the talk attached to the first message.
 
 ## Supported agents
 
@@ -118,7 +174,8 @@ with that agent's own CLI.
    capability.
 5. **Stream** `session/update` notifications: message chunks, optional
    thoughts, [tool calls](https://agentclientprotocol.com/protocol/tool-calls)
-   and plans. Ctrl+C sends `session/cancel`.
+   (with [diffs](#diffs)) and plans. Ctrl-C sends `session/cancel`.
+6. In chat, repeat step 4 on the same session for each message.
 
 The `--json` stream has one object per line with an `event` field: `agent`,
 `session`, `plan`, `agent_message_chunk`, `agent_thought_chunk`, `tool_call`,
@@ -128,7 +185,8 @@ updates pass through under their own names).
 ## Permissions
 
 - Every `session/request_permission` goes to you in the terminal: the tool
-  title, kind, paths and input, then a numbered choice. **Enter rejects.**
+  title, kind, paths and input (or [diff](#diffs)), then a numbered choice.
+  **Enter rejects.**
 - Nothing is auto-approved, writes included. There is no allow-all flag.
 - The agent's "allow always" option is hidden by default, so each write
   needs a fresh decision. `--allow-always-option` shows it for that run.
@@ -137,16 +195,52 @@ updates pass through under their own names).
   terminal, the prompt is shown on stderr.
 - Rejection uses the agent's `reject_once` option, or the `cancelled` outcome
   if the agent offered none.
+- Ctrl-C at the prompt cancels the whole turn (`cancelled` outcome plus
+  `session/cancel`).
+
+## Diffs
+
+ACP tool calls can carry
+[diff content](https://agentclientprotocol.com/protocol/tool-calls#diffs)
+(`{"type": "diff", "path", "oldText", "newText"}`; `oldText` is null for a new
+file). `ae code` renders it as a coloured unified diff with a `+added -removed`
+summary:
+
+- **In permission prompts.** The diff is shown inside the prompt, where you
+  decide. Diffs over 40 lines are cut with "... N more diff lines", and the
+  prompt adds **d View the full diff**, which prints the whole diff and asks
+  again.
+- **While streaming.** Diffs on `tool_call` and `tool_call_update` are shown
+  once, when the call starts running or finishes. A diff on a call that is
+  still `pending` is held back, because the agent usually asks permission next
+  and the prompt shows it; the same diff is never printed twice.
+- **In `--json`.** Tool-call events pass the diff content through unchanged,
+  and `permission` events add a `diffs` summary
+  (`path`, `added`, `removed`, `new_file`).
 
 ## Testing
 
 CI does not need a real agent. `tests/fixtures/fake_acp_agent.py` is an ACP
-agent built on the same SDK. One prompt turn sends a plan, streamed text and
+agent built on the same SDK. Its first turn sends a plan, streamed text and
 thoughts, a tool call that really calls the attached `agenteng mcp` server
-over stdio, and an edit that needs permission. Tests check the
-`initialize` and `session/new` payloads, the MCP round trip, rendering, the
-JSON stream, reject-by-default, the allow path, the hidden allow-always option
-and sign-in errors.
+over stdio, and an edit with diff content that needs permission. Later turns
+echo attached context, and a message containing "patch" streams a second edit
+whose diff arrives on `tool_call_update`. A slow mode waits for
+`session/cancel`, and `FAKE_ACP_DIFF_LINES` makes the diff long enough to
+truncate. Tests check:
+
+- the `initialize` and `session/new` payloads, the MCP round trip, rendering,
+  the JSON stream, reject-by-default, the allow path, the hidden allow-always
+  option and sign-in errors;
+- chat: one session across turns from piped lines, `/help`, `/agent`,
+  `/context`, unknown commands, `/exit`, the preamble on the first turn only,
+  and `--json` staying single-shot;
+- cancel: `session/cancel` ends a turn `cancelled`, and Ctrl-C at a permission
+  prompt answers it `cancelled`;
+- diffs: colours, stats, truncation, the `d` full view, stream diffs shown
+  once, and the JSON `diffs` summary;
+- the menu entry: agent pick, talk pick (skipping events with no talks),
+  install hints when no agent is installed.
 
 A real third-party agent was also checked on a machine with no credentials:
 `fast-agent-acp==0.10.1 --model passthrough` (no model) completed a session,
@@ -164,8 +258,9 @@ ae code --agent gemini --cwd ./demo "scaffold a demo of talk agenteng-london-202
 
 | Stage | Scope | Rough effort |
 | --- | --- | --- |
-| Spike (this change) | One prompt turn, agent catalogue, MCP attach, context blocks, permissions, rich and JSON output, fake-agent tests | Done |
-| Usable | Multi-turn chat loop, `ae` menu entry, show diffs in permission prompts, session modes and model picker, better long-output rendering | 2 to 4 days |
+| Spike | One prompt turn, agent catalogue, MCP attach, context blocks, permissions, rich and JSON output, fake-agent tests | Done |
+| Usable, part 1 | Chat loop with cancel and slash commands, `ae` menu entry, diffs in permission prompts and streams | Done |
+| Usable, part 2 | Session modes and model picker, better long-output rendering, slash commands advertised by the agent | 1 to 2 days |
 | Polished | Registry-driven discovery and install, `session/load` resume, optional read-only `fs/read_text_file`, workshop presets, Windows checks | 1 to 2 weeks |
 
 ## Risks
