@@ -1,8 +1,8 @@
 import asyncio
-from dataclasses import replace
 import json
 import threading
 import time
+from dataclasses import replace
 
 import httpx
 import pytest
@@ -125,9 +125,6 @@ async def test_model_can_choose_public_tool_directory_lookup():
 async def test_model_cannot_read_private_intake_or_local_state(monkeypatch, operation):
     provider = Provider(tool={"operation": operation, "receipt": "a" * 32})
     service = chat_service(provider)
-    monkeypatch.setattr(
-        service.participation, "execute", lambda *args: pytest.fail("Private access")
-    )
     result = await service.execute(Request(operation="chat", query="memory"))
     assert result.engine == "chat"
     tool_reply = json.loads(provider.calls[1][0][-1]["content"])
@@ -293,36 +290,38 @@ async def test_a2a_public_chat_and_fallback_need_no_browser_credentials():
     provider = Provider()
     service = chat_service(provider)
     app = create_app(service)
-    async with app.router.lifespan_context(app):
-        async with httpx.AsyncClient(
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
             transport=httpx.ASGITransport(app), base_url="http://localhost"
-        ) as client:
-            card = (await client.get("/.well-known/agent-card.json")).json()
-            assert any(skill["id"] == "agenteng-chat" for skill in card["skills"])
-            payload = {
-                "jsonrpc": "2.0",
-                "id": "chat-test",
-                "method": "SendMessage",
-                "params": {
-                    "message": {
-                        "messageId": "public-question",
-                        "role": "ROLE_USER",
-                        "parts": [
-                            {
-                                "data": {"operation": "chat", "query": "memory", "history": []},
-                            }
-                        ],
-                    },
+        ) as client,
+    ):
+        card = (await client.get("/.well-known/agent-card.json")).json()
+        assert any(skill["id"] == "agenteng-chat" for skill in card["skills"])
+        payload = {
+            "jsonrpc": "2.0",
+            "id": "chat-test",
+            "method": "SendMessage",
+            "params": {
+                "message": {
+                    "messageId": "public-question",
+                    "role": "ROLE_USER",
+                    "parts": [
+                        {
+                            "data": {"operation": "chat", "query": "memory", "history": []},
+                        }
+                    ],
                 },
-            }
-            headers = {"A2A-Version": "1.0", "Origin": "https://agentengineering.world"}
-            response = await client.post("/", json=payload, headers=headers)
-            assert response.headers["access-control-allow-origin"] == headers["Origin"]
-            assert response.json()["result"]["message"]["parts"][1]["data"]["engine"] == "chat"
-            provider.failure = httpx.ReadTimeout("secret")
-            response = await client.post("/", json=payload, headers=headers)
-            result = response.json()["result"]["message"]["parts"][1]["data"]
-            assert result["engine"] == "lookup" and result["status"] != "unavailable"
+            },
+        }
+        headers = {"A2A-Version": "1.0", "Origin": "https://agentengineering.world"}
+        response = await client.post("/", json=payload, headers=headers)
+        assert response.headers["access-control-allow-origin"] == headers["Origin"]
+        assert response.json()["result"]["message"]["parts"][1]["data"]["engine"] == "chat"
+        provider.failure = httpx.ReadTimeout("secret")
+        response = await client.post("/", json=payload, headers=headers)
+        result = response.json()["result"]["message"]["parts"][1]["data"]
+        assert result["engine"] == "lookup" and result["status"] != "unavailable"
 
 
 @pytest.mark.asyncio

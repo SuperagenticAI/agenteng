@@ -44,12 +44,6 @@ class Settings:
     max_output_tokens: int = 1200
     max_reserved_tokens: int = 12000
     request_timeout: float = 45
-    enable_intake: bool = False
-    inbox_path: str | None = None
-    calls_path: str | None = None
-    intake_privacy_notice: str = ""
-    intake_retention_days: int = 90
-    intake_capacity: int = 1000
 
     def __post_init__(self):
         try:
@@ -74,12 +68,6 @@ class Settings:
             model_api_key=os.getenv("AGENTENG_MODEL_API_KEY", ""),
             model_base_url=os.getenv("AGENTENG_MODEL_BASE_URL", cls.model_base_url),
             model=os.getenv("AGENTENG_MODEL", ""),
-            enable_intake=os.getenv("AGENTENG_ENABLE_INTAKE") == "1",
-            inbox_path=os.getenv("AGENTENG_INBOX"),
-            calls_path=os.getenv("AGENTENG_CALLS"),
-            intake_privacy_notice=os.getenv("AGENTENG_INTAKE_PRIVACY_NOTICE", ""),
-            intake_retention_days=int(os.getenv("AGENTENG_INTAKE_RETENTION_DAYS", "90")),
-            intake_capacity=int(os.getenv("AGENTENG_INTAKE_CAPACITY", "1000")),
             allowed_origins=tuple(
                 x.strip()
                 for x in os.getenv(

@@ -11,9 +11,7 @@ class RemoteService:
     def __init__(self, url, *, transport=None):
         self.url = validate_origin(url)
         self.transport = transport
-        # Broad remote tools conservatively advertise potential writes. The
-        # remote operator still controls actual intake and authorization.
-        self.settings = Settings(public_url=self.url, enable_intake=True)
+        self.settings = Settings(public_url=self.url)
 
     async def execute(self, request, *, token=None):
         headers = {"Authorization": "Bearer " + token} if token else {}

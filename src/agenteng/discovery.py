@@ -1,11 +1,10 @@
 """Source-backed event discovery for people, crawlers and agent clients."""
 
-from html import escape
 import json
 import shlex
+from html import escape
 
 from .config import validate_origin as validate_origin
-
 from .participation import CITIES, ORGANIZER
 
 WEBSITE = "https://agentengineering.world"
@@ -63,14 +62,14 @@ def discovery(service, city=None):
             "Find the next Agent Engineering Conference in London",
             "Show Agent Engineering HQ events in San Francisco",
             "Which London sessions cover evaluation or agent harnesses?",
-            "Help me draft an idea for a future AgentEng event in London",
+            "Show the public agenda for AgentEng London",
             "List tools for memory engineering",
         ],
         "participation": {
             "organizer": ORGANIZER,
-            "offline_drafting": True,
-            "private_intake_enabled": bool(service.participation.inbox),
-            "participant_credential_required": True,
+            "offline_drafting": False,
+            "private_intake_enabled": False,
+            "participant_credential_required": False,
             "london_2026": "Invited programme; no public CFP",
             "san_francisco": "No public CFP announced in this catalogue",
         },
@@ -201,8 +200,7 @@ def llms_text(service):
         "",
         "## Participation and accuracy",
         "London 2026 has an invited programme and no public CFP. No San Francisco public CFP is announced in this snapshot.",
-        "Use proposal_draft, proposal_preview and proposal_export to prepare a local draft; nothing is sent.",
-        "Private intake is operator-configured, requires a participant credential and explicit preview confirmation.",
+        "AgentEng serves public information only. It accepts no attendee records, personal agendas or proposal submissions.",
         "Ideas do not guarantee review, a response, acceptance or an event. Do not infer open calls or ticket availability.",
         f"Snapshot published: {service.catalogue.published_at.isoformat()}. Confirm current details on {WEBSITE}.",
     ]
@@ -211,6 +209,43 @@ def llms_text(service):
 
 def connection(client, transport, url):
     origin = validate_origin(url)
+    if client == "a2a":
+        payload = json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "id": "agenteng-hello",
+                "method": "SendMessage",
+                "params": {
+                    "message": {
+                        "messageId": "agenteng-hello",
+                        "role": "ROLE_USER",
+                        "parts": [{"data": {"operation": "discover"}}],
+                    }
+                },
+            },
+            separators=(",", ":"),
+        )
+        return (
+            "AgentEng A2A setup (A2A 1.0 JSON-RPC)\n"
+            f"Agent card: {origin}/.well-known/agent-card.json\n"
+            f"JSON-RPC endpoint: {origin}/\n\n"
+            f"curl -fsSL {shlex.quote(origin + '/.well-known/agent-card.json')}\n"
+            f"curl -fsSL {shlex.quote(origin + '/')} "
+            "-H 'Content-Type: application/json' -H 'A2A-Version: 1.0' "
+            f"--data {shlex.quote(payload)}\n"
+        )
+    if client == "acp":
+        return (
+            "AgentEng ACP setup\n"
+            "Install the optional ACP extra and an ACP-compatible coding agent.\n"
+            "List available agents, then choose one for a local coding session.\n"
+            "These instructions do not launch an agent or create a session.\n\n"
+            "uv tool install --upgrade 'agenteng[acp]'\n"
+            "agenteng code --list\n"
+            'agenteng code --agent claude "Show the public London agenda"\n'
+        )
+    if client == "mcp":
+        client = "generic"
     if client == "codex":
         return (
             f"codex mcp add agenteng --url {shlex.quote(origin + '/mcp/')}"

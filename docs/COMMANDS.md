@@ -52,7 +52,7 @@ The Result JSON is the same object MCP, A2A and `POST /v1/query` return:
 | `stale` | `true` when the catalogue is older than the configured maximum age. |
 | `engine` | `lookup` unless a model engine was explicitly requested and enabled. |
 | `usage` | Model usage, empty for lookups. |
-| `artifact` | A file body for `--format ics`, bingo `text`/`svg`/`html` and proposal exports, else `null`. |
+| `artifact` | A file body for `--format ics`, bingo `text`/`svg`/`html`, else `null`. |
 
 When a command returns an `artifact` and you do not pass `--output` or `--json`,
 the artifact itself is printed (for example the `.ics` text).
@@ -79,13 +79,13 @@ These print something other than Result JSON:
 | `130` | `agenteng code` turn cancelled with Ctrl-C. |
 
 **Empty but valid** means a list or snapshot command ran correctly and found
-nothing: `agenteng my-agenda` with no bookmarks, `agenteng now` between sessions,
+nothing: `agenteng now` between sessions,
 `agenteng search` with zero hits, or `agenteng talks --search` with no match.
 These exit `0`. Their Result JSON is unchanged, so `status` is still `not_found`
 with an empty list (or a snapshot whose `session` is `null`). Check `data`, not
 the exit code, to tell empty from full. The commands this applies to are
 `events`, `speakers`, `talks`, `faq`, `themes`, `sponsors`, `recordings`,
-`search`, `ask`, `agenda`, `plan`, `my-agenda`, `now`, `next` and `live`.
+`search`, `ask`, `agenda`, `now`, `next` and `live`.
 
 An unknown ID still exits `1` with `status` `not_found`: `agenteng event nope`,
 `agenteng speaker nope`, `agenteng tool nope`, `agenteng talk nope` or
@@ -382,52 +382,6 @@ agenteng live [OPTIONS]
 agenteng live --event london --at 10:40 --refresh 15
 ```
 
-### agenteng save
-
-Bookmark a talk locally by session ID or speaker ID (this machine only).
-
-IDENTIFIER is a session ID or speaker ID from agenteng talks.
-
-```text
-agenteng save [OPTIONS] IDENTIFIER
-```
-
-```sh
-agenteng save samuel-colvin
-```
-
-### agenteng unsave
-
-Remove a local talk bookmark by session ID or speaker ID.
-
-IDENTIFIER is a session ID or speaker ID you saved before.
-
-```text
-agenteng unsave [OPTIONS] IDENTIFIER
-```
-
-```sh
-agenteng unsave samuel-colvin
-```
-
-### agenteng my-agenda
-
-Show locally bookmarked talks; optional .ics export.
-
-```text
-agenteng my-agenda [OPTIONS]
-```
-
-| Option | Meaning | Default |
-| --- | --- | --- |
-| `--event` TEXT | Only bookmarks for this event ID. |  |
-| `--format` CHOICE | json for Result JSON, ics for a calendar file. One of: `json`, `ics`. | `json` |
-| `--output` FILE | Write the result to this file. |  |
-
-```sh
-agenteng my-agenda --format ics --output my-agenda.ics
-```
-
 ### agenteng bingo
 
 Talk bingo from published talk terms. Local only; nothing is sent.
@@ -447,26 +401,6 @@ agenteng bingo [OPTIONS]
 
 ```sh
 agenteng bingo --seed 7 --size 4 --format html --output bingo.html
-```
-
-### agenteng plan
-
-Select sessions by published text and optionally export a calendar.
-
-EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
-
-```text
-agenteng plan [OPTIONS] [EVENT_ID]
-```
-
-| Option | Meaning | Default |
-| --- | --- | --- |
-| `--interest` TEXT | A topic you care about. Repeatable. |  |
-| `--format` CHOICE | json for Result JSON, ics for a calendar file. One of: `json`, `ics`. | `json` |
-| `--output` FILE | Write the result to this file. |  |
-
-```sh
-agenteng plan agenteng-london-2026 --interest memory --interest evals
 ```
 
 ## Search and ask
@@ -639,20 +573,23 @@ agenteng tool langgraph
 
 ### agenteng connect
 
-Print MCP setup instructions; never modify a client's configuration.
+Print A2A, MCP or ACP setup instructions without changing client configuration.
 
-CLIENT is codex, claude-code, cursor or generic. Output is plain text.
+CLIENT is a2a, mcp, acp, codex, claude-code, cursor or generic. Output is plain text.
 
 ```text
-agenteng connect [OPTIONS] {codex|claude-code|cursor|generic}
+agenteng connect [OPTIONS] {a2a|mcp|acp|codex|claude-code|cursor|generic}
 ```
 
 | Option | Meaning | Default |
 | --- | --- | --- |
 | `--transport` CHOICE | stdio runs agenteng mcp locally; http uses the hosted MCP server. One of: `stdio`, `http`. | `stdio` |
-| `--url` TEXT | Hosted server base URL for http. | `https://a2a.agentengineering.world` |
+| `--url` TEXT | Hosted server base URL for A2A or HTTP MCP. | `https://a2a.agentengineering.world` |
 
 ```sh
+agenteng connect a2a
+agenteng connect mcp --transport http
+agenteng connect acp
 agenteng connect claude-code --transport http
 ```
 
@@ -718,218 +655,12 @@ agenteng code [OPTIONS] [PROMPT]...
 agenteng code --agent claude "summarise talk agenteng-london-2026-2 in three bullets"
 ```
 
-## Ideas and proposals
-
-### agenteng engage
-
-Build a future-event idea through a short guided conversation.
-
-```text
-agenteng engage [OPTIONS]
-```
-
-| Option | Meaning | Default |
-| --- | --- | --- |
-| `--city` CHOICE | City the idea is for; asks when omitted. One of: `London`, `San Francisco`. |  |
-| `--kind` CHOICE | What kind of idea this is. One of: `talk`, `workshop`, `event_idea`, `feedback`. | `event_idea` |
-| `--output` FILE | Write the result to this file. |  |
-
-```sh
-agenteng engage --city London --output draft.json
-```
-
-### agenteng proposal
-
-Draft ideas for London/San Francisco; private intake requires organizer access.
-
-#### agenteng proposal draft
-
-Create a local draft; default target is a possible future event.
-
-```text
-agenteng proposal draft [OPTIONS]
-```
-
-| Option | Meaning | Default |
-| --- | --- | --- |
-| `--city` CHOICE | City the idea is for. One of: `London`, `San Francisco`. Required. |  |
-| `--kind` CHOICE | What kind of idea this is. One of: `talk`, `workshop`, `event_idea`, `feedback`. | `talk` |
-| `--title` TEXT | Working title. |  |
-| `--abstract` TEXT | Short abstract or idea. |  |
-| `--audience` TEXT | Who it is for. |  |
-| `--outcome` TEXT | One practical learning outcome. Repeatable. |  |
-| `--speaker-name` TEXT | Speaker name, saved in your local draft file. |  |
-| `--contact-email` TEXT | Contact email, saved in your local draft file. |  |
-| `--event` TEXT | Target event ID; omit for a possible future event. |  |
-| `--interactive` | Ask for missing fields in the terminal. |  |
-| `--output` FILE | Write the result to this file. |  |
-
-```sh
-agenteng proposal draft --city London --kind workshop --title 'Evals in practice' --output draft.json
-```
-
-#### agenteng proposal preview
-
-Check a draft locally; no external submission or stored receipt.
-
-FILE is a draft JSON file from agenteng proposal draft or agenteng engage.
-
-```text
-agenteng proposal preview [OPTIONS] FILE
-```
-
-```sh
-agenteng proposal preview draft.json
-```
-
-#### agenteng proposal export
-
-Export your draft for editing or sending yourself.
-
-FILE is a draft JSON file from agenteng proposal draft or agenteng engage.
-
-```text
-agenteng proposal export [OPTIONS] FILE
-```
-
-| Option | Meaning | Default |
-| --- | --- | --- |
-| `--format` CHOICE | Export format. One of: `json`, `markdown`. | `markdown` |
-| `--output` FILE | Write the result to this file. |  |
-
-```sh
-agenteng proposal export draft.json --format markdown --output draft.md
-```
-
-#### agenteng proposal submit
-
-Prepare an exact private preview, then ask for explicit confirmation.
-
-FILE is a draft JSON file. Needs the intake pilot and a participant credential.
-
-```text
-agenteng proposal submit [OPTIONS] FILE
-```
-
-```sh
-agenteng proposal submit draft.json
-```
-
-#### agenteng proposal status
-
-Read your own submission using the participant credential.
-
-RECEIPT is the receipt printed by agenteng proposal submit.
-
-```text
-agenteng proposal status [OPTIONS] RECEIPT
-```
-
-```sh
-agenteng proposal status RECEIPT
-```
-
-#### agenteng proposal withdraw
-
-Confirm withdrawal and erase active proposal content.
-
-RECEIPT is the receipt printed by agenteng proposal submit.
-
-```text
-agenteng proposal withdraw [OPTIONS] RECEIPT
-```
-
-```sh
-agenteng proposal withdraw RECEIPT
-```
-
-## Organizer inbox (private store host only)
-
-### agenteng inbox
-
-Organizer-only local inbox administration; requires private filesystem access.
-
-#### agenteng inbox issue-access
-
-Write a new per-participant credential to a new private file.
-
-```text
-agenteng inbox issue-access [OPTIONS]
-```
-
-| Option | Meaning | Default |
-| --- | --- | --- |
-| `--days` INTEGER | Days until the credential expires. | `30` |
-| `--output` FILE | New private file for the credential; must not exist. Required. |  |
-
-```sh
-agenteng inbox issue-access --days 30 --output participant.token
-```
-
-#### agenteng inbox list
-
-Show the latest 100 private submissions to the local organizer.
-
-```text
-agenteng inbox list [OPTIONS]
-```
-
-```sh
-agenteng inbox list
-```
-
-#### agenteng inbox review
-
-Record an organizer decision; acceptance never schedules or publishes a talk.
-
-RECEIPT is a submission receipt from agenteng inbox list.
-
-```text
-agenteng inbox review [OPTIONS] RECEIPT
-```
-
-| Option | Meaning | Default |
-| --- | --- | --- |
-| `--status` CHOICE | Decision to record. One of: `under_review`, `needs_information`, `accepted`, `declined`. Required. |  |
-
-```sh
-agenteng inbox review RECEIPT --status under_review
-```
-
-#### agenteng inbox purge
-
-Remove expired previews, credentials and submission records.
-
-```text
-agenteng inbox purge [OPTIONS]
-```
-
-```sh
-agenteng inbox purge
-```
-
-#### agenteng inbox revoke-access
-
-Revoke a participant credential without printing it.
-
-CREDENTIAL_FILE is the file written by agenteng inbox issue-access.
-
-```text
-agenteng inbox revoke-access [OPTIONS] CREDENTIAL_FILE
-```
-
-```sh
-agenteng inbox revoke-access participant.token
-```
-
 ## Environment
 
 | Variable | What it does |
 | --- | --- |
 | `AGENTENG_OUTPUT=json` | Always print Result JSON, as `--json` does. |
-| `AGENTENG_CONFIG_DIR` | Folder for local bookmarks and `agenteng code` logs. Default `$XDG_CONFIG_HOME/agenteng`, else `~/.config/agenteng`. |
-| `AGENTENG_PARTICIPANT_TOKEN` | Participant credential for `proposal submit`, `status` and `withdraw`. |
-| `AGENTENG_INBOX` | Private store path for `agenteng inbox` on the organizer host. |
+| `AGENTENG_CONFIG_DIR` | Folder for `agenteng code` logs. Default `$XDG_CONFIG_HOME/agenteng`, else `~/.config/agenteng`. |
 
 Installer variables are listed under [installer options](index.md#installer-options).
 Server settings are in [`.env.example`](https://github.com/SuperagenticAI/agenteng/blob/main/.env.example).

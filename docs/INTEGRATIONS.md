@@ -11,7 +11,11 @@ MCP, then use the same requests over hosted MCP, A2A or HTTP when a service is r
 
 AgentEng is the Agent Engineering Conference and event guide from Agent Engineering HQ. This service covers **London and San Francisco only**, including their published historical events. `discover` highlights the next published event in each city, or the most recent event when there is no upcoming one. Event names, dates, speakers and registration links come from the public website catalogue.
 
-The official hosted origin is live at `https://a2a.agentengineering.world`. Installing this package does not start that service. Local lookup and proposal drafting work offline and require no provider key.
+The official hosted origin is live at `https://a2a.agentengineering.world`. Installing this package does not start that service. Local lookup work offline and require no provider key.
+
+## Protocol connection instructions
+
+`agenteng connect a2a` prints the public agent card, JSON-RPC endpoint and complete curl examples. `agenteng connect mcp --transport http` prints hosted MCP configuration; omit `--transport http` for local stdio. `agenteng connect acp` prints optional installation and local coding-agent session instructions. These commands do not claim a connection has been established, launch agents or change configuration.
 
 ## Local MCP
 
@@ -85,20 +89,20 @@ The HTTP MCP endpoint is `/mcp/` and uses Streamable HTTP. For clients that need
 }
 ```
 
-This bridge requires network access and relays requests to that origin; it does not silently fall back to a local snapshot. Remote tools conservatively advertise possible writes. The hosted server still controls intake availability and authorization.
+This bridge requires network access and relays requests to that origin; it does not silently fall back to a local snapshot. The bridge exposes the same public read-only operations; personal storage and submissions are unsupported.
 
 ## Useful questions and requests
 
 - “Find the next Agent Engineering Conference in London.”
 - “Show Agent Engineering HQ events in San Francisco.”
 - “Which London sessions cover evaluation or agent harnesses?”
-- “Help me draft a workshop idea for a future AgentEng event in San Francisco.”
+- “Show the published London agenda.”
 
 Start with `{"operation":"discover"}` or `{"operation":"events","upcoming":true}`. Use returned IDs for agenda, speakers, tickets and planning. London 2026 is `agenteng-london-2026`; the October San Francisco event is `sf-code-engineering-2026`, whose published title remains **Code Engineering: From Coding Agents to Software Factories**.
 
 Event-day operations: `{"operation":"live","at":"2026-10-16T10:40:00+01:00"}` returns a now/next venue-screen snapshot (`at` is optional and also works for `now` and `next`), `{"operation":"bingo","seed":7,"size":5,"format":"svg"}` deals a reproducible talk bingo card (the card is always in `data`; `format` text, svg or html also returns a printable copy in `artifact`, and json, the default, leaves `artifact` empty), `{"operation":"about","section":"connect"}` returns the organiser, chair and connection details, and `{"operation":"hq","section":"manifesto"}` returns Agent Engineering HQ content. City filters accept website slugs such as `san-francisco`.
 
-An LLM client can use the same typed operations through MCP, or translate them to `POST /v1/query` using `/openapi.json`. A2A clients discover `/.well-known/agent-card.json` and send A2A 1.0 JSON-RPC to `/` with `A2A-Version: 1.0`. The card advertises skills, examples and any enabled participant security requirements. Client/model usage may have its own costs; default AgentEng lookup and drafting make zero server-side model calls.
+An LLM client can use the same typed operations through MCP, or translate them to `POST /v1/query` using `/openapi.json`. A2A clients discover `/.well-known/agent-card.json` and send A2A 1.0 JSON-RPC to `/` with `A2A-Version: 1.0`. The card advertises skills, examples. Client/model usage may have its own costs; default AgentEng lookup make zero server-side model calls.
 
 ## Tool directory
 
@@ -124,14 +128,6 @@ The hosted service provides crawlable HTML at `/` and `/events/EVENT_ID`, indivi
 These surfaces make the service accessible to crawlers and agents. They do not guarantee indexing, search ranking, recommendations by an LLM or automatic discovery in a coding client. An `llms.txt` is a reading guide, not an instruction override or a registry submission. Event markup preserves published facts; see [Google's event structured-data guidance](https://developers.google.com/search/docs/appearance/structured-data/event).
 
 The website already maintains its own metadata, sitemap and `llms.txt`. Release staging adds an **AgentEng agent guide** and an **event feed** for website publication. Link the guide from the website and its existing `llms.txt` after the service is deployed; preserve the site's existing event and organizer identities.
-
-## Private participation
-
-Local drafts use `proposal_draft`, `proposal_preview` and `proposal_export`. An agent must never submit as a side effect of discovery or brainstorming. London 2026 has an invited programme and no public CFP; no San Francisco public CFP is announced in the bundled snapshot.
-
-An enabled private pilot requires a distinct participant credential issued by the organizer. HTTP/A2A clients send it as an authorization bearer header; local stdio clients can use `AGENTENG_PARTICIPANT_TOKEN` through their client's supported secret/environment configuration. Never commit the credential to project configuration. Optional inference credentials are separate and do not authorize submissions.
-
-Private operations are `proposal_prepare`, `proposal_submit`, `proposal_status` and `proposal_withdraw`. Show the exact prepared draft, privacy terms and recipient to the contributor, obtain explicit confirmation, then submit the unchanged draft and preview reference. A broad tool serving an enabled intake advertises writes and withdrawal; it is not marked read-only. See [participation usage](PARTICIPATION.md).
 
 ## Website A2A chat
 
@@ -164,7 +160,7 @@ secret references; container defaults keep optional capabilities off.
 
 Chat can make up to two model calls and two read-only catalogue lookups per
 question. It can read published events, speakers, talks, agendas and engineering
-tools. It cannot access private intake, local bookmarks, databases, arbitrary
+tools. It cannot access private records, databases, arbitrary
 URLs, files or code execution. Source IDs must come from retrieved evidence;
 this validates attribution membership, not the factual quality of generated prose.
 

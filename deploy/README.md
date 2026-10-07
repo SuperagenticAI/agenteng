@@ -198,7 +198,7 @@ Cloud Build creates **Cloud Run → Services → agenteng** automatically. The
 deployment sets the runtime account, public access, port `8080`, one CPU, 512 MiB
 memory, zero minimum instances, two maximum instances per revision, concurrency
 40 and a 60-second request timeout. It directs service traffic to the latest
-revision and keeps ordinary synthesis, RLM and private intake disabled.
+revision and keeps ordinary synthesis and RLM disabled.
 
 On the first deployment, a second revision sets `AGENTENG_PUBLIC_URL` to Google's
 generated HTTPS URL. Later releases reuse that URL. This preserves strict Host
@@ -270,7 +270,7 @@ Routes: A2A JSON-RPC `/` with `A2A-Version: 1.0`, discovery `/.well-known/agent-
 
 GET `/` and `/events/EVENT_ID` serve crawlable public pages. `/events.json`, `/llms.txt`, `/robots.txt` and `/sitemap.xml` support event discovery. The source catalogue covers London and San Francisco only. See [coding-agent setup](../docs/INTEGRATIONS.md).
 
-This deployment keeps `AGENTENG_ENABLE_INTAKE=0`. Offline drafts can be prepared through the public service, but it creates no private inbox. Do not enable the SQLite pilot on Cloud Run's ephemeral filesystem. A private intake deployment needs persistent encrypted storage, participant credentials, a privacy/retention policy and organizer administration; see [participation](../docs/PARTICIPATION.md).
+The service exposes public operations only. Personal agendas, bookmarks, proposal drafting and private intake are unsupported; legacy intake environment settings cannot enable them.
 
 The process limit is 300 POST/DELETE requests per minute. For quotas across replicas or per caller, use the HTTPS gateway/load balancer. Both inference flags remain off in this public image. Optional inference requires a separate operator configuration with the extra installed, a provider and bearer credential. Per-request limits do not impose a daily monetary budget across replicas; keep it operator-only and configure provider/project spending limits before enabling it.
 

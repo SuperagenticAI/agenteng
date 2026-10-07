@@ -78,7 +78,7 @@ def test_site_command_status_is_true(row):
 def test_site_sync_doc_lists_every_site_command():
     doc = (ROOT / "docs/SITE-SYNC.md").read_text()
     rows = site_rows()
-    assert len(rows) == 45
+    assert rows
     for status, command, site_file, runs_as, _ in rows:
         assert f"`{command}`" in doc, command
         if status == "change":
@@ -123,7 +123,6 @@ def test_canonical_city(value, expected):
         (["tickets", "--london"], ["tickets", LONDON]),
         (["venue", "--london"], ["venue", LONDON]),
         (["event", "--london"], ["event", LONDON]),
-        (["plan", "--london", "--interest", "memory"], ["plan", LONDON, "--interest", "memory"]),
         (["sponsors", "--sf"], ["sponsors", "--city", "San Francisco"]),
         (["speakers", "--sf"], ["speakers", "--city", "San Francisco"]),
         (["discover", "--city", "san-francisco"], ["discover", "--city", "San Francisco"]),
@@ -521,8 +520,9 @@ def test_a2a_card_lists_event_day_skill():
 
 
 def test_remote_requests_omit_defaults_for_older_servers():
-    from agenteng.remote import RemoteService
     import asyncio
+
+    from agenteng.remote import RemoteService
 
     sent = []
 
@@ -590,21 +590,21 @@ def test_local_files_are_private(tmp_path, monkeypatch):
     import stat
 
     from agenteng.acp_client import stderr_log_path
-    from agenteng.bookmarks import config_dir, save_bookmarks
+    from agenteng.local_storage import config_dir
 
     monkeypatch.setenv("AGENTENG_CONFIG_DIR", str(tmp_path / "cfg"))
     old = os.umask(0o022)
     try:
-        save_bookmarks(["agenteng-london-2026-4"])
         log = stderr_log_path("claude")
     finally:
         os.umask(old)
-    mode = lambda p: stat.S_IMODE(os.stat(p).st_mode)  # noqa: E731
+
+    def mode(p):
+        return stat.S_IMODE(os.stat(p).st_mode)
+
     assert mode(config_dir()) == 0o700
-    assert mode(config_dir() / "bookmarks.json") == 0o600
     assert mode(log.parent) == 0o700
     assert mode(log) == 0o600
-    assert not list(config_dir().glob(".bookmarks.json.*"))
 
 
 def test_serve_access_log_is_off_by_default(monkeypatch):

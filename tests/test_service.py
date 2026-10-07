@@ -65,12 +65,12 @@ def test_search_scope_and_recordings(service):
 
 
 def test_ics_utc_and_no_invented_sf_times(service):
-    result = service.lookup(Request(operation="plan", event_id=LONDON, format="ics"))
+    result = service.lookup(Request(operation="agenda", event_id=LONDON, format="ics"))
     assert result.artifact.startswith("BEGIN:VCALENDAR\r\n")
     assert "DTSTART:20261016T070000Z" in result.artifact
     assert all(len(line.encode()) <= 75 for line in result.artifact.split("\r\n"))
     missing = service.lookup(
-        Request(operation="plan", event_id="sf-code-engineering-2026", format="ics")
+        Request(operation="agenda", event_id="sf-code-engineering-2026", format="ics")
     )
     assert missing.status == "unavailable" and missing.artifact is None
     e = service.events[LONDON].model_copy(update={"title": "A, B; C\\D\n" + "漢" * 100})

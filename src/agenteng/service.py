@@ -9,12 +9,11 @@ import threading
 from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
-from . import bookmarks as bookmark_store
 from .calendar import calendar
 from .catalogue import load_catalogue
 from .config import Settings
 from .models import Catalogue, Event, Request, Result, Session, Speaker
-from .participation import CITIES, DRAFT_OPERATIONS, PRIVATE_OPERATIONS, Participation
+from .participation import CITIES
 from .tool_directory import TOOL_OPERATIONS, ToolDirectory, load_tool_directory
 
 
@@ -67,7 +66,6 @@ class Service:
         # Optional inference is serialized per process; it is operator-only.
         self._model_slot = threading.Lock()
         self._chat_runtime = None
-        self.participation = Participation(self)
 
     def authorized(self, token: str | None) -> bool:
         expected = self.settings.operator_token
@@ -153,21 +151,6 @@ class Service:
             payload.setdefault("disciplines", [])
         return payload
 
-    def resolve_session_id(self, request: Request) -> str | None:
-        if request.session_id:
-            return request.session_id
-        if request.speaker_id:
-            match = next(
-                (
-                    s
-                    for s in self.catalogue.sessions
-                    if s.speaker_id == request.speaker_id and s.kind == "talk"
-                ),
-                None,
-            )
-            return match.id if match else None
-        return None
-
     def default_live_event_id(self, request: Request) -> str | None:
         if request.event_id:
             return request.event_id
@@ -193,12 +176,6 @@ class Service:
         if request.event_id and request.event_id not in self.events:
             return self.result(
                 "Unknown event_id. Use events to list published event IDs.", status="not_found"
-            )
-        if request.operation in DRAFT_OPERATIONS:
-            return self.participation.execute(request, None)
-        if request.operation in PRIVATE_OPERATIONS:
-            return self.result(
-                "Use authenticated execution for private participation.", status="unavailable"
             )
         if request.operation == "discover":
             from .discovery import discovery, featured_events
@@ -228,29 +205,20 @@ class Service:
             return self.result(
                 f"To discuss a talk or event idea, contact the organizer yourself at {email}. "
                 "Ideas are for possible consideration; no review deadline, response, acceptance "
-                "or event is guaranteed. Drafting sends nothing; private intake, when enabled, requires "
-                "participant access and explicit confirmation. London 2026 has an invited programme and no public CFP.",
+                "or event is guaranteed. AgentEng provides public information only and accepts no "
+                "submissions. London 2026 has an invited programme and no public CFP.",
                 {
                     "organizer_email": email,
                     "contact_url": "mailto:" + email,
-                    "automated_submission_available": bool(self.participation.inbox),
-                    "private_intake_enabled": bool(self.participation.inbox),
-                    "participant_credential_required": True,
+                    "automated_submission_available": False,
+                    "private_intake_enabled": False,
+                    "participant_credential_required": False,
                     "organizer": "Agent Engineering HQ",
                     "cities": ["London", "San Francisco"],
-                    "offline_drafting_available": True,
-                    "draft_operation": "proposal_draft",
+                    "offline_drafting_available": False,
                     "current_event_policy": "London 2026 has an invited programme and no public CFP. "
                     "No San Francisco public CFP is announced in this snapshot. "
                     "Future-event ideas are for possible consideration.",
-                    "suggested_proposal_fields": [
-                        "working title",
-                        "short abstract",
-                        "intended audience",
-                        "learning outcomes",
-                        "London or San Francisco",
-                        "relevant public link",
-                    ],
                     "privacy_guidance": "Share only the information needed for a reply. Keep private "
                     "proposals and contact details out of public GitHub issues.",
                 },
@@ -258,6 +226,29 @@ class Service:
             )
         if request.operation == "ask":
             query_terms = terms(request.query)
+            if query_terms & {"doors", "arrival", "arrive", "checkin"}:
+                city = request.city or next(
+                    (city for city in CITIES if city.casefold() in request.query.casefold()), None
+                )
+                events = self.matching_events(request.model_copy(update={"city": city}))
+                events = [e for e in events if self.state(e) in {"upcoming", "ongoing"}]
+                if len(events) == 1:
+                    event = events[0]
+                    opening = next(
+                        (
+                            s
+                            for s in self.catalogue.sessions
+                            if s.event_id == event.id and s.kind == "open" and s.start
+                        ),
+                        None,
+                    )
+                    if opening:
+                        local = opening.start.astimezone(ZoneInfo(event.timezone))
+                        return self.result(
+                            f"{opening.title}: {local:%H:%M} on {local:%d %B %Y} ({event.timezone}), at {event.venue}.",
+                            self.talk_payload(opening),
+                            opening.source_ids,
+                        )
             if (
                 not request.event_id
                 and not request.city
@@ -353,7 +344,6 @@ class Service:
                 "proposal",
                 "proposals",
                 "propose",
-                "submit",
                 "contribute",
             }:
                 return self.lookup(
@@ -680,6 +670,13 @@ class Service:
                     status="unavailable",
                 )
             event = self.events[event_id]
+            if event.cancelled:
+                return self.result(
+                    "This event is cancelled; no scheduled sessions are running.",
+                    {"event_id": event_id, "session": None, "state": "cancelled"},
+                    event.source_ids,
+                    status="unavailable",
+                )
             now = local_now(self, request, event.timezone)
             timed = [
                 s for s in self.catalogue.sessions if s.event_id == event_id and s.start and s.end
@@ -725,64 +722,11 @@ class Service:
                 event.source_ids,
                 status="not_found",
             )
-        if request.operation in {"save", "unsave", "my_agenda"}:
-            if request.operation in {"save", "unsave"}:
-                session_id = self.resolve_session_id(request)
-                if not session_id or session_id not in self.session_map():
-                    return self.result(
-                        "Unknown session. Pass session_id or speaker_id for a published talk.",
-                        status="not_found",
-                    )
-                saved = (
-                    bookmark_store.add_bookmark(session_id)
-                    if request.operation == "save"
-                    else bookmark_store.remove_bookmark(session_id)
-                )
-                action = "Saved" if request.operation == "save" else "Removed"
-                return self.result(
-                    f"{action} {session_id}. {len(saved)} bookmark(s) on this machine.",
-                    {
-                        "session_id": session_id,
-                        "session_ids": saved,
-                        "path": str(bookmark_store.bookmarks_path()),
-                    },
-                    self.session_map()[session_id].source_ids,
-                )
-            saved_ids = bookmark_store.load_bookmarks()
-            rows = [self.session_map()[i] for i in saved_ids if i in self.session_map()]
-            if request.event_id:
-                rows = [s for s in rows if s.event_id == request.event_id]
-            artifact = None
-            if request.format == "ics" and rows:
-                by_event: dict[str, list] = {}
-                for session in rows:
-                    by_event.setdefault(session.event_id, []).append(session)
-                # Export the first event group that has timed sessions.
-                artifact = None
-                for event_id, sessions in by_event.items():
-                    timed = [s for s in sessions if s.start and s.end]
-                    if timed:
-                        artifact = calendar(self.events[event_id], timed, self.clock())
-                        break
-                if artifact is None:
-                    return self.result(
-                        "Bookmarked sessions have no published times; calendar export unavailable.",
-                        [self.talk_payload(s) for s in rows],
-                        [i for s in rows for i in s.source_ids],
-                        status="unavailable",
-                    )
-            return self.result(
-                f"{len(rows)} bookmarked session(s) on this machine.",
-                [self.talk_payload(s) for s in rows],
-                [i for s in rows for i in s.source_ids],
-                artifact=artifact,
-                status="ok" if rows else "not_found",
-            )
-        if request.operation in {"agenda", "plan"}:
+        if request.operation == "agenda":
             rows = [s for s in self.catalogue.sessions if s.event_id in ids]
             if request.session_id:
                 rows = [s for s in rows if s.id == request.session_id]
-            wanted = terms(" ".join([request.topic or "", *request.interests]))
+            wanted = terms(request.topic or "")
             if wanted:
                 rows = [
                     s
@@ -808,7 +752,7 @@ class Service:
                     )
                 artifact = calendar(event, timed, self.clock())
             return self.result(
-                f"{len(rows)} agenda entry/entries matched. Topic matching uses published text; attendance is subject to registration.",
+                f"{len(rows)} agenda entry/entries matched. This is the published agenda; attendance is subject to registration.",
                 [s.model_dump(mode="json") for s in rows],
                 [i for s in rows for i in s.source_ids],
                 artifact=artifact,
@@ -883,8 +827,6 @@ class Service:
             if self._chat_runtime is None:
                 self._chat_runtime = PublicChat(self)
             return await self._chat_runtime.execute(request)
-        if request.operation in PRIVATE_OPERATIONS:
-            return await asyncio.to_thread(self.participation.execute, request, token)
         if request.engine in {"lookup", "auto"}:
             # auto deliberately stays model-free in this release.
             return self.lookup(request)

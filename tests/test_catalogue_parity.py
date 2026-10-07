@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -65,7 +64,7 @@ def test_faq_venue_sponsors_conduct_themes(service):
     assert themes.status == "ok" and len(themes.data) == 4
 
 
-def test_now_next_and_local_bookmarks(service, tmp_path, monkeypatch):
+def test_now_and_next(service, tmp_path, monkeypatch):
     monkeypatch.setenv("AGENTENG_CONFIG_DIR", str(tmp_path))
     live = Service(
         Settings.from_env(),
@@ -77,18 +76,6 @@ def test_now_next_and_local_bookmarks(service, tmp_path, monkeypatch):
     nxt = live.lookup(Request(operation="next", event_id=LONDON))
     assert nxt.status == "ok"
     assert nxt.data["session"]["speaker_id"] == "meryem-arik"
-
-    saved = service.lookup(Request(operation="save", speaker_id="samuel-colvin"))
-    assert saved.status == "ok"
-    assert saved.data["session_ids"]
-    mine = service.lookup(Request(operation="my_agenda"))
-    assert mine.status == "ok"
-    assert any(row["speaker_id"] == "samuel-colvin" for row in mine.data)
-    ics = service.lookup(Request(operation="my_agenda", format="ics"))
-    assert ics.artifact and ics.artifact.startswith("BEGIN:VCALENDAR")
-    removed = service.lookup(Request(operation="unsave", speaker_id="samuel-colvin"))
-    assert removed.data["session_ids"] == []
-    assert Path(tmp_path, "bookmarks.json").exists()
 
 
 def test_discover_has_no_em_dash(service):

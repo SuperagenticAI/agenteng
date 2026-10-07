@@ -181,6 +181,13 @@ def live(service: Service, request: Request) -> Result:
             "Choose an event_id with a published timed agenda.", status="unavailable"
         )
     event = service.events[event_id]
+    if event.cancelled:
+        return service.result(
+            "This event is cancelled; no scheduled sessions are running.",
+            {"event_id": event_id, "phase": "cancelled", "current": None, "next": None},
+            event.source_ids,
+            status="unavailable",
+        )
     now = local_now(service, request, event.timezone)
     timed = sorted(
         (s for s in service.catalogue.sessions if s.event_id == event_id and s.start and s.end),

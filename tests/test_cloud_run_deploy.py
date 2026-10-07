@@ -2,10 +2,10 @@
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import textwrap
+from pathlib import Path
 
 import pytest
 
@@ -87,7 +87,7 @@ def test_first_deployment_bootstraps_generated_origin(deployment):
     assert "AGENTENG_MODEL" not in env
     assert not any(c.startswith(("--set-secrets=", "--clear-secrets")) for c in deploy)
     dockerfile = (SCRIPT.parents[1] / "Dockerfile").read_text()
-    for flag in ["CHAT", "STANDARD", "RLM", "INTAKE"]:
+    for flag in ["CHAT", "STANDARD", "RLM"]:
         assert f"AGENTENG_ENABLE_{flag}=0" in dockerfile
     updates = [c for c in calls if c[:3] == ["run", "services", "update"]]
     assert len(updates) == 1

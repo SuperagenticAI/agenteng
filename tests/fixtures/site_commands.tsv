@@ -1,46 +1,83 @@
 # status	site command	site file	runs as	note
-works	agenteng --help	components/FAQSection.tsx	agenteng --help	
-works	agenteng speakers	pages/Agenda.tsx	agenteng speakers	
-works	agenteng events --city london	pages/London.tsx	agenteng events --city london	
+works	agenteng --help	components/FAQSection.tsx	agenteng --help	Public lookup
+works	agenteng speakers	pages/Agenda.tsx	agenteng speakers	Public lookup
+works	agenteng events --city london	pages/London.tsx	agenteng events --city london	Public lookup
 alias	agenteng events --city san-francisco	pages/SanFrancisco.tsx	agenteng events --city san-francisco	city slugs accepted everywhere a city is
 alias	agenteng events --next san-francisco	pages/SanFrancisco.tsx	agenteng events --next san-francisco	--next = --upcoming; optional CITY argument
 alias	agenteng events --london --next	pages/London.tsx	agenteng events --london --next	--london / --sf shortcuts for --city
 alias	agenteng events --london --history	pages/London.tsx	agenteng events --london --history	--history = --past
 alias	agenteng events --previous	components/SFProofBand.tsx	agenteng events --previous	--previous = --past
 alias	agenteng agenda --london	pages/Agenda.tsx	agenteng agenda --london	city resolves to its next event
-alias	agenteng tickets --london	components/TicketsSection.tsx	agenteng tickets --london	
-alias	agenteng sponsors --sf	components/SponsorStrip.tsx	agenteng sponsors --sf	
+alias	agenteng tickets --london	components/TicketsSection.tsx	agenteng tickets --london	Public lookup
+alias	agenteng sponsors --sf	components/SponsorStrip.tsx	agenteng sponsors --sf	Public lookup
 alias	agenteng inspect --speaker samuel-colvin	components/SpeakerAgentActions.tsx	agenteng inspect --speaker samuel-colvin	hidden alias of agenteng speaker SLUG
 alias	agenteng --themes	components/CoreThemesSection.tsx	agenteng --themes	runs agenteng themes
 alias	agenteng --list-disciplines	components/WhatIsAgentEngSection.tsx	agenteng --list-disciplines	runs agenteng disciplines
 alias	agenteng --list-cities	pages/AgentEngineeringHQ.tsx	agenteng --list-cities	runs agenteng discover (cities and featured events)
 alias	agenteng --info	components/Footer.tsx	agenteng --info	runs agenteng about
 alias	agenteng whoami --chair	components/FounderCLISection.tsx	agenteng whoami --chair	hidden alias of agenteng about --chair
-change	agenteng agenda --preview	components/AgendaPreviewSection.tsx	agenteng agenda --london	
-change	agenteng conference --london	pages/London.tsx	agenteng event --london	
-change	agenteng speakers --announced	components/SpeakersAnnouncedSection.tsx	agenteng speakers	every listed speaker is announced; a no-op flag would be decorative
-change	agenteng list --speakers	pages/Speakers.tsx	agenteng speakers	
-change	agenteng venue --info	components/VenueSection.tsx	agenteng venue --london	
-change	agenteng faq --search	components/AgentActivityPanel.tsx	agenteng faq --search recorded	--search needs a query
-change	agenteng plan --program	components/ProgramTracksSection.tsx	agenteng plan --london --interest memory	
-change	agenteng schedule --optimize	components/AgentActivityPanel.tsx	agenteng plan --london --interest memory	
-change	agenteng contact --options	components/CTASection.tsx	agenteng participate	
-change	agenteng compare --why-different	components/WhyDifferentSection.tsx	agenteng faq --search different	
-change	agenteng read --file manifesto.md	components/ManifestoSection.tsx	agenteng hq manifesto	
-change	agenteng mindset --principles	components/AgentEngineeringMindsetSection.tsx	agenteng hq mindset	
-change	agenteng read --further	components/FurtherReadingSection.tsx	agenteng hq reading	
-change	agenteng hq --init	components/HomeHeroSection.tsx	agenteng hq	
-change	agenteng hq --subscribe	pages/SanFrancisco.tsx	agenteng events --sf --next	registration links are in the event records
-change	agenteng hq --city san-francisco	pages/SanFrancisco.tsx	agenteng events --city san-francisco	
-change	agenteng init --conference 2026	components/HeroSection.tsx	agenteng event --london	
-missing	agenteng --ecosystem	components/EcosystemSection.tsx		no ecosystem data in the catalogue; restyle as a heading or mark illustrative
-missing	agenteng map --convergence	components/EngineeringConvergenceSection.tsx		interactive site map only; restyle or mark illustrative
-missing	agenteng orchestrate --mode=live	components/AgentOrchestrationSection.tsx		animation only; restyle or mark illustrative
-missing	agenteng audience --london	components/CommunityStatsBrief.tsx		community stats are not in the catalogue
-missing	agenteng community --london	components/LondonCommunityBand.tsx		community stats are not in the catalogue
-missing	agenteng --community --signal	components/CommunitySection.tsx		community stats are not in the catalogue
-missing	agenteng identify --audience	components/AudienceSection.tsx		audience copy only; restyle as a heading
-missing	agenteng --match-audience	components/AgentActivityPanel.tsx		animation only; restyle or mark illustrative
-missing	agenteng run --sandbox monty	data/speaker-stack.ts		speaker demo panel; label as the speaker's own stack or use agenteng talk SLUG
-missing	agenteng run --guard	data/speaker-stack.ts		speaker demo panel; label as the speaker's own stack or use agenteng talk SLUG
-missing	agenteng run --stack	data/speaker-stack.ts		speaker demo panel; label as the speaker's own stack or use agenteng talk SLUG
+works	agenteng agenda --london	components/AgendaPreviewSection.tsx	agenteng agenda --london	Public lookup
+works	agenteng event --london	pages/London.tsx	agenteng event --london	Public lookup
+works	agenteng speakers	components/SpeakersAnnouncedSection.tsx	agenteng speakers	every listed speaker is announced; a no-op flag would be decorative
+works	agenteng speakers	pages/Speakers.tsx	agenteng speakers	Public lookup
+works	agenteng venue --london	components/VenueSection.tsx	agenteng venue --london	Public lookup
+works	agenteng agenda --london --topic memory	components/ProgramTracksSection.tsx	agenteng agenda --london --topic memory	Public lookup
+works	agenteng participate	components/CTASection.tsx	agenteng participate	Public lookup
+works	agenteng faq --search different	components/WhyDifferentSection.tsx	agenteng faq --search different	Public lookup
+works	agenteng hq manifesto	components/ManifestoSection.tsx	agenteng hq manifesto	Public lookup
+works	agenteng hq mindset	components/AgentEngineeringMindsetSection.tsx	agenteng hq mindset	Public lookup
+works	agenteng hq reading	components/FurtherReadingSection.tsx	agenteng hq reading	Public lookup
+works	agenteng hq	components/HomeHeroSection.tsx	agenteng hq	Public lookup
+works	agenteng events --sf --next	pages/SanFrancisco.tsx	agenteng events --sf --next	registration links are in the event records
+works	agenteng events --city san-francisco	pages/SanFrancisco.tsx	agenteng events --city san-francisco	Public lookup
+works	agenteng event --london	components/HeroSection.tsx	agenteng event --london	Public lookup
+works	agenteng hq mindset	data/agent-activities.ts	agenteng hq mindset	Verified against the CLI
+works	agenteng tools --discipline memory	components/AgentToolingSection.tsx	agenteng tools --discipline memory	Verified against the CLI
+works	agenteng connect cursor	components/AgentToolingSection.tsx	agenteng connect cursor	Verified against the CLI
+works	agenteng connect a2a	components/AgentToolingSection.tsx	agenteng connect a2a	Verified against the CLI
+works	agenteng connect a2a	data/agent-activities.ts	agenteng connect a2a	Verified against the CLI
+works	agenteng participate	data/agent-activities.ts	agenteng participate	Verified against the CLI
+works	agenteng hq reading	data/agent-activities.ts	agenteng hq reading	Verified against the CLI
+works	agenteng event --london	data/agent-activities.ts	agenteng event --london	Verified against the CLI
+works	agenteng hq	data/agent-activities.ts	agenteng hq	Verified against the CLI
+works	agenteng hq manifesto	data/agent-activities.ts	agenteng hq manifesto	Verified against the CLI
+works	agenteng tools --discipline eval	components/ProgramTracksSection.tsx	agenteng tools --discipline eval	Verified against the CLI
+works	agenteng tools --discipline protocol	components/ProgramTracksSection.tsx	agenteng tools --discipline protocol	Verified against the CLI
+works	agenteng tools --discipline protocol	data/agent-activities.ts	agenteng tools --discipline protocol	Verified against the CLI
+works	agenteng tools --discipline code	components/ProgramTracksSection.tsx	agenteng tools --discipline code	Verified against the CLI
+works	agenteng themes	components/ProgramTracksSection.tsx	agenteng themes	Verified against the CLI
+works	agenteng themes	data/agent-activities.ts	agenteng themes	Verified against the CLI
+works	agenteng agenda --london --topic memory	data/agent-activities.ts	agenteng agenda --london --topic memory	Verified against the CLI
+works	agenteng speakers	data/agent-activities.ts	agenteng speakers	Verified against the CLI
+works	agenteng speakers	data/speaker-stack.ts	agenteng speakers	Verified against the CLI
+works	agenteng sponsors --sf	data/agent-activities.ts	agenteng sponsors --sf	Verified against the CLI
+works	agenteng venue --london	data/agent-activities.ts	agenteng venue --london	Verified against the CLI
+works	agenteng connect mcp --transport http	data/agent-activities.ts	agenteng connect mcp --transport http	Verified against the CLI
+works	agenteng connect acp	data/agent-activities.ts	agenteng connect acp	Verified against the CLI
+works	agenteng about	data/agent-activities.ts	agenteng about	Verified against the CLI
+works	agenteng disciplines	data/agent-activities.ts	agenteng disciplines	Verified against the CLI
+works	agenteng events --london	data/agent-activities.ts	agenteng events --london	Verified against the CLI
+works	agenteng events --sf	data/agent-activities.ts	agenteng events --sf	Verified against the CLI
+works	agenteng discover	data/agent-activities.ts	agenteng discover	Verified against the CLI
+works	agenteng recordings	data/agent-activities.ts	agenteng recordings	Verified against the CLI
+works	agenteng events --sf --next	data/agent-activities.ts	agenteng events --sf --next	Verified against the CLI
+works	agenteng event --sf	data/agent-activities.ts	agenteng event --sf	Verified against the CLI
+works	agenteng agenda --london	data/agent-activities.ts	agenteng agenda --london	Verified against the CLI
+works	agenteng conduct	data/agent-activities.ts	agenteng conduct	Verified against the CLI
+works	agenteng tools --discipline harness	data/agent-activities.ts	agenteng tools --discipline harness	Verified against the CLI
+works	agenteng talks --event agenteng-london-2026	data/agent-activities.ts	agenteng talks --event agenteng-london-2026	Verified against the CLI
+works	agenteng about --chair	data/agent-activities.ts	agenteng about --chair	Verified against the CLI
+works	agenteng about --organiser	data/agent-activities.ts	agenteng about --organiser	Verified against the CLI
+works	agenteng sponsors --london	data/agent-activities.ts	agenteng sponsors --london	Verified against the CLI
+works	agenteng faq	data/agent-activities.ts	agenteng faq	Verified against the CLI
+works	agenteng faq --search recorded	data/agent-activities.ts	agenteng faq --search recorded	Verified against the CLI
+works	agenteng speaker samuel-colvin	data/speaker-stack.ts	agenteng speaker samuel-colvin	Verified against the CLI
+works	agenteng speaker andrey-breslav	data/speaker-stack.ts	agenteng speaker andrey-breslav	Verified against the CLI
+works	agenteng speaker ismail-pelaseyed	data/speaker-stack.ts	agenteng speaker ismail-pelaseyed	Verified against the CLI
+works	agenteng speaker tobie-morgan-hitchcock	data/speaker-stack.ts	agenteng speaker tobie-morgan-hitchcock	Verified against the CLI
+works	agenteng speaker sergey-ignatov	data/speaker-stack.ts	agenteng speaker sergey-ignatov	Verified against the CLI
+works	agenteng speaker jon-bratseth	data/speaker-stack.ts	agenteng speaker jon-bratseth	Verified against the CLI
+works	agenteng speaker meryem-arik	data/speaker-stack.ts	agenteng speaker meryem-arik	Verified against the CLI
+works	agenteng speaker frederic-barthelet	data/speaker-stack.ts	agenteng speaker frederic-barthelet	Verified against the CLI
+works	agenteng speaker stas-bichenko	data/speaker-stack.ts	agenteng speaker stas-bichenko	Verified against the CLI
+works	agenteng speaker jocelyn-darcy	data/speaker-stack.ts	agenteng speaker jocelyn-darcy	Verified against the CLI

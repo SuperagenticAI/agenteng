@@ -167,58 +167,6 @@ def _browse_tools(ctx) -> None:
     _show(ctx, dict(operation="tools", discipline=discipline, limit=20, offset=0))
 
 
-def _draft_proposal(ctx) -> None:
-    city = _select("City", [Choice("London", "London"), Choice("San Francisco", "San Francisco")])
-    if not city:
-        return
-    kind = _select(
-        "What are you drafting?",
-        [
-            Choice("Talk", "talk"),
-            Choice("Workshop", "workshop"),
-            Choice("Event idea", "event_idea"),
-            Choice("Feedback", "feedback"),
-        ],
-        default="event_idea",
-    )
-    if not kind:
-        return
-    title = _text("Working title")
-    if title is None:
-        return
-    abstract = _text("Short abstract or idea")
-    if abstract is None:
-        return
-    audience = _text("Intended audience")
-    if audience is None:
-        return
-    speaker_name = ""
-    outcomes: list[str] = []
-    if kind in {"talk", "workshop"}:
-        speaker_name = _text("Speaker name") or ""
-        outcome = _text("One practical learning outcome") or ""
-        if outcome:
-            outcomes = [outcome]
-    _show(
-        ctx,
-        {
-            "operation": "proposal_draft",
-            "draft": {
-                "kind": kind,
-                "city": city,
-                "title": title or "",
-                "abstract": abstract or "",
-                "audience": audience or "",
-                "outcomes": outcomes,
-                "speaker_name": speaker_name,
-                "contact_email": "",
-                "event_id": None,
-                "future_event": True,
-            },
-        },
-    )
-
-
 def _connect_agent(ctx) -> None:
     client = _select(
         "Coding agent",
@@ -341,9 +289,7 @@ def run_menu(ctx) -> None:
                     Choice("Talk bingo card", "bingo"),
                     Choice("About Agent Engineering", "about"),
                     Choice("Agent Engineering HQ: manifesto and mindset", "hq"),
-                    Choice("My bookmarked agenda", "my_agenda"),
                     Choice("Browse the tool directory", "tools"),
-                    Choice("Draft a talk or event idea", "draft"),
                     Choice("Code with an agent (ACP, experimental)", "code"),
                     Choice("Connect a coding agent", "connect"),
                     Choice("Discover (welcome)", "discover"),
@@ -385,12 +331,8 @@ def run_menu(ctx) -> None:
                 _bingo(ctx)
             elif action in {"about", "hq"}:
                 _show(ctx, dict(operation=action))
-            elif action == "my_agenda":
-                _show(ctx, dict(operation="my_agenda"))
             elif action == "tools":
                 _browse_tools(ctx)
-            elif action == "draft":
-                _draft_proposal(ctx)
             elif action == "code":
                 _code_with_agent(ctx)
             elif action == "connect":

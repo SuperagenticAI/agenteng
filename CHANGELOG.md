@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.13 - 2026-10-07
+
+- Add real A2A, MCP and ACP connection setup commands and validate website CLI examples against the tool.
+- Public-only scope: remove bookmarks, personal planning, proposal drafting and private intake across CLI, HTTP, MCP and A2A. Legacy intake settings no longer enable storage.
+- Fix cancelled-event now/next and doors-opening lookup without a model.
+- Preserve published session IDs across running-order edits; refresh dependencies and public command documentation.
+
 ## 0.0.12 - 2026-10-06
 
 ### Fixed

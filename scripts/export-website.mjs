@@ -180,11 +180,16 @@ const speakers = roster.map(s => {
 });
 const topics = text => [...new Set(['memory','evaluation','harness','context','security','voice','coding','mcp','acp','inference']
   .filter(t => text.toLowerCase().includes(t === 'evaluation' ? 'eval' : t)))];
-const sessions = constant('agenda').map((s,i) => {
+const agendaIds = new Set();
+const sessions = constant('agenda').map(s => {
+  if (typeof s.id !== 'string' || !s.id.startsWith(london+'-') || agendaIds.has(s.id)) {
+    throw new Error('Every agenda slot requires a unique, stable public id scoped to the London event');
+  }
+  agendaIds.add(s.id);
   const speaker = speakers.find(p => p.id === s.speakerSlug);
-  const id = source(`london-session-${i}`,site+'/agenda',
+  const id = source(`london-session-${s.id.slice(london.length+1)}`,site+'/agenda',
     `${s.time} ${s.title}. ${speaker?.name ?? ''}. ${speaker?.abstract ?? s.note ?? ''}`,london,'session');
-  return {id:`${london}-${i}`,event_id:london,title:s.title,kind:s.kind,
+  return {id:s.id,event_id:london,title:s.title,kind:s.kind,
     start:`2026-10-16T${s.time}:00+01:00`,end:s.end ? `2026-10-16T${s.end}:00+01:00` : null,
     speaker_id:s.speakerSlug ?? null,topics:topics(s.title+' '+(speaker?.abstract ?? '')),source_ids:[id]};
 });

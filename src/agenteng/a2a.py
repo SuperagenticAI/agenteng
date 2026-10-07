@@ -19,10 +19,6 @@ from a2a.types import (
     AgentSkill,
     Message,
     Part,
-    HTTPAuthSecurityScheme,
-    SecurityRequirement,
-    SecurityScheme,
-    StringList,
 )
 from a2a.utils.errors import InvalidParamsError, UnsupportedOperationError
 from google.protobuf.json_format import MessageToDict, ParseDict
@@ -34,32 +30,9 @@ from .models import Request
 
 
 def agent_card(service):
-    private_skills = []
-    security_schemes = {}
-    if service.settings.enable_intake:
-        security_schemes["participant"] = SecurityScheme(
-            http_auth_security_scheme=HTTPAuthSecurityScheme(
-                scheme="bearer",
-                description="Organizer-issued, per-participant pilot credential. "
-                "Not the optional inference operator credential.",
-            )
-        )
-        private_skills.append(
-            AgentSkill(
-                id="agenteng-participation",
-                name="Private Agent Engineering HQ participation",
-                description="Prepare an exact private preview, explicitly confirm submission, read your receipt or withdraw. "
-                "Requires participant access. No review, response, acceptance or event is guaranteed. "
-                "Submission content is never published automatically.",
-                tags=["proposals", "London", "San Francisco", "private-intake"],
-                security_requirements=[
-                    SecurityRequirement(schemes={"participant": StringList(list=[])})
-                ],
-            )
-        )
     return AgentCard(
         name="Agent Engineering HQ: AgentEng Conference",
-        description="AgentEng, the Agent Engineering Conference, and Agent Engineering HQ technical events in London and San Francisco. Discover published dates, speakers, full talk abstracts, agendas, FAQ, venue, sponsors, code of conduct, registration links, proposal drafting and a tool directory across twelve agent-engineering disciplines. Catalogue lookups use no model calls. The opt-in chat operation uses public catalogue tools and falls back to lookup when inference is unavailable. London 2026 has an invited programme and no public CFP.",
+        description="AgentEng, the Agent Engineering Conference, and Agent Engineering HQ technical events in London and San Francisco. Discover published dates, speakers, full talk abstracts, agendas, FAQ, venue, sponsors, code of conduct, registration links and a tool directory across twelve agent-engineering disciplines. Catalogue lookups use no model calls. The opt-in chat operation uses public catalogue tools and falls back to lookup when inference is unavailable. London 2026 has an invited programme and no public CFP.",
         version="1.0",
         provider=AgentProvider(
             organization="Agent Engineering HQ", url="https://agentengineering.world"
@@ -77,7 +50,6 @@ def agent_card(service):
         ),
         default_input_modes=["application/json", "text/plain"],
         default_output_modes=["application/json", "text/plain"],
-        security_schemes=security_schemes,
         skills=[
             AgentSkill(
                 id="agenteng-chat",
@@ -109,7 +81,6 @@ def agent_card(service):
                     '{"operation":"events","upcoming":true}',
                     '{"operation":"discover"}',
                     '{"operation":"tickets","event_id":"agenteng-london-2026"}',
-                    '{"operation":"proposal_draft","draft":{"city":"San Francisco","kind":"event_idea","title":"Agent evaluation workshop"}}',
                 ],
             ),
             AgentSkill(
@@ -149,8 +120,7 @@ def agent_card(service):
                     '{"operation":"tool","tool_id":"langgraph"}',
                 ],
             ),
-        ]
-        + private_skills,
+        ],
     )
 
 

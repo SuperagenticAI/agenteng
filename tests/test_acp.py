@@ -18,6 +18,11 @@ FAKE = ROOT / "tests/fixtures/fake_acp_agent.py"
 FAKE_COMMAND = f"{sys.executable} {FAKE}"
 
 
+@pytest.fixture(autouse=True)
+def isolated_agent_logs(tmp_path, monkeypatch):
+    monkeypatch.setenv("AGENTENG_CONFIG_DIR", str(tmp_path / "agenteng-config"))
+
+
 def run_ae(*args, env=None, stdin=subprocess.DEVNULL, input=None, timeout=60):
     merged = {**os.environ, "AGENTENG_OUTPUT": "", **(env or {})}
     io = {"input": input} if input is not None else {"stdin": stdin}

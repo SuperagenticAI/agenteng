@@ -400,16 +400,6 @@ def render_live(console: Console, result: Result, *, title: str) -> None:
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
-def render_bookmarks(console: Console, result: Result) -> None:
-    data = result.data
-    if isinstance(data, dict) and "session_ids" in data:
-        console.print(f"[ae.ok]{display_text(result.answer)}[/]")
-        if data.get("path"):
-            console.print(f"[ae.meta]Stored at {data['path']}[/]")
-        return
-    render_talks(console, result)
-
-
 def render_agenda(console: Console, result: Result, *, title: str = "Agenda") -> None:
     sessions = result.data if isinstance(result.data, list) else []
     if not sessions:
@@ -688,33 +678,6 @@ def render_participate(console: Console, result: Result) -> None:
     console.print(_panel("Participate", body, border=VIOLET))
 
 
-def render_proposal(console: Console, result: Result) -> None:
-    data = result.data
-    console.print(f"[ae.title]{display_text(result.answer)}[/]")
-    if isinstance(data, dict) and data:
-        table = Table(show_header=False, box=None, pad_edge=False, expand=True)
-        table.add_column("Key", style="ae.meta", no_wrap=True)
-        table.add_column("Value", overflow="fold")
-        for key, value in data.items():
-            if key in {"draft"} and isinstance(value, dict):
-                continue
-            rendered = value
-            if isinstance(value, list):
-                rendered = ", ".join(str(v) for v in value)
-            elif isinstance(value, dict):
-                rendered = ", ".join(f"{k}={v}" for k, v in value.items())
-            table.add_row(str(key), display_text(str(rendered)))
-        console.print(_panel("Proposal", table, border=MAGENTA))
-        draft = data.get("draft")
-        if isinstance(draft, dict):
-            body = Text()
-            for key in ("kind", "city", "title", "abstract", "audience", "speaker_name"):
-                if draft.get(key):
-                    body.append(f"{key}: ", style="ae.meta")
-                    body.append(display_text(str(draft[key])) + "\n")
-            console.print(_panel("Draft", body, border=VIOLET))
-
-
 def render_generic(console: Console, result: Result) -> None:
     console.print(f"[ae.title]{display_text(result.answer)}[/]")
     data = result.data
@@ -810,11 +773,7 @@ def render_result(result: Result, operation: str, console: Console | None = None
         "live": lambda c, r: c.print(live_board(r), height=min(c.size.height, 40)),
         "now": lambda c, r: render_live(c, r, title="Now"),
         "next": lambda c, r: render_live(c, r, title="Next"),
-        "save": render_bookmarks,
-        "unsave": render_bookmarks,
-        "my_agenda": render_bookmarks,
         "agenda": render_agenda,
-        "plan": lambda c, r: render_agenda(c, r, title="Plan"),
         "tickets": render_tickets,
         "recordings": render_recordings,
         "search": render_search,
@@ -824,13 +783,6 @@ def render_result(result: Result, operation: str, console: Console | None = None
         "tool": render_tool,
         "discover": render_discover,
         "participate": render_participate,
-        "proposal_draft": render_proposal,
-        "proposal_preview": render_proposal,
-        "proposal_export": render_proposal,
-        "proposal_prepare": render_proposal,
-        "proposal_submit": render_proposal,
-        "proposal_status": render_proposal,
-        "proposal_withdraw": render_proposal,
     }
     handler = handlers.get(operation, render_generic)
     handler(console, result)

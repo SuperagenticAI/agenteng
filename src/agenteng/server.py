@@ -1,26 +1,27 @@
 """Combined read-only HTTP, hosted MCP and A2A application."""
 
+import time
 from collections import deque
 from contextlib import asynccontextmanager
 from pathlib import Path
-import time
+from typing import Annotated, Literal
 from urllib.parse import urlsplit
 
-from fastapi import FastAPI, Request as HTTPRequest
+from fastapi import FastAPI, Query
+from fastapi import Path as PathParameter
+from fastapi import Request as HTTPRequest
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import HTMLResponse, JSONResponse, Response
-from fastapi import Query, Path as PathParameter
-from typing import Annotated, Literal
 
 from . import __version__
 from .a2a import add_a2a
 from .auth import bearer
+from .discovery import featured_events, html_page, llms_text
 from .mcp import create_mcp
 from .models import Request, Result
 from .service import Service
-from .discovery import featured_events, html_page, llms_text
 from .tool_directory import DisciplineID, ToolKind
 from .tool_pages import tool_page
 
@@ -83,7 +84,7 @@ def create_app(service: Service | None = None):
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request, exc):
-        # FastAPI's default errors repeat input values, including proposal PII.
+        # FastAPI's default errors repeat input values, including personal text pasted into a public request.
         return JSONResponse(
             {"error": "Invalid AgentEng request; check the published schema."}, status_code=422
         )
@@ -220,7 +221,7 @@ def create_app(service: Service | None = None):
             "chat_enabled": service.settings.enable_chat,
             "standard_enabled": service.settings.enable_standard,
             "rlm_enabled": service.settings.enable_rlm,
-            "private_intake_enabled": bool(service.participation.inbox),
+            "private_intake_enabled": False,
             "tool_directory_version": service.tool_directory.version,
             "tool_listing_count": len(service.tool_directory.tools),
         }

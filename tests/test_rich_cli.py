@@ -15,7 +15,6 @@ from agenteng.output import display_text, make_console, use_json
 from agenteng.render import render_result
 from agenteng.service import Service
 
-
 OPERATIONS = [
     ("events", {"upcoming": True}),
     ("event", {"event_id": "agenteng-london-2026"}),
@@ -36,7 +35,7 @@ OPERATIONS = [
     ("tools", {"discipline": "memory", "limit": 5}),
     ("tool", {"tool_id": "langgraph"}),
     ("discover", {}),
-    ("plan", {"event_id": "agenteng-london-2026", "interests": ["memory"]}),
+    ("agenda", {"event_id": "agenteng-london-2026", "topic": "memory"}),
     ("participate", {}),
 ]
 

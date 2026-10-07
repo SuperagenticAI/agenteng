@@ -56,8 +56,7 @@ Explore the bundled catalogue with **no provider key or model calls**. Read card
 | **Find your next event** | Browse events, speakers, talks, agendas and official ticket links. |
 | **Explore the discipline** | Search tools, models and infrastructure across 12 disciplines, with source attribution. |
 | **Bring your coding agent** | Connect Codex, Claude Code or Cursor through MCP; use A2A or HTTP for other clients. |
-| **Make the most of event day** | Save sessions, build your agenda, follow the live now/next board and play talk bingo. |
-| **Shape a future event** | Prepare and preview local talk, workshop or event proposal drafts. |
+| **Make the most of event day** | Browse the public agenda, follow the live now/next board and play talk bingo. |
 
 The catalogue is a snapshot. Follow official event and registration links for current details and ticket availability. See [data and attribution](docs/DATA.md).
 
@@ -188,7 +187,7 @@ The same typed request works as an A2A JSON data part or an HTTP body. Request s
 <details>
 <summary><strong>Public operations across CLI, MCP, A2A and HTTP</strong></summary>
 
-Public operations (CLI, MCP, A2A, HTTP) include: `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `live`, `bingo`, `about`, `hq`, `save`, `unsave`, `my_agenda`, `tickets`, `recordings`, `search`, `plan`, `ask` and `participate`. Draft operations are `proposal_draft`, `proposal_preview` and `proposal_export`.
+Public operations (CLI, MCP, A2A, HTTP) include: `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `live`, `bingo`, `about`, `hq`, `tickets`, `recordings`, `search`, `ask` and `participate`.
 
 Begin with `discover` for featured London/San Francisco events, or `events` for published IDs. Full command and flag reference: [docs/COMMANDS.md](docs/COMMANDS.md).
 
@@ -203,26 +202,11 @@ agenteng bingo --seed 7           # talk bingo; same seed, same card
 agenteng bingo --format html --output bingo.html
 agenteng about                   # what Agent Engineering is
 agenteng hq                      # manifesto, mindset, reading
-agenteng save SESSION_ID          # bookmark a session from the catalogue
-agenteng my-agenda
 agenteng unsave SESSION_ID
 agenteng recordings
 ```
 
 Piped or with `--json` before the subcommand, `agenteng live` prints one Result JSON snapshot (`agenteng --json live --once`). Website command wording is tracked in [docs/SITE-SYNC.md](docs/SITE-SYNC.md).
-
-## Shape a future event
-
-Have a talk, workshop or event idea? Create a local draft, preview it and export it to share with the organizer.
-
-```sh
-agenteng engage --city London --output draft.json
-agenteng proposal preview draft.json
-agenteng proposal export draft.json --format markdown --output draft.md
-agenteng participate
-```
-
-Drafting and exporting do not send a proposal. See [participation](docs/PARTICIPATION.md) and [community](docs/COMMUNITY.md) for organizer contacts and event-specific guidance.
 
 ## Experimental: drive a coding agent (`agenteng code`)
 
@@ -239,7 +223,7 @@ Details: [ACP design note](docs/ACP.md) and [docs](https://docs.agentengineering
 ## Privacy
 
 - **No telemetry.** Catalogue lookups run offline by default; `--remote URL` sends requests to your chosen host.
-- **Local storage.** Bookmarks and `agenteng code` logs stay in your config directory. Proposal drafts are saved where you choose.
+- **Local storage.** Optional `agenteng code` logs stay in your config directory. Public operations create no attendee records or personal agendas.
 - **Your chosen coding agent.** `agenteng code` sends prompts to the coding agent you launch and its provider.
 - **No stored conversations.** The public AgentEng application keeps no conversations or request bodies; the hosting platform maintains standard request logs.
 
@@ -254,7 +238,7 @@ Full policy: [Privacy in DATA.md](docs/DATA.md#privacy).
 | Coding-agent integrations | [INTEGRATIONS](https://docs.agentengineering.world/INTEGRATIONS/) |
 | Tool directory | [TOOLS](https://docs.agentengineering.world/TOOLS/) |
 | ACP client | [ACP](https://docs.agentengineering.world/ACP/) |
-| Participation drafts | [PARTICIPATION](https://docs.agentengineering.world/PARTICIPATION/) |
+| Public participation policy | [PARTICIPATION](https://docs.agentengineering.world/PARTICIPATION/) |
 | Community | [COMMUNITY.md](docs/COMMUNITY.md) |
 | Data and privacy | [DATA](https://docs.agentengineering.world/DATA/) |
 | Architecture | [ARCHITECTURE](docs/ARCHITECTURE.md) |

@@ -10,16 +10,17 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from dataclasses import dataclass, field
 import importlib.util
 import inspect
 import json
 import os
-from pathlib import Path
 import re
 import sys
 import tempfile
-from typing import Any, Callable, TextIO
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, TextIO
 
 import acp
 from acp import schema
@@ -625,7 +626,7 @@ class AgentError(RuntimeError):
 
 
 def stderr_log_path(label: str) -> Path:
-    from .bookmarks import config_dir
+    from .local_storage import config_dir
 
     # Agent stderr can echo prompts, file paths or account names: keep it private.
     folder = config_dir() / "acp-logs"
@@ -674,12 +675,12 @@ async def spawn_agent(client, argv: list[str], *, cwd: str, stderr: int):
             await process.stdin.wait_closed()
         try:
             await asyncio.wait_for(process.wait(), timeout=2.0)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             with contextlib.suppress(ProcessLookupError):
                 process.terminate()
             try:
                 await asyncio.wait_for(process.wait(), timeout=2.0)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 with contextlib.suppress(ProcessLookupError):
                     process.kill()
                 await process.wait()
@@ -719,7 +720,7 @@ class AgentSession:
         self._stack = contextlib.AsyncExitStack()
         self.conn = None
 
-    async def __aenter__(self) -> "AgentSession":
+    async def __aenter__(self) -> AgentSession:
         try:
             log = self._stack.enter_context(self.log_path.open("wb"))
             self.conn, _process = await self._stack.enter_async_context(

@@ -35,14 +35,14 @@ def test_commands_doc_lists_every_command_and_option():
     assert "\N{EM DASH}" not in doc
     for path, command in visible_commands():
         name = " ".join(path)
-        assert re.search(rf"^#+ agenteng {re.escape(name)}$", doc, re.M), name
+        assert re.search(rf"^#+ agenteng {re.escape(name)}$", doc, re.MULTILINE), name
         for option in visible_options(command):
             assert f"`{option.opts[0]}`" in doc, (name, option.opts[0])
 
 
 def test_commands_doc_examples_use_agenteng():
     doc = DOC.read_text()
-    blocks = re.findall(r"```sh\n(.*?)```", doc, re.S)
+    blocks = re.findall(r"```sh\n(.*?)```", doc, re.DOTALL)
     assert blocks
     for block in blocks:
         for line in block.strip().splitlines():
@@ -67,8 +67,8 @@ def test_user_visible_copy_says_agenteng(tmp_path):
     assert '"ae ' not in commands
     help_text = runner.invoke(main, ["now", "--help"]).output
     assert "agenteng live" in help_text and "`ae " not in help_text
-    failed = runner.invoke(main, ["save", "no-such-talk-anywhere"])
-    assert "agenteng talks" in failed.output
+    failed = runner.invoke(main, ["talk", "zzqxv"])
+    assert failed.exit_code == 1
 
 
 # --- exit codes: empty but valid is 0, unknown IDs stay 1 --------------------------
@@ -83,7 +83,6 @@ def run_json(tmp_path, *args):
 @pytest.mark.parametrize(
     "args",
     [
-        ("my-agenda",),
         ("now", LONDON, "--at", "03:00"),
         ("search", "zzqxv"),
         ("talks", "--search", "zzqxv"),

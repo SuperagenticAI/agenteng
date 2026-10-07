@@ -1,16 +1,15 @@
 """Shared, strictly validated catalogue and protocol contracts."""
 
-from datetime import date as calendar_date, datetime
-from typing import Annotated, Literal
+import re
+from datetime import date as calendar_date
+from datetime import datetime
+from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-import re
-
-from pydantic import Field, HttpUrl, StrictBool, field_validator, model_validator
+from pydantic import Field, HttpUrl, field_validator, model_validator
 
 from .contracts import Model
-from .participation import Draft, DRAFT_OPERATIONS, PRIVATE_OPERATIONS
-from .tool_directory import DisciplineID, ToolKind, TOOL_OPERATIONS
+from .tool_directory import TOOL_OPERATIONS, DisciplineID, ToolKind
 
 
 class Source(Model):
@@ -321,13 +320,9 @@ class Request(Model):
         "next",
         "live",
         "bingo",
-        "save",
-        "unsave",
-        "my_agenda",
         "tickets",
         "recordings",
         "search",
-        "plan",
         "ask",
         "chat",
         "participate",
@@ -335,13 +330,6 @@ class Request(Model):
         "disciplines",
         "tools",
         "tool",
-        "proposal_draft",
-        "proposal_preview",
-        "proposal_export",
-        "proposal_prepare",
-        "proposal_submit",
-        "proposal_status",
-        "proposal_withdraw",
     ]
     event_id: str | None = Field(default=None, max_length=128)
     speaker_id: str | None = Field(default=None, max_length=128)
@@ -352,9 +340,6 @@ class Request(Model):
     topic: str | None = Field(default=None, max_length=200)
     upcoming: bool = False
     past: bool = False
-    interests: list[Annotated[str, Field(max_length=200)]] = Field(
-        default_factory=list, max_length=20
-    )
     format: Literal["json", "ics", "text", "svg", "html"] = "json"
     section: Literal["manifesto", "mindset", "reading", "organiser", "chair", "connect"] | None = (
         None
@@ -370,11 +355,6 @@ class Request(Model):
     category: str | None = Field(default=None, min_length=1, max_length=160)
     offset: int = Field(default=0, ge=0, le=10000)
     tool_status: Literal["listed", "hold", "deprecated", "all"] = "listed"
-    draft: Draft | None = None
-    draft_format: Literal["json", "markdown"] = "json"
-    preview_reference: str | None = Field(default=None, min_length=32, max_length=128)
-    receipt: str | None = Field(default=None, min_length=32, max_length=32, pattern="^[a-f0-9]+$")
-    confirmed: StrictBool = False
 
     @field_validator("city")
     @classmethod
@@ -390,7 +370,6 @@ class Request(Model):
             or self.event_id
             or self.city
             or self.topic
-            or self.interests
             or self.upcoming
             or self.past
         ):
@@ -427,7 +406,6 @@ class Request(Model):
             or self.upcoming
             or self.past
             or self.topic
-            or self.interests
             or self.speaker_id
             or self.session_id
         ):
@@ -438,35 +416,14 @@ class Request(Model):
             "speaker",
             "talk",
             "talks",
-            "save",
-            "unsave",
             "speakers",
         }:
-            raise ValueError("speaker_id only applies to speaker, talk, talks, speakers or save")
-        if self.session_id and self.operation not in {"talk", "save", "unsave", "agenda", "plan"}:
-            raise ValueError("session_id only applies to talk, save, unsave, agenda or plan")
-        draft_operations = DRAFT_OPERATIONS | {"proposal_prepare", "proposal_submit"}
-        if self.operation in draft_operations and self.draft is None:
-            raise ValueError("This proposal operation requires a draft")
-        if self.operation not in draft_operations and self.draft is not None:
-            raise ValueError("Draft content is only accepted by explicit draft operations")
-        if self.operation == "proposal_submit" and not self.preview_reference:
-            raise ValueError("Submission requires a prepared preview_reference")
-        if self.preview_reference and self.operation != "proposal_submit":
-            raise ValueError("Preview references only apply to submission")
-        if self.operation in {"proposal_status", "proposal_withdraw"} and not self.receipt:
-            raise ValueError("This operation requires a receipt")
-        if self.receipt and self.operation not in {"proposal_status", "proposal_withdraw"}:
-            raise ValueError("Receipt only applies to status or withdrawal")
-        if self.confirmed and self.operation not in {"proposal_submit", "proposal_withdraw"}:
-            raise ValueError("Confirmation only applies to submission or withdrawal")
-        if self.operation in DRAFT_OPERATIONS | PRIVATE_OPERATIONS and (
-            self.query or self.event_id or self.city or self.interests or self.topic
-        ):
-            raise ValueError("Proposal context belongs inside the draft")
+            raise ValueError("speaker_id only applies to speaker, talk, talks or speakers")
+        if self.session_id and self.operation not in {"talk", "agenda"}:
+            raise ValueError("session_id only applies to talk or agenda")
         if self.upcoming and self.past:
             raise ValueError("Choose upcoming or past, not both")
-        if self.operation in {"event", "agenda", "tickets", "plan", "venue"} and not self.event_id:
+        if self.operation in {"event", "agenda", "tickets", "venue"} and not self.event_id:
             raise ValueError(f"{self.operation} requires event_id")
         if self.operation == "speaker" and not self.speaker_id:
             raise ValueError("speaker requires speaker_id")
@@ -477,14 +434,12 @@ class Request(Model):
             and not self.query.strip()
         ):
             raise ValueError("talk requires session_id, speaker_id or query")
-        if self.operation in {"save", "unsave"} and not self.session_id and not self.speaker_id:
-            raise ValueError(f"{self.operation} requires session_id or speaker_id")
         if self.operation in {"ask", "search", "chat"} and not self.query.strip():
             raise ValueError(f"{self.operation} requires query")
         if self.engine not in {"lookup", "auto"} and self.operation != "ask":
             raise ValueError("Model engines only apply to ask")
-        if self.format == "ics" and self.operation not in {"plan", "agenda", "my_agenda"}:
-            raise ValueError("ICS output is only supported for plan, agenda or my_agenda")
+        if self.format == "ics" and self.operation not in {"agenda"}:
+            raise ValueError("ICS output is only supported for agenda")
         return self
 
 

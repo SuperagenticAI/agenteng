@@ -107,12 +107,12 @@ assert version("agenteng") == agenteng.__version__
     assert tools["engine"] == "lookup" and tools["data"]["total"] == 456
     assert tools["data"]["directory"]["source"]["entry_count"] == 461
     assert tools["data"]["next_offset"] == 100
-    draft_output = subprocess.check_output(
+    agenda_output = subprocess.check_output(
         [
             str(environment / "bin/agenteng"),
             "--json",
             "query",
-            '{"operation":"proposal_draft","draft":{"city":"London","kind":"event_idea","title":"Useful workshop"}}',
+            '{"operation":"agenda","event_id":"agenteng-london-2026"}',
         ],
         cwd=target,
         env={
@@ -122,7 +122,7 @@ assert version("agenteng") == agenteng.__version__
         },
         text=True,
     )
-    assert json.loads(draft_output)["data"]["sent"] is False
+    assert json.loads(agenda_output)["status"] == "ok"
     print(
-        "Release wheel: offline CLI, events, tool directory and drafts work without MCP, A2A or Monty."
+        "Release wheel: offline CLI, events, tool directory and public agenda work without MCP, A2A or Monty."
     )

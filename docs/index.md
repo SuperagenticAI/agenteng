@@ -58,14 +58,6 @@ hide:
 
     [Browse the directory →](TOOLS.md)
 
--   **💡 Shape a future event**
-
-    ---
-
-    Turn a talk, workshop or event idea into a local draft, then choose how to share it with the organizer.
-
-    [Prepare an idea →](PARTICIPATION.md)
-
 </div>
 
 ## 🚀 Installation and first run { #installation-and-first-run }
@@ -110,11 +102,11 @@ curl -fsSL https://agentengineering.world/install.sh | AGENTENG_VERSION=0.0.7 sh
 | Variable | What it does |
 | --- | --- |
 | `AGENTENG_OUTPUT=json` | Always print Result JSON, as `--json` does. |
-| `AGENTENG_CONFIG_DIR` | Folder for local bookmarks and `agenteng code` logs. Default `$XDG_CONFIG_HOME/agenteng`, else `~/.config/agenteng`. |
+| `AGENTENG_CONFIG_DIR` | Folder for `agenteng code` logs. Default `$XDG_CONFIG_HOME/agenteng`, else `~/.config/agenteng`. |
 
 **Your first result:** published London and San Francisco events as readable cards
 (or Result JSON for agents), with supporting source links. The CLI uses its bundled
-snapshot, so event lookup, tool browsing and local drafting work offline with
+snapshot, so event lookup, tool browsing  work offline with
 **zero model calls** and no provider key.
 
 On a terminal, `agenteng` opens an interactive menu and commands render tables and cards.
@@ -153,7 +145,7 @@ agenteng themes
 agenteng now agenteng-london-2026
 agenteng next agenteng-london-2026
 agenteng save samuel-colvin
-agenteng my-agenda
+agenteng agenda --london
 agenteng tickets agenteng-london-2026
 ```
 
@@ -233,31 +225,11 @@ Add the installed executable to a client's local MCP configuration:
 ```
 
 Try asking: **“Find the next London conference”**, **“List memory tools”** or
-**“Help me draft a workshop idea for San Francisco.”**
+**“Show the public agenda for London.”**
 
 Run `agenteng connect codex`, `agenteng connect claude-code` or
 `agenteng connect cursor` for client-specific setup instructions.
 [The connection guide](INTEGRATIONS.md) also covers hosted MCP, A2A and HTTP.
-
-## 💡 Have an idea? Start with a draft { #share-an-idea }
-
-A practical workshop, a talk you want to give, a topic the community should
-explore: start small and shape the idea before sharing it.
-
-```sh title="Prepare a future-event idea"
-agenteng engage --city London --output draft.json
-agenteng proposal preview draft.json
-agenteng proposal export draft.json --format markdown --output draft.md
-agenteng participate
-```
-
-These commands create local drafts and show organizer contact details; they do
-not send a proposal. Ideas go to **one organizing group: Agent Engineering HQ**.
-Sharing an idea does not guarantee a response, acceptance or an event. London
-2026 has an invited programme and no public CFP.
-
-[Drafting and the optional intake pilot →](PARTICIPATION.md)
-[Community participation →](COMMUNITY.md)
 
 ## 🔓 Built in the open { #built-in-the-open }
 

@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 from pathlib import Path
+from typing import get_args
 
 import click
 import httpx
@@ -11,13 +12,11 @@ from pydantic import ValidationError
 
 from . import __version__
 from .config import Settings
-from .models import Request, Result, canonical_city
-from .service import Service
 from .discovery import connection, validate_origin
-from .participation import Draft, Inbox, PRIVATE_OPERATIONS
+from .models import Request, Result, canonical_city
+from .output import empty_but_valid, stdin_is_tty, stdout_is_tty
+from .service import Service
 from .tool_directory import DISCIPLINES, ToolKind
-from .output import empty_but_valid, stdout_is_tty, stdin_is_tty
-from typing import get_args
 
 
 @click.group(
@@ -64,12 +63,7 @@ def main(ctx, catalogue, remote, as_json, site_shortcut):
 
 def execute(ctx, request: Request) -> Result:
     """Run one request locally or against --remote; raises transport errors."""
-    token = os.getenv(
-        "AGENTENG_PARTICIPANT_TOKEN"
-        if request.operation in PRIVATE_OPERATIONS
-        else "AGENTENG_OPERATOR_TOKEN",
-        "",
-    )
+    token = os.getenv("AGENTENG_OPERATOR_TOKEN", "")
     if ctx.obj["remote"]:
         headers = {"Authorization": "Bearer " + token} if token else {}
         response = httpx.post(
@@ -99,10 +93,7 @@ def dispatch(ctx, payload, output=None, *, quiet=False):
         return result
     if output and result.artifact:
         try:
-            if request.operation.startswith("proposal_"):
-                write_private(output, result.artifact)
-            else:
-                Path(output).write_bytes(result.artifact.encode())
+            Path(output).write_bytes(result.artifact.encode())
         except OSError as exc:
             raise click.ClickException("Cannot create output; choose a new writable file.") from exc
     forced_json = bool(ctx.obj["as_json"]) or (
@@ -224,13 +215,6 @@ def resolve_talk(ctx, identifier: str, event_id: str | None = None):
     if len(rows) == 1:
         return rows[0]
     return None
-
-
-def write_private(path, text):
-    """Never replace an existing file or follow a destination symlink."""
-    fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-    with os.fdopen(fd, "w") as file:
-        file.write(text)
 
 
 def city_shortcuts(command):
@@ -539,58 +523,6 @@ def live_cmd(ctx, event_id=None, refresh=30, at=None, once=False, city=None):
         raise click.ClickException(str(exc)) from exc
 
 
-@main.command("save")
-@click.argument("identifier")
-@click.pass_context
-def save_cmd(ctx, identifier):
-    """Bookmark a talk locally by session ID or speaker ID (this machine only).
-
-    IDENTIFIER is a session ID or speaker ID from agenteng talks.
-    """
-    row = resolve_talk(ctx, identifier)
-    if not row:
-        raise click.ClickException(
-            "Could not resolve a single talk. Pass a session ID or speaker ID from `agenteng talks`."
-        )
-    dispatch(ctx, dict(operation="save", session_id=row["id"]))
-
-
-@main.command("unsave")
-@click.argument("identifier")
-@click.pass_context
-def unsave_cmd(ctx, identifier):
-    """Remove a local talk bookmark by session ID or speaker ID.
-
-    IDENTIFIER is a session ID or speaker ID you saved before.
-    """
-    row = resolve_talk(ctx, identifier)
-    if row:
-        dispatch(ctx, dict(operation="unsave", session_id=row["id"]))
-    else:
-        dispatch(ctx, dict(operation="unsave", speaker_id=identifier))
-
-
-@main.command("my-agenda")
-@click.option("--event", "event_id", help="Only bookmarks for this event ID.")
-@click.option(
-    "--format",
-    "output_format",
-    type=click.Choice(["json", "ics"]),
-    default="json",
-    show_default=True,
-    help="json for Result JSON, ics for a calendar file.",
-)
-@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
-@click.pass_context
-def my_agenda(ctx, event_id, output_format, output):
-    """Show locally bookmarked talks; optional .ics export."""
-    dispatch(
-        ctx,
-        dict(operation="my_agenda", event_id=event_id, format=output_format),
-        output,
-    )
-
-
 @main.command()
 @click.argument("event_id", required=False)
 @city_shortcuts
@@ -646,40 +578,6 @@ def ask(ctx, query, event_id, engine):
     QUERY is a plain question, for example "When is the next London conference?".
     """
     dispatch(ctx, dict(operation="ask", query=query, event_id=event_id, engine=engine))
-
-
-@main.command()
-@click.argument("event_id", required=False)
-@click.option("--interest", "interests", multiple=True, help="A topic you care about. Repeatable.")
-@click.option(
-    "--format",
-    "output_format",
-    type=click.Choice(["json", "ics"]),
-    default="json",
-    show_default=True,
-    help="json for Result JSON, ics for a calendar file.",
-)
-@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
-@city_shortcuts
-@click.pass_context
-def plan(ctx, event_id, interests, output_format, output, city=None):
-    """Select sessions by published text and optionally export a calendar.
-
-    EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
-    """
-    from .interactive import require_event_id
-
-    event_id = event_or_city(ctx, event_id, city)
-    dispatch(
-        ctx,
-        dict(
-            operation="plan",
-            event_id=require_event_id(ctx, event_id),
-            interests=list(interests),
-            format=output_format,
-        ),
-        output,
-    )
 
 
 @main.command()
@@ -792,7 +690,9 @@ def bingo(ctx, event_id, size, seed, output_format, output, play, city=None):
 
 
 @main.command()
-@click.argument("client", type=click.Choice(["codex", "claude-code", "cursor", "generic"]))
+@click.argument(
+    "client", type=click.Choice(["a2a", "mcp", "acp", "codex", "claude-code", "cursor", "generic"])
+)
 @click.option(
     "--transport",
     type=click.Choice(["stdio", "http"]),
@@ -801,306 +701,20 @@ def bingo(ctx, event_id, size, seed, output_format, output, play, city=None):
     help="stdio runs agenteng mcp locally; http uses the hosted MCP server.",
 )
 @click.option(
-    "--url", default=Settings.public_url, show_default=True, help="Hosted server base URL for http."
+    "--url",
+    default=Settings.public_url,
+    show_default=True,
+    help="Hosted server base URL for A2A or HTTP MCP.",
 )
 def connect(client, transport, url):
-    """Print MCP setup instructions; never modify a client's configuration.
+    """Print A2A, MCP or ACP setup instructions without changing client configuration.
 
-    CLIENT is codex, claude-code, cursor or generic. Output is plain text.
+    CLIENT is a2a, mcp, acp, codex, claude-code, cursor or generic. Output is plain text.
     """
     try:
         click.echo(connection(client, transport, url))
     except ValueError as exc:
         raise click.ClickException(str(exc)) from exc
-
-
-@main.group()
-def proposal():
-    """Draft ideas for London/San Francisco; private intake requires organizer access."""
-
-
-@proposal.command("draft")
-@click.option(
-    "--city",
-    required=True,
-    type=click.Choice(["London", "San Francisco"]),
-    help="City the idea is for.",
-)
-@click.option(
-    "--kind",
-    type=click.Choice(["talk", "workshop", "event_idea", "feedback"]),
-    default="talk",
-    show_default=True,
-    help="What kind of idea this is.",
-)
-@click.option("--title", default="", help="Working title.")
-@click.option("--abstract", default="", help="Short abstract or idea.")
-@click.option("--audience", default="", help="Who it is for.")
-@click.option(
-    "--outcome", "outcomes", multiple=True, help="One practical learning outcome. Repeatable."
-)
-@click.option("--speaker-name", default="", help="Speaker name, saved in your local draft file.")
-@click.option("--contact-email", default="", help="Contact email, saved in your local draft file.")
-@click.option("--event", "event_id", help="Target event ID; omit for a possible future event.")
-@click.option("--interactive", is_flag=True, help="Ask for missing fields in the terminal.")
-@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
-@click.pass_context
-def proposal_draft(
-    ctx,
-    city,
-    kind,
-    title,
-    abstract,
-    audience,
-    outcomes,
-    speaker_name,
-    contact_email,
-    event_id,
-    interactive,
-    output,
-):
-    """Create a local draft; default target is a possible future event."""
-    if interactive:
-        title = title or click.prompt("Working title")
-        abstract = abstract or click.prompt("Short abstract or idea")
-        audience = audience or click.prompt("Intended audience")
-        if kind in {"talk", "workshop"}:
-            speaker_name = speaker_name or click.prompt("Speaker name")
-            outcomes = outcomes or (click.prompt("One practical learning outcome"),)
-    dispatch(
-        ctx,
-        {
-            "operation": "proposal_draft",
-            "draft": {
-                "kind": kind,
-                "city": city,
-                "title": title,
-                "abstract": abstract,
-                "audience": audience,
-                "outcomes": list(outcomes),
-                "speaker_name": speaker_name,
-                "contact_email": contact_email,
-                "event_id": event_id,
-                "future_event": not bool(event_id),
-            },
-        },
-        output,
-    )
-
-
-@main.command()
-@click.option(
-    "--city",
-    type=click.Choice(["London", "San Francisco"]),
-    help="City the idea is for; asks when omitted.",
-)
-@click.option(
-    "--kind",
-    type=click.Choice(["talk", "workshop", "event_idea", "feedback"]),
-    default="event_idea",
-    show_default=True,
-    help="What kind of idea this is.",
-)
-@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
-@click.pass_context
-def engage(ctx, city, kind, output):
-    """Build a future-event idea through a short guided conversation."""
-    city = city or click.prompt("City", type=click.Choice(["London", "San Francisco"]))
-    ctx.invoke(proposal_draft, city=city, kind=kind, interactive=True, output=output)
-
-
-def read_draft(path):
-    try:
-        if Path(path).stat().st_size > 65536:
-            raise ValueError("Draft is too large")
-        return Draft.model_validate_json(Path(path).read_bytes()).model_dump(mode="json")
-    except (OSError, ValueError) as exc:
-        raise click.ClickException("Use a valid draft JSON file of at most 64 KiB.") from exc
-
-
-@proposal.command("preview")
-@click.argument("file", type=click.Path(exists=True, dir_okay=False))
-@click.pass_context
-def proposal_preview(ctx, file):
-    """Check a draft locally; no external submission or stored receipt.
-
-    FILE is a draft JSON file from agenteng proposal draft or agenteng engage.
-    """
-    dispatch(ctx, {"operation": "proposal_preview", "draft": read_draft(file)})
-
-
-@proposal.command("export")
-@click.argument("file", type=click.Path(exists=True, dir_okay=False))
-@click.option(
-    "--format",
-    "draft_format",
-    type=click.Choice(["json", "markdown"]),
-    default="markdown",
-    show_default=True,
-    help="Export format.",
-)
-@click.option("--output", type=click.Path(dir_okay=False), help="Write the result to this file.")
-@click.pass_context
-def proposal_export(ctx, file, draft_format, output):
-    """Export your draft for editing or sending yourself.
-
-    FILE is a draft JSON file from agenteng proposal draft or agenteng engage.
-    """
-    dispatch(
-        ctx,
-        {"operation": "proposal_export", "draft": read_draft(file), "draft_format": draft_format},
-        output,
-    )
-
-
-@proposal.command("submit")
-@click.argument("file", type=click.Path(exists=True, dir_okay=False))
-@click.pass_context
-def proposal_submit(ctx, file):
-    """Prepare an exact private preview, then ask for explicit confirmation.
-
-    FILE is a draft JSON file. Needs the intake pilot and a participant credential.
-    """
-    draft = read_draft(file)
-    preview = dispatch(ctx, {"operation": "proposal_prepare", "draft": draft}, quiet=True)
-    click.echo(json.dumps(preview.data, default=str, indent=2), err=True)
-    click.confirm(
-        "Send this exact draft to the private Agent Engineering HQ inbox?", abort=True, err=True
-    )
-    dispatch(
-        ctx,
-        {
-            "operation": "proposal_submit",
-            "draft": draft,
-            "preview_reference": preview.data["preview_reference"],
-            "confirmed": True,
-        },
-    )
-
-
-@proposal.command("status")
-@click.argument("receipt")
-@click.pass_context
-def proposal_status(ctx, receipt):
-    """Read your own submission using the participant credential.
-
-    RECEIPT is the receipt printed by agenteng proposal submit.
-    """
-    dispatch(ctx, {"operation": "proposal_status", "receipt": receipt})
-
-
-@proposal.command("withdraw")
-@click.argument("receipt")
-@click.pass_context
-def proposal_withdraw(ctx, receipt):
-    """Confirm withdrawal and erase active proposal content.
-
-    RECEIPT is the receipt printed by agenteng proposal submit.
-    """
-    click.confirm(
-        "Withdraw this submission and erase its active proposal content?", abort=True, err=True
-    )
-    dispatch(ctx, {"operation": "proposal_withdraw", "receipt": receipt, "confirmed": True})
-
-
-@main.group()
-@click.pass_context
-def inbox(ctx):
-    """Organizer-only local inbox administration; requires private filesystem access."""
-    if ctx.obj["remote"]:
-        raise click.ClickException("Inbox administration runs only on the private store host.")
-    settings = Settings.from_env()
-    if not settings.inbox_path:
-        raise click.ClickException("Configure AGENTENG_INBOX on the private store host.")
-    ctx.obj["inbox"] = Inbox(
-        settings.inbox_path,
-        retention_days=settings.intake_retention_days,
-        capacity=settings.intake_capacity,
-    )
-
-
-@inbox.command("issue-access")
-@click.option(
-    "--days",
-    type=click.IntRange(1, 365),
-    default=30,
-    show_default=True,
-    help="Days until the credential expires.",
-)
-@click.option(
-    "--output",
-    required=True,
-    type=click.Path(dir_okay=False),
-    help="New private file for the credential; must not exist.",
-)
-@click.pass_context
-def issue_access(ctx, days, output):
-    """Write a new per-participant credential to a new private file."""
-    try:
-        # Check the destination before issuing an otherwise unusable credential.
-        if Path(output).exists() or Path(output).is_symlink():
-            raise OSError("Destination exists")
-        token = ctx.obj["inbox"].issue_caller(days)
-        write_private(output, token + "\n")
-    except (OSError, ValueError) as exc:
-        raise click.ClickException(
-            "Could not issue access; choose a new writable private file."
-        ) from exc
-    click.echo("Participant credential written. Share it privately with that participant only.")
-
-
-@inbox.command("list")
-@click.pass_context
-def inbox_list(ctx):
-    """Show the latest 100 private submissions to the local organizer."""
-    click.echo(json.dumps(ctx.obj["inbox"].listing(), default=str, indent=2))
-
-
-@inbox.command("review")
-@click.argument("receipt")
-@click.option(
-    "--status",
-    required=True,
-    type=click.Choice(["under_review", "needs_information", "accepted", "declined"]),
-    help="Decision to record.",
-)
-@click.pass_context
-def inbox_review(ctx, receipt, status):
-    """Record an organizer decision; acceptance never schedules or publishes a talk.
-
-    RECEIPT is a submission receipt from agenteng inbox list.
-    """
-    try:
-        result = ctx.obj["inbox"].review(receipt, status)
-    except ValueError as exc:
-        raise click.ClickException(str(exc)) from exc
-    click.echo(json.dumps(result, default=str, indent=2))
-
-
-@inbox.command("purge")
-@click.pass_context
-def inbox_purge(ctx):
-    """Remove expired previews, credentials and submission records."""
-    ctx.obj["inbox"].maintenance()
-    click.echo("Expired private records removed.")
-
-
-@inbox.command("revoke-access")
-@click.argument("credential_file", type=click.Path(exists=True, dir_okay=False))
-@click.pass_context
-def revoke_access(ctx, credential_file):
-    """Revoke a participant credential without printing it.
-
-    CREDENTIAL_FILE is the file written by agenteng inbox issue-access.
-    """
-    try:
-        path = Path(credential_file)
-        if path.stat().st_size > 1024:
-            raise ValueError("Invalid credential file")
-        ctx.obj["inbox"].revoke(path.read_text().strip())
-    except (OSError, ValueError) as exc:
-        raise click.ClickException("Could not revoke this participant credential.") from exc
-    click.echo("Participant access and pending previews revoked.")
 
 
 @main.command("code")
@@ -1363,6 +977,7 @@ def serve(host, port, access_log):
     """Run the combined HTTP, MCP and A2A server (install [server])."""
     try:
         import uvicorn
+
         from .server import create_app
     except ImportError as exc:
         raise click.ClickException("Install agenteng[server] for hosted transports.") from exc

@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-1d9afb536a13",
-  "published_at": "2026-10-06T09:17:24.301Z",
-  "source_commit": "36a29130471aa673a7507e25add3c5cbf518d8d4",
-  "source_hash": "1d9afb536a13f504a1894bf690187b552efa3e45a78c55516323cd98b1591ec0",
+  "version": "website-8069463adac3",
+  "published_at": "2026-10-07T07:35:20.673Z",
+  "source_commit": "04b3bde6e04cb92fb3d964fe835332ddfe476753",
+  "source_hash": "8069463adac396e7e6b52ca7a78acc871494799e881737cfeed46d5ee7951f6b",
   "events": [
     {
       "id": "agenteng-london-2026",

@@ -83,8 +83,6 @@ EMPTY_OK_OPERATIONS = frozenset(
         "search",
         "ask",
         "agenda",
-        "plan",
-        "my_agenda",
         "now",
         "next",
         "live",
