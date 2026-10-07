@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.14 - 2026-10-07
+
+- Answer topical speaker and session questions directly from the published programme, including conversational wording and the reported memory-engineering question.
+- Return cited speakers, talk titles and local session times without AI calls, provider quota or outage banners. Preserve city, event and cancellation filters and existing company-based speaker searches.
+- Verify the reported question through the website's A2A transport and during provider cooldown; do not invent unpublished talks.
+
 ## 0.0.13 - 2026-10-07
 
 - Add real A2A, MCP and ACP connection setup commands and validate website CLI examples against the tool.

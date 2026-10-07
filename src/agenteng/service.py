@@ -225,6 +225,11 @@ class Service:
                 [contact.id],
             )
         if request.operation == "ask":
+            from .chat_context import published_talk_answer
+
+            talk_answer = published_talk_answer(self, request)
+            if talk_answer is not None:
+                return talk_answer
             query_terms = terms(request.query)
             if query_terms & {"doors", "arrival", "arrive", "checkin"}:
                 city = request.city or next(

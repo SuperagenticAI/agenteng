@@ -28,6 +28,7 @@ from .chat_context import (
     chat_fallback,
     cited_data,
     focused_search,
+    published_talk_answer,
     resolved_question,
 )
 from .engines import Budget, HTTPProvider, validated
@@ -129,6 +130,9 @@ class PublicChat:
             for text in assistant_text
         ):
             return service.result(PRIVACY_REPLY, status="unavailable")
+        talk_answer = published_talk_answer(service, request)
+        if talk_answer is not None:
+            return talk_answer
         fallback = chat_fallback(service, request)
         if not fallback.sources and fallback.status == "ok":
             # Greetings need no model or speculative catalogue calls.

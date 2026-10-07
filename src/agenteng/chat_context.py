@@ -5,6 +5,7 @@ No runtime web, private catalogue, or model is needed to answer these basics.
 """
 
 import re
+from zoneinfo import ZoneInfo
 
 from .models import Request, Source
 
@@ -132,6 +133,122 @@ def resolved_question(request):
         if previous:
             return previous
     return question
+
+
+def published_talk_answer(service, request):
+    """Answer topical speaker/session questions from the published programme."""
+    from .service import terms
+
+    question = resolved_question(request)
+    plain = question.casefold()
+    if not re.search(r"\b(?:speaking|talking|presenting|speakers?|talks?|sessions?)\b", plain):
+        return None
+    if re.search(r"\b(?:tools?|libraries|frameworks|submit|proposal|propose)\b", plain):
+        return None
+    if re.search(r"\bfrom\b", plain) and not re.search(r"\b(?:about|on|covering)\b", plain):
+        # Company/affiliation filters belong to the existing speaker lookup.
+        return None
+    city = request.city or next(
+        (e.city for e in service.catalogue.events if e.city.casefold() in plain), None
+    )
+    if not city and re.search(r"\bsf\b", plain):
+        city = "San Francisco"
+    filler = {
+        "who",
+        "us",
+        "you",
+        "they",
+        "will",
+        "be",
+        "do",
+        "does",
+        "has",
+        "have",
+        "talking",
+        "speaking",
+        "presenting",
+        "speaker",
+        "speakers",
+        "talk",
+        "talks",
+        "session",
+        "sessions",
+        "give",
+        "giving",
+        "cover",
+        "covering",
+        "covers",
+        "on",
+        "in",
+        "at",
+        "to",
+        "from",
+        "by",
+        "time",
+        "start",
+        "starts",
+        "scheduled",
+        "show",
+        "list",
+        "find",
+        "any",
+        "there",
+        "engineering",
+        "agenteng",
+        "conference",
+        "next",
+        "upcoming",
+        "past",
+    }
+    wanted = terms(question) - filler - terms(city or "")
+    if not wanted:
+        return None
+    scoped = service.matching_events(request.model_copy(update={"city": city}))
+    events = {
+        e.id: e
+        for e in scoped
+        if service.state(e) != "cancelled"
+        and (request.event_id or request.past or service.state(e) in {"upcoming", "ongoing"})
+    }
+    speakers = service.speaker_map()
+    matches = []
+    for session in service.catalogue.sessions:
+        speaker = speakers.get(session.speaker_id)
+        if session.event_id not in events or not speaker:
+            continue
+        title = terms(" ".join([session.title, *session.topics, speaker.name]))
+        evidence = title | terms(speaker.abstract or "") | terms(" ".join(speaker.disciplines))
+        if wanted <= evidence:
+            matches.append((len(wanted & title), session, speaker))
+    if not matches:
+        return service.result(
+            "No published talk matches that topic in the requested events. Try another topic or city.",
+            [],
+            status="not_found",
+        )
+    # Exact title/topic matches take precedence over incidental abstract mentions.
+    best = max(score for score, _, _ in matches)
+    matches = [item for item in matches if item[0] == best][: request.limit]
+    answers, data, source_ids = [], [], []
+    for _, session, speaker in matches:
+        event = events[session.event_id]
+        answer = f"{speaker.name}{' from ' + speaker.company if speaker.company else ''} is presenting “{session.title}” at {event.title}."
+        if session.start:
+            start = session.start.astimezone(ZoneInfo(event.timezone))
+            end = session.end.astimezone(ZoneInfo(event.timezone)) if session.end else None
+            hours = f"{start:%H:%M}" + (f"–{end:%H:%M}" if end else "")
+            answer += f" Scheduled for {start:%d %B %Y}, {hours} ({event.timezone})."
+        else:
+            answer += " The session time has not been published yet."
+        answers.append(answer)
+        talk = service.talk_payload(session)
+        data.append(
+            {**speaker.model_dump(mode="json"), "talk": talk}
+            if re.search(r"\b(?:who|speakers?)\b", plain)
+            else talk
+        )
+        source_ids.extend([*session.source_ids, *speaker.source_ids, *event.source_ids])
+    return service.result("\n\n".join(answers), data, source_ids)
 
 
 def chat_fallback(service, request):

@@ -1,4 +1,5 @@
 import json
+from datetime import UTC, datetime
 
 import httpx
 import pytest
@@ -7,6 +8,122 @@ from agenteng.chat_context import chat_fallback
 from agenteng.config import Settings
 from agenteng.models import Request
 from agenteng.service import Service
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Who us talking about memory engineering",
+        "Who is talking about memory engineering?",
+        "Who's speaking about memory in London?",
+        "Who will be presenting on memory?",
+        "When is the memory talk?",
+        "What time does Tobie Morgan Hitchcock's session start?",
+        "Which talks cover memory?",
+    ],
+)
+@pytest.mark.asyncio
+async def test_published_topic_answers_need_no_ai_even_during_provider_cooldown(question):
+    from agenteng.public_chat import PublicChat
+
+    class Unexpected:
+        def complete(self, *args, **kwargs):
+            pytest.fail("Published programme questions should need no provider")
+
+    service = Service(
+        Settings(enable_chat=True),
+        provider=Unexpected(),
+        clock=lambda: datetime(2026, 10, 7, tzinfo=UTC),
+    )
+    service._chat_runtime = PublicChat(service)
+    service._chat_runtime.cooldown_until = float("inf")
+    result = await service.execute(Request(operation="chat", query=question))
+    assert result.status == "ok" and result.engine == "lookup"
+    assert "Tobie Morgan Hitchcock" in result.answer
+    assert "SurrealDB" in result.answer and "Memory Is Not a Bigger Context Window" in result.answer
+    assert "16 October 2026" in result.answer and "15:50–16:20" in result.answer
+    assert result.data and result.sources
+    assert not result.usage or "fallback_reason" not in result.usage
+    # Shared lookup supports CLI, MCP and structured A2A requests as well.
+    assert service.lookup(Request(operation="ask", query=question)).answer == result.answer
+
+
+def test_topic_answers_exclude_cancelled_events_and_respect_explicit_filters():
+    from agenteng.chat_context import published_talk_answer
+
+    service = Service(clock=lambda: datetime(2026, 10, 7, tzinfo=UTC))
+    question = "Who is talking about memory engineering?"
+    assert (
+        published_talk_answer(
+            service, Request(operation="ask", query=question, city="San Francisco")
+        ).status
+        == "not_found"
+    )
+    service.catalogue = service.catalogue.model_copy(
+        update={
+            "events": [
+                event.model_copy(update={"cancelled": True}) for event in service.catalogue.events
+            ]
+        }
+    )
+    assert (
+        published_talk_answer(service, Request(operation="ask", query=question)).status
+        == "not_found"
+    )
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Who is talking about memory in San Francisco?",
+        "Who is talking about nuclear reactors?",
+    ],
+)
+@pytest.mark.asyncio
+async def test_topic_answers_do_not_invent_talks_or_cross_city_filters(question):
+    result = await Service().execute(Request(operation="chat", query=question))
+    assert result.status == "not_found" and result.data == []
+    assert "Tobie" not in result.answer
+
+
+@pytest.mark.asyncio
+async def test_memory_question_over_the_browser_a2a_transport():
+    from agenteng.server import create_app
+
+    app = create_app(Service())
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app), base_url="http://localhost"
+        ) as client,
+    ):
+        response = await client.post(
+            "/",
+            headers={"A2A-Version": "1.0"},
+            json={
+                "jsonrpc": "2.0",
+                "id": "memory-question",
+                "method": "SendMessage",
+                "params": {
+                    "message": {
+                        "messageId": "memory-question",
+                        "role": "ROLE_USER",
+                        "parts": [
+                            {
+                                "data": {
+                                    "operation": "chat",
+                                    "query": "Who us talking about memory engineering",
+                                }
+                            }
+                        ],
+                    }
+                },
+            },
+        )
+    result = response.json()["result"]["message"]["parts"][1]["data"]
+    assert result["status"] == "ok" and "Tobie Morgan Hitchcock" in result["answer"]
+    assert result["data"][0]["name"] == "Tobie Morgan Hitchcock"
+    assert result["sources"] and not result["usage"]
 
 
 @pytest.mark.parametrize(
