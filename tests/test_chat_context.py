@@ -314,6 +314,36 @@ def test_practical_attendance_question_still_gets_published_invoice_answer():
     assert result.data == {}
 
 
+@pytest.mark.parametrize(
+    ("question", "source_id", "policy"),
+    [
+        (
+            "Do you cover travel and accommodation costs?",
+            "faq-20",
+            "We cannot cover travel or accommodation costs for speakers or attendees.",
+        ),
+        (
+            "Do you cover travel costs for speakers?",
+            "faq-20",
+            "We cannot cover travel or accommodation costs for speakers or attendees.",
+        ),
+        (
+            "Can I get a visa invitation letter?",
+            "faq-21",
+            "we do not provide visa invitation letters or handle visa-related matters.",
+        ),
+    ],
+)
+def test_travel_and_visa_questions_use_published_policy_without_a_model(
+    question, source_id, policy
+):
+    result = chat_fallback(Service(Settings()), Request(operation="chat", query=question))
+    assert result.status == "ok"
+    assert policy in result.answer
+    assert source_id in {source.id for source in result.sources}
+    assert result.engine == "lookup"
+
+
 @pytest.mark.asyncio
 async def test_supplied_protocol_evidence_requests_final_json_without_tools():
     class Provider:

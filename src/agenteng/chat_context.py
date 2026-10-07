@@ -45,7 +45,8 @@ def attendance_question(question):
         re.search(
             r"\b(?:faq|attend(?:ing|ance)?|tickets?|refunds?|invoices?|transfer|approval|"
             r"approved|registration|register|accessible|accessibility|wheelchair|dietary|"
-            r"food|lunch|drinks?|catering|cancel(?:led|lation)?|conduct|dress|seats?)\b",
+            r"food|lunch|drinks?|catering|cancel(?:led|lation)?|conduct|dress|seats?|"
+            r"travel|accommodation|visas?)\b",
             question,
             re.I,
         )
@@ -143,7 +144,10 @@ def published_talk_answer(service, request):
     plain = question.casefold()
     if not re.search(r"\b(?:speaking|talking|presenting|speakers?|talks?|sessions?)\b", plain):
         return None
-    if re.search(r"\b(?:tools?|libraries|frameworks|submit|proposal|propose)\b", plain):
+    if re.search(
+        r"\b(?:tools?|libraries|frameworks|submit|proposal|propose|travel|accommodation|visas?)\b",
+        plain,
+    ):
         return None
     if re.search(r"\bfrom\b", plain) and not re.search(r"\b(?:about|on|covering)\b", plain):
         # Company/affiliation filters belong to the existing speaker lookup.

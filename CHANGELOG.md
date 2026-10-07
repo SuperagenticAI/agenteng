@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.15 - 2026-10-07
+
+- Add the conference's travel/accommodation funding policy and visa invitation letter policy to the attributed FAQ catalogue.
+- Route travel, accommodation and visa questions to practical FAQ evidence, including questions about speakers' costs, without requiring a model.
+
 ## 0.0.14 - 2026-10-07
 
 - Answer topical speaker and session questions directly from the published programme, including conversational wording and the reported memory-engineering question.

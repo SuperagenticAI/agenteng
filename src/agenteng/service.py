@@ -225,7 +225,10 @@ class Service:
                 [contact.id],
             )
         if request.operation == "ask":
-            from .chat_context import published_talk_answer
+            from .chat_context import focused_search, published_talk_answer
+
+            if terms(request.query) & {"travel", "accommodation", "visa", "visas"}:
+                return focused_search(self, request.query, request.limit, allow_faq=True)
 
             talk_answer = published_talk_answer(self, request)
             if talk_answer is not None:

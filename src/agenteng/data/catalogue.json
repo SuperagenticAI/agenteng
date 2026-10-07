@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-8069463adac3",
-  "published_at": "2026-10-07T07:35:20.673Z",
-  "source_commit": "04b3bde6e04cb92fb3d964fe835332ddfe476753",
-  "source_hash": "8069463adac396e7e6b52ca7a78acc871494799e881737cfeed46d5ee7951f6b",
+  "version": "website-d60cff90e82d",
+  "published_at": "2026-10-07T11:54:09.779Z",
+  "source_commit": "a9696546bd4f690596a86b4a6a6b68b90c4c8500",
+  "source_hash": "d60cff90e82ded9952b643da5c4b2f661d5e9aee79066d53d46f9e7f87a6cffc",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -1312,6 +1312,24 @@
       "source_ids": [
         "faq-19"
       ]
+    },
+    {
+      "id": "faq-20",
+      "question": "Do you cover travel and accommodation costs?",
+      "answer": "Unfortunately, no. This conference is a Founders Edition funded by ticket sales and the organiser. We cannot cover travel or accommodation costs for speakers or attendees.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-20"
+      ]
+    },
+    {
+      "id": "faq-21",
+      "question": "Can I get a visa invitation letter?",
+      "answer": "Unfortunately, no. To keep the organisation of this conference manageable, we do not provide visa invitation letters or handle visa-related matters.",
+      "event_id": "agenteng-london-2026",
+      "source_ids": [
+        "faq-21"
+      ]
     }
   ],
   "sponsors": [
@@ -1951,6 +1969,20 @@
       "id": "faq-19",
       "url": "https://agentengineering.world/#faq",
       "text": "Will talks be recorded?\nYes. Talks are recorded and shared with ticket holders after the day.",
+      "event_id": "agenteng-london-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "faq-20",
+      "url": "https://agentengineering.world/#faq",
+      "text": "Do you cover travel and accommodation costs?\nUnfortunately, no. This conference is a Founders Edition funded by ticket sales and the organiser. We cannot cover travel or accommodation costs for speakers or attendees.",
+      "event_id": "agenteng-london-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "faq-21",
+      "url": "https://agentengineering.world/#faq",
+      "text": "Can I get a visa invitation letter?\nUnfortunately, no. To keep the organisation of this conference manageable, we do not provide visa invitation letters or handle visa-related matters.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },

@@ -64,6 +64,19 @@ def test_faq_venue_sponsors_conduct_themes(service):
     assert themes.status == "ok" and len(themes.data) == 4
 
 
+@pytest.mark.parametrize(
+    ("query", "faq_id"),
+    [("travel", "faq-20"), ("accommodation", "faq-20"), ("visa", "faq-21")],
+)
+def test_travel_and_visa_faqs_are_searchable_with_source_attribution(service, query, faq_id):
+    result = service.lookup(Request(operation="faq", event_id=LONDON, query=query))
+    assert result.status == "ok"
+    assert [row["id"] for row in result.data] == [faq_id]
+    assert result.data[0]["source_ids"] == [faq_id]
+    assert [source.id for source in result.sources] == [faq_id]
+    assert str(result.sources[0].url) == "https://agentengineering.world/#faq"
+
+
 def test_now_and_next(service, tmp_path, monkeypatch):
     monkeypatch.setenv("AGENTENG_CONFIG_DIR", str(tmp_path))
     live = Service(
