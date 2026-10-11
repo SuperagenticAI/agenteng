@@ -1,9 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Data: associate name corrected to Gloria Gong in `agenteng about`.
+
 ## 0.0.16 - 2026-10-11
 
 - Sync the bundled catalogue with agentengineering.world (site commit fe27241) via `scripts/export-website.mjs`. Alexander Korchagin, Head of Technology Adoption at JetBrains, replaces the previous JetBrains speaker in the 09:15 to 09:45 London slot and the same lineup position, with the talk "Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents" (`agenteng speaker alexander-korchagin`, `agenteng talk alexander-korchagin`).
-- `agenteng about` and `agenteng about --organiser` / `--chair` list the associates published on the homepage chair card (James Hua, Gloria Tong). Media support credits from the /support page are not included.
+- `agenteng about` and `agenteng about --organiser` / `--chair` list the associates published on the homepage chair card (James Hua, Gloria Gong). Media support credits from the /support page are not included.
 - The support page moved from /sponsorships to /support; catalogue sources now cite https://agentengineering.world/support. The recording support blurb follows the site's new wording.
 - The exporter orders its speaker list by the site's `listedOn` date when present, matching the website's lineup order.
 

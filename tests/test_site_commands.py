@@ -184,7 +184,7 @@ def test_about_sections(service, section):
     extra = {"associates"} if section in {"chair", "organiser"} else set()
     assert set(result.data) == {"section", section} | extra
     if extra:
-        assert [a["name"] for a in result.data["associates"]] == ["James Hua", "Gloria Tong"]
+        assert [a["name"] for a in result.data["associates"]] == ["James Hua", "Gloria Gong"]
 
 
 def test_about_without_published_card_omits_it(service):

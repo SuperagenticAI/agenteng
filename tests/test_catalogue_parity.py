@@ -119,7 +119,7 @@ def test_about_lists_published_associates(tmp_path, monkeypatch):
     monkeypatch.setenv("AGENTENG_CONFIG_DIR", str(tmp_path))
     result = CliRunner().invoke(main, ["--json", "about", "--organiser"])
     assert result.exit_code == 0
-    assert "James Hua" in result.output and "Gloria Tong" in result.output
+    assert "James Hua" in result.output and "Gloria Gong" in result.output
     assert "Venpin" not in result.output and "Intelligensi" not in result.output
 
 
