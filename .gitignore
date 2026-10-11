@@ -90,3 +90,4 @@ contacts_*.csv
 *.swo
 *.log
 *.tmp
+.fast-agent/
