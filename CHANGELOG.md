@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.17 - 2026-10-12
 
 - Data: associate name corrected to Gloria Gong in `agenteng about`.
 
