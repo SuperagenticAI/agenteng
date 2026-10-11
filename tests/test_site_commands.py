@@ -181,7 +181,10 @@ def test_about_uses_published_site_data(service):
 @pytest.mark.parametrize("section", ["chair", "organiser", "connect"])
 def test_about_sections(service, section):
     result = service.lookup(Request(operation="about", section=section))
-    assert set(result.data) == {"section", section}
+    extra = {"associates"} if section in {"chair", "organiser"} else set()
+    assert set(result.data) == {"section", section} | extra
+    if extra:
+        assert [a["name"] for a in result.data["associates"]] == ["James Hua", "Gloria Tong"]
 
 
 def test_about_without_published_card_omits_it(service):

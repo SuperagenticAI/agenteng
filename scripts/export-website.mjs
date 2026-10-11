@@ -126,7 +126,7 @@ const sponsorText = read('src/components/SponsorStrip.tsx');
 const tracksText = read('src/components/ProgramTracksSection.tsx');
 const sponsorsPage = read('src/pages/Sponsors.tsx');
 const roster = constant('roster');
-values.set('speakers', [...roster].sort((a,b) => b.announcedOn.localeCompare(a.announcedOn)));
+values.set('speakers', [...roster].sort((a,b) => (b.listedOn ?? b.announcedOn).localeCompare(a.listedOn ?? a.announcedOn)));
 values.set('whoIsSpeakingAnswer', 'The lineup: ' + roster.map(
   s => `${s.name}, ${s.role} at ${s.company}`).join('; ') + '. See the published speakers page.');
 read('src/components/FAQSection.tsx');
@@ -259,17 +259,17 @@ const support_options = [
   {id:'after-party',title:'After-party / drinks',
     blurb:'Support an evening gathering after the talks, if we run one. Ideal for hallway conversations and informal recognition.'},
   {id:'recording',title:'Recording support',
-    blurb:'Help with filming, editing, or publishing the talks. Credit on the released recordings and related posts.'},
+    blurb:'A professional videographer already records the talks. Help fund editing and publishing them, with credit on the released recordings and related posts.'},
 ];
 for (const option of support_options) {
   if (!sponsorsPage.includes(option.title) || !sponsorsPage.includes(option.blurb)) {
     throw new Error('Support option drift: '+option.id);
   }
-  source('support-'+option.id,site+'/sponsorships',option.title+'\n'+option.blurb,london,'sponsorship');
+  source('support-'+option.id,site+'/support',option.title+'\n'+option.blurb,london,'sponsorship');
 }
 source('hq',site+'/agent-engineering-hq','Agent Engineering HQ organises practitioner events on building, evaluating and operating production AI agents, with communities in San Francisco and London.',null);
 source('contact',site+'/',`Public organiser contact: ${constant('ORGANISER_EMAIL')}`,null);
-source('sponsor-contact',site+'/sponsorships',`Sponsorship enquiry: ${constant('ORGANISER_EMAIL')}`,null,'sponsorship');
+source('sponsor-contact',site+'/support',`Sponsorship enquiry: ${constant('ORGANISER_EMAIL')}`,null,'sponsorship');
 // Agent Engineering HQ page content and the published organiser card.
 read('src/pages/AgentEngineeringHQ.tsx');
 read('src/components/ManifestoSection.tsx');
@@ -305,10 +305,24 @@ const organiserName = only(jsxTexts(founder, 'p'), t => t === 'Superagentic AI',
 const organiserBlurb = only(jsxTexts(founder, 'p'), t => t.startsWith('Advancing the Agent Engineering'), 'organiser blurb');
 const chairLinks = nestedConstant(founder, 'links');
 const organiserUrl = only(chairLinks, l => l.label === organiserName, 'organiser link').url;
+// Associates are published on the homepage chair card (and the /support Team section).
+const associatesText = fs.readFileSync(path.join(root, founder), 'utf8');
+const associateMatches = [];
+walk(trees.get(founder), n => {
+  if (!ts.isArrayLiteralExpression(n) || !n.elements.length) return;
+  if (!n.elements.every(e => ts.isObjectLiteralExpression(e))) return;
+  const rows = evaluate(n);
+  if (rows.every(r => Object.keys(r).join() === 'name,url' && r.url.startsWith('https://www.linkedin.com/'))) {
+    associateMatches.push(...rows.map(r => ({name:r.name, url:r.url})));
+  }
+});
+if (!associatesText.includes('associates') || associateMatches.length < 1) throw new Error('Associates drift');
 const aboutSource = source('about', site+'/', [definition, `Organised by ${organiserName}: ${organiserBlurb}`,
-  `${chairName}, ${chairTitle}. ${chairBio}`].join('\n'), null, 'about');
+  `${chairName}, ${chairTitle}. ${chairBio}`,
+  `Associates: ${associateMatches.map(a => a.name).join(', ')}`].join('\n'), null, 'about');
 const about = {definition, organiser:{name:organiserName, url:organiserUrl, blurb:organiserBlurb},
   chair:{name:chairName, title:chairTitle, bio:chairBio, links:chairLinks.map(l => ({label:l.label, url:l.url}))},
+  associates:associateMatches,
   contact_email:constant('ORGANISER_EMAIL'), source_ids:[aboutSource]};
 const source_hash=hash.digest('hex');
 const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),published_at:new Date().toISOString(),
