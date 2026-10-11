@@ -85,7 +85,7 @@ def test_now_and_next(service, tmp_path, monkeypatch):
     )
     now = live.lookup(Request(operation="now", event_id=LONDON))
     assert now.status == "ok"
-    assert now.data["session"]["speaker_id"] == "sergey-ignatov"
+    assert now.data["session"]["speaker_id"] == "alexander-korchagin"
     nxt = live.lookup(Request(operation="next", event_id=LONDON))
     assert nxt.status == "ok"
     assert nxt.data["session"]["speaker_id"] == "meryem-arik"
@@ -100,15 +100,30 @@ def test_discover_has_no_em_dash(service):
 def test_cli_speaker_and_talk_json(tmp_path, monkeypatch):
     monkeypatch.setenv("AGENTENG_CONFIG_DIR", str(tmp_path))
     runner = CliRunner()
-    result = runner.invoke(main, ["--json", "speaker", "sergey-ignatov"])
+    result = runner.invoke(main, ["--json", "speaker", "alexander-korchagin"])
     assert result.exit_code == 0
-    assert "Lead ACP maintainer" in result.output
+    assert "Head of Technology Adoption" in result.output
+    assert "https://www.linkedin.com/in/alexanderkorchagin/" in result.output
     assert "\N{EM DASH}" not in result.output
-    result = runner.invoke(main, ["--json", "talk", "sergey-ignatov"])
+    result = runner.invoke(main, ["--json", "talk", "alexander-korchagin"])
     assert result.exit_code == 0
-    assert "Agentic Coding and ACP" in result.output
+    assert "Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents" in result.output
     result = runner.invoke(
         main, ["--json", "agenda", LONDON, "--format", "ics", "--output", str(tmp_path / "a.ics")]
     )
     assert result.exit_code == 0
     assert (tmp_path / "a.ics").read_text().startswith("BEGIN:VCALENDAR")
+
+
+def test_about_lists_published_associates(tmp_path, monkeypatch):
+    monkeypatch.setenv("AGENTENG_CONFIG_DIR", str(tmp_path))
+    result = CliRunner().invoke(main, ["--json", "about", "--organiser"])
+    assert result.exit_code == 0
+    assert "James Hua" in result.output and "Gloria Tong" in result.output
+    assert "Venpin" not in result.output and "Intelligensi" not in result.output
+
+
+def test_support_links_use_support_page(service):
+    urls = {str(s.url) for s in service.catalogue.sources}
+    assert not any("/sponsorships" in u for u in urls)
+    assert "https://agentengineering.world/support" in urls

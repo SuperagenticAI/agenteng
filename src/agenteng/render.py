@@ -829,6 +829,13 @@ def render_about(console: Console, result: Result) -> None:
             body.append(f"\n{link['label']}: ", style="ae.accent")
             body.append(link["url"], style="ae.blue")
         console.print(_panel("Conference chair", body, border=VIOLET))
+    associates = data.get("associates") or []
+    if associates:
+        body = Text()
+        for i, person in enumerate(associates):
+            body.append(("\n" if i else "") + display_text(person["name"]) + ": ", style="bold")
+            body.append(person["url"], style="ae.blue")
+        console.print(_panel("Associates", body, border=VIOLET))
     links = data.get("links")
     if links:
         table = _kv_table()

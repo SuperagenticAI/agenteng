@@ -84,7 +84,7 @@ The fixture contains 82 command locations. Tool CI executes each row and require
 | `agenteng speaker andrey-breslav` | `data/speaker-stack.ts` |
 | `agenteng speaker ismail-pelaseyed` | `data/speaker-stack.ts` |
 | `agenteng speaker tobie-morgan-hitchcock` | `data/speaker-stack.ts` |
-| `agenteng speaker sergey-ignatov` | `data/speaker-stack.ts` |
+| `agenteng speaker alexander-korchagin` | `data/speaker-stack.ts` |
 | `agenteng speaker jon-bratseth` | `data/speaker-stack.ts` |
 | `agenteng speaker meryem-arik` | `data/speaker-stack.ts` |
 | `agenteng speaker frederic-barthelet` | `data/speaker-stack.ts` |

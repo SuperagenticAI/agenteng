@@ -202,12 +202,20 @@ class Chair(Model):
     links: list[Link] = Field(default_factory=list)
 
 
+class Associate(Model):
+    """Associate named on the published homepage chair card."""
+
+    name: str
+    url: str
+
+
 class About(Model):
     """Published definition, organiser and chair card from the website."""
 
     definition: str
     organiser: Organiser | None = None
     chair: Chair | None = None
+    associates: list[Associate] = Field(default_factory=list)
     contact_email: str | None = None
     source_ids: list[str]
 

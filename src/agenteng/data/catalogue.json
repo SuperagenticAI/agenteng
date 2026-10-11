@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-d60cff90e82d",
-  "published_at": "2026-10-07T11:54:09.779Z",
-  "source_commit": "a9696546bd4f690596a86b4a6a6b68b90c4c8500",
-  "source_hash": "d60cff90e82ded9952b643da5c4b2f661d5e9aee79066d53d46f9e7f87a6cffc",
+  "version": "website-be9f1718f197",
+  "published_at": "2026-10-11T20:07:29.539Z",
+  "source_commit": "fe2724119fccbb8cc13c19ec94bc0bd39631d684",
+  "source_hash": "be9f1718f1976a2813660d3c228eb0cc495c0a565a16bf8404d143cbb0d4f9c7",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -393,56 +393,32 @@
       ]
     },
     {
-      "id": "sergey-ignatov",
-      "name": "Sergey Ignatov",
-      "role": "Director of Engineering",
+      "id": "alexander-korchagin",
+      "name": "Alexander Korchagin",
+      "role": "Head of Technology Adoption",
       "company": "JetBrains",
       "company_url": "https://www.jetbrains.com",
-      "note": "Lead ACP maintainer",
+      "note": null,
       "location": {
-        "city": "Amsterdam",
-        "country": "NL"
+        "city": null,
+        "country": "US"
       },
       "links": {
-        "x": "https://x.com/sergey__ignatov",
-        "github": "https://github.com/ignatov",
-        "linkedin": "https://www.linkedin.com/in/sergey-ignatov"
+        "linkedin": "https://www.linkedin.com/in/alexanderkorchagin/"
       },
-      "projects": [
-        {
-          "name": "Agent Client Protocol",
-          "url": "https://agentclientprotocol.com",
-          "blurb": "The standard between editors and coding agents, which he co-leads"
-        },
-        {
-          "name": "GoLand",
-          "url": "https://www.jetbrains.com/go/",
-          "blurb": "The Go IDE, which he co-created"
-        },
-        {
-          "name": "DataGrip",
-          "url": "https://www.jetbrains.com/datagrip/",
-          "blurb": "Database IDE, one of the teams he has led"
-        },
-        {
-          "name": "intellij-erlang",
-          "url": "https://github.com/ignatov/intellij-erlang",
-          "blurb": "Erlang IDE plugin he wrote and still maintains"
-        }
-      ],
-      "announced_on": "2026-08-11",
+      "projects": [],
+      "announced_on": "2026-10-11",
       "disciplines": [
-        "protocol",
-        "code",
-        "loop"
+        "agentic",
+        "code"
       ],
       "event_ids": [
         "agenteng-london-2026"
       ],
-      "talk_title": "Agentic Coding and ACP",
-      "abstract": "Sergey will explore the latest on ACP and agentic tools from JetBrains.",
+      "talk_title": "Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents",
+      "abstract": "Most of what gets presented about agentic coding is what worked or what we hope will work. This talk is the other column.\n\n2026 was the year several comfortable assumptions failed under load. Engineering organisations would converge on a single tooling. They didn't, and the ones that mandated it found their engineers routing around it. Productivity gains would be self-evident, but controlled measurement found experienced developers running slower while reporting they were faster. Betting on one vendor seemed the safe option, in a year with three separate model-access shutoffs. That cost would stay acceptable, right up until it became a top-three adoption barrier.\n\nA field report on what the industry collectively got wrong, what the evidence actually shows, and which of these are now solved versus merely renamed.",
       "source_ids": [
-        "speaker-sergey-ignatov"
+        "speaker-alexander-korchagin"
       ]
     },
     {
@@ -817,14 +793,13 @@
     {
       "id": "agenteng-london-2026-2",
       "event_id": "agenteng-london-2026",
-      "title": "Agentic Coding and ACP",
+      "title": "Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents",
       "kind": "talk",
       "start": "2026-10-16T09:15:00+01:00",
       "end": "2026-10-16T09:45:00+01:00",
-      "speaker_id": "sergey-ignatov",
+      "speaker_id": "alexander-korchagin",
       "topics": [
-        "coding",
-        "acp"
+        "coding"
       ],
       "source_ids": [
         "london-session-2"
@@ -1253,7 +1228,7 @@
     {
       "id": "faq-13",
       "question": "Who is speaking?",
-      "answer": "The lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Sergey Ignatov, Director of Engineering at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
+      "answer": "The lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-13"
@@ -1298,7 +1273,7 @@
     {
       "id": "faq-18",
       "question": "Are there sponsorship opportunities?",
-      "answer": "We are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/sponsorships",
+      "answer": "We are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/support",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-18"
@@ -1362,7 +1337,7 @@
     {
       "id": "recording",
       "title": "Recording support",
-      "blurb": "Help with filming, editing, or publishing the talks. Credit on the released recordings and related posts."
+      "blurb": "A professional videographer already records the talks. Help fund editing and publishing them, with credit on the released recordings and related posts."
     }
   ],
   "themes": [
@@ -1483,6 +1458,16 @@
         }
       ]
     },
+    "associates": [
+      {
+        "name": "James Hua",
+        "url": "https://www.linkedin.com/in/james-hua-854ba4354/"
+      },
+      {
+        "name": "Gloria Tong",
+        "url": "https://www.linkedin.com/in/tong-gong/"
+      }
+    ],
     "contact_email": "events@agentengineering.world",
     "source_ids": [
       "about"
@@ -1546,9 +1531,9 @@
       "kind": "speaker"
     },
     {
-      "id": "speaker-sergey-ignatov",
-      "url": "https://agentengineering.world/speakers#sergey-ignatov",
-      "text": "Sergey Ignatov, Director of Engineering at JetBrains. Agentic Coding and ACP. Sergey will explore the latest on ACP and agentic tools from JetBrains.",
+      "id": "speaker-alexander-korchagin",
+      "url": "https://agentengineering.world/speakers#alexander-korchagin",
+      "text": "Alexander Korchagin, Head of Technology Adoption at JetBrains. Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents. Most of what gets presented about agentic coding is what worked or what we hope will work. This talk is the other column.\n\n2026 was the year several comfortable assumptions failed under load. Engineering organisations would converge on a single tooling. They didn't, and the ones that mandated it found their engineers routing around it. Productivity gains would be self-evident, but controlled measurement found experienced developers running slower while reporting they were faster. Betting on one vendor seemed the safe option, in a year with three separate model-access shutoffs. That cost would stay acceptable, right up until it became a top-three adoption barrier.\n\nA field report on what the industry collectively got wrong, what the evidence actually shows, and which of these are now solved versus merely renamed.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
@@ -1604,7 +1589,7 @@
     {
       "id": "london-session-2",
       "url": "https://agentengineering.world/agenda",
-      "text": "09:15 Agentic Coding and ACP. Sergey Ignatov. Sergey will explore the latest on ACP and agentic tools from JetBrains.",
+      "text": "09:15 Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents. Alexander Korchagin. Most of what gets presented about agentic coding is what worked or what we hope will work. This talk is the other column.\n\n2026 was the year several comfortable assumptions failed under load. Engineering organisations would converge on a single tooling. They didn't, and the ones that mandated it found their engineers routing around it. Productivity gains would be self-evident, but controlled measurement found experienced developers running slower while reporting they were faster. Betting on one vendor seemed the safe option, in a year with three separate model-access shutoffs. That cost would stay acceptable, right up until it became a top-three adoption barrier.\n\nA field report on what the industry collectively got wrong, what the evidence actually shows, and which of these are now solved versus merely renamed.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
@@ -1926,7 +1911,7 @@
     {
       "id": "faq-13",
       "url": "https://agentengineering.world/#faq",
-      "text": "Who is speaking?\nThe lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Sergey Ignatov, Director of Engineering at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
+      "text": "Who is speaking?\nThe lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
@@ -1961,7 +1946,7 @@
     {
       "id": "faq-18",
       "url": "https://agentengineering.world/#faq",
-      "text": "Are there sponsorship opportunities?\nWe are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/sponsorships",
+      "text": "Are there sponsorship opportunities?\nWe are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/support",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
@@ -2037,22 +2022,22 @@
     },
     {
       "id": "support-refreshments",
-      "url": "https://agentengineering.world/sponsorships",
+      "url": "https://agentengineering.world/support",
       "text": "Refreshments\nHelp with arrival tea and pastries or lunch. A warm, practical way to be present without a trade-show package.",
       "event_id": "agenteng-london-2026",
       "kind": "sponsorship"
     },
     {
       "id": "support-after-party",
-      "url": "https://agentengineering.world/sponsorships",
+      "url": "https://agentengineering.world/support",
       "text": "After-party / drinks\nSupport an evening gathering after the talks, if we run one. Ideal for hallway conversations and informal recognition.",
       "event_id": "agenteng-london-2026",
       "kind": "sponsorship"
     },
     {
       "id": "support-recording",
-      "url": "https://agentengineering.world/sponsorships",
-      "text": "Recording support\nHelp with filming, editing, or publishing the talks. Credit on the released recordings and related posts.",
+      "url": "https://agentengineering.world/support",
+      "text": "Recording support\nA professional videographer already records the talks. Help fund editing and publishing them, with credit on the released recordings and related posts.",
       "event_id": "agenteng-london-2026",
       "kind": "sponsorship"
     },
@@ -2072,7 +2057,7 @@
     },
     {
       "id": "sponsor-contact",
-      "url": "https://agentengineering.world/sponsorships",
+      "url": "https://agentengineering.world/support",
       "text": "Sponsorship enquiry: events@agentengineering.world",
       "event_id": null,
       "kind": "sponsorship"
@@ -2101,7 +2086,7 @@
     {
       "id": "about",
       "url": "https://agentengineering.world/",
-      "text": "Agent Engineering is the discipline of designing, building, evaluating, and operating AI agents. It covers prompt, context, harness, inference, memory, evaluation, and code.\nOrganised by Superagentic AI: Advancing the Agent Engineering discipline and practice\nShashi Jagtap, Conference Chair & Curator · Ex-Apple Engineer (6 years) · Organizer, London Agentic AI & Agent Engineering HQ. Building the bridge from Developer Experience to Agent Experience. Transatlantic connections between London and Silicon Valley, with programming shaped by a broader technical community.",
+      "text": "Agent Engineering is the discipline of designing, building, evaluating, and operating AI agents. It covers prompt, context, harness, inference, memory, evaluation, and code.\nOrganised by Superagentic AI: Advancing the Agent Engineering discipline and practice\nShashi Jagtap, Conference Chair & Curator · Ex-Apple Engineer (6 years) · Organizer, London Agentic AI & Agent Engineering HQ. Building the bridge from Developer Experience to Agent Experience. Transatlantic connections between London and Silicon Valley, with programming shaped by a broader technical community.\nAssociates: James Hua, Gloria Tong",
       "event_id": null,
       "kind": "about"
     }

@@ -109,6 +109,7 @@ def about(service: Service, request: Request) -> Result:
         if record and record.organiser
         else None,
         "chair": record.chair.model_dump(mode="json") if record and record.chair else None,
+        "associates": [a.model_dump(mode="json") for a in record.associates] if record else [],
         "contact_email": record.contact_email if record else None,
         "links": {
             "website": SITE + "/",
@@ -126,7 +127,10 @@ def about(service: Service, request: Request) -> Result:
                 f"No published {request.section} information in this catalogue.",
                 status="not_found",
             )
-        data = {"section": request.section, request.section: data[request.section]}
+        section_data = {"section": request.section, request.section: data[request.section]}
+        if request.section in {"chair", "organiser"} and data["associates"]:
+            section_data["associates"] = data["associates"]
+        data = section_data
         source_ids = {"connect": [], "chair": source_ids[:1], "organiser": source_ids[:1]}[
             request.section
         ]
