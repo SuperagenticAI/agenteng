@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Catalogue re-exported from site commit 094ab77: the after-event social now reads "Details will be shared during the day. Drinks are buy your own.", and the agenda and FAQ say "Informal networking from 16:30. Details shared on the day."
+
 ## 0.0.20 - 2026-10-15
 
 - Catalogue re-exported from site commit 84f1011: the ticket FAQ is now "Can I still get a ticket?" with fully booked wording, and the team seats answer is updated.
