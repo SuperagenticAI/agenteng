@@ -154,7 +154,8 @@ def test_model_free_question_routing(service):
     when = service.lookup(Request(operation="ask", query="When is the next London conference?"))
     assert len(when.data) == 1 and when.data[0]["date"] == "2026-10-16"
     ambiguous = service.lookup(Request(operation="ask", query="ticket prices"))
-    assert ambiguous.status == "unavailable" and "event_id" in ambiguous.answer
+    # With no city named, ticket questions default to the upcoming London conference.
+    assert ambiguous.status == "ok" and ambiguous.data["registration_status"] == "fully_booked"
 
 
 @pytest.mark.parametrize("change", [{"timezone": "Invalid/Timezone"}, {"date": "20261016"}])
