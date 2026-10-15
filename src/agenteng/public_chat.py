@@ -56,6 +56,7 @@ class PublicLookup(Model):
         "themes",
         "about",
         "hq",
+        "guide",
         "tickets",
         "recordings",
     ]

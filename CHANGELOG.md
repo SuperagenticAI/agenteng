@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- New `agenteng guide` command and public `guide` operation (CLI, HTTP, MCP and A2A) mirroring the website's /guide day guide for AgentEng London on Fri 16 October 2026: quick facts, arriving, getting here, registration and badges, social area, speaker area, lunch and drinks, questions and Q&A, photography, phones and laptops, seating, help on the day and the after-event social. `agenteng guide SECTION`, `--section`, `--list` and `--json` are supported; the website wording `agenteng guide --london` works too. The A2A event-day skill, MCP instructions, interactive menu and rich terminal cards include it.
+- `agenteng venue` for London adds the published directions: best way in via Canary Wharf Elizabeth line station, the walk video (https://www.youtube.com/watch?v=GPmvi7qjiwA), registration on the left as you walk in, doors 08:00, arrive 8:30 to 8:45, be seated by 8:50, programme starts 9:00 sharp, plus the day-guide help contacts.
+- `agenteng about` and the London event card show the homepage tagline "There are many Agent conferences. This one is truly yours." and the "Why this one is truly yours" text.
+- Tickets are no longer promoted. London is fully booked, so `agenteng tickets london` prints the site's wording and points to the day guide, with no prices or registration link; the event card, interactive menu and fallback hints no longer prompt for tickets.
+- `scripts/export-website.mjs` exports the guide, directions, tagline and registration status from the site source (site commit 9a899d8), with drift checks on guide sections, venue, times, help links and the homepage ticket section. Imported text has em dashes stripped.
+
 ## 0.0.17 - 2026-10-12
 
 - Data: associate name corrected to Gloria Gong in `agenteng about`.

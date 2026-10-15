@@ -239,7 +239,9 @@ agenteng faq --search tickets
 
 ### agenteng venue
 
-Read venue address, tour link, track and accessibility notes.
+Read venue address, directions, arrival times, help contacts and accessibility notes.
+
+For London this includes the best way in (Canary Wharf Elizabeth line station), the walk video, where registration is, doors, arrival and start times, and the published help contacts.
 
 EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
 
@@ -293,7 +295,9 @@ agenteng themes
 
 ### agenteng tickets
 
-Read published prices and the official registration link.
+Read the published registration status (London is fully booked).
+
+London is fully booked, so this prints the site's wording and points to the day guide; it no longer lists prices or a registration link. For an event with open registration it shows the published price window and the official registration link.
 
 EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
 
@@ -323,6 +327,31 @@ agenteng recordings --city London
 ```
 
 ## At the event
+
+### agenteng guide
+
+The published day guide: arriving, getting here, registration, Q&A and help.
+
+SECTION is optional, for example arriving, getting-here, registration, qna, help or facts. Omit it for the whole guide; use --list to see every section.
+
+```text
+agenteng guide [OPTIONS] [SECTION]
+```
+
+| Option | Meaning | Default |
+| --- | --- | --- |
+| `--list` | List the day guide sections. |  |
+| `--section` SECTION | Show one section, same as the SECTION argument. |  |
+| `--event` TEXT | Event ID; the guide is published for London only. |  |
+
+Sections follow the website's /guide page: `facts` (quick facts), `arriving`, `getting-here`, `registration`, `social-area`, `speaker-area`, `lunch`, `qna`, `photography`, `phones`, `seating`, `help` and `after`. Section titles also work, for example `agenteng guide "Lunch and drinks"`. The website wording `agenteng guide --london` runs the whole guide.
+
+```sh
+agenteng guide
+agenteng guide arriving
+agenteng guide --list
+agenteng --json guide help
+```
 
 ### agenteng now
 

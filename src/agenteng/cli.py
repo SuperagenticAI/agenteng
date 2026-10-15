@@ -398,7 +398,7 @@ def faq(ctx, event_id, query):
 @city_shortcuts
 @click.pass_context
 def venue(ctx, event_id, city=None):
-    """Read venue address, tour link, track and accessibility notes.
+    """Read venue address, directions, arrival times, help contacts and accessibility notes.
 
     EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
     """
@@ -528,7 +528,7 @@ def live_cmd(ctx, event_id=None, refresh=30, at=None, once=False, city=None):
 @city_shortcuts
 @click.pass_context
 def tickets(ctx, event_id, city=None):
-    """Read published prices and the official registration link.
+    """Read the published registration status (London is fully booked).
 
     EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
     """
@@ -623,6 +623,30 @@ def about(ctx, section):
 def whoami(ctx, chair):
     """Website wording for `agenteng about --chair`."""
     ctx.invoke(about, section="chair")
+
+
+@main.command()
+@click.argument("section", required=False)
+@click.option("--list", "list_sections", is_flag=True, help="List the day guide sections.")
+@click.option(
+    "--section",
+    "section_option",
+    metavar="SECTION",
+    help="Show one section, same as the SECTION argument.",
+)
+@click.option("--event", "event_id", help="Event ID; the guide is published for London only.")
+@city_shortcuts
+@click.pass_context
+def guide(ctx, section, list_sections, section_option, event_id, city=None):
+    """The published day guide: arriving, getting here, registration, Q&A and help.
+
+    SECTION is optional, for example arriving, getting-here, registration, qna, help or
+    facts. Omit it for the whole guide; use --list to see every section.
+    """
+    picked = "list" if list_sections else (section_option or section)
+    if picked:
+        picked = picked.strip().casefold().replace(" ", "-").replace("&", "")
+    dispatch(ctx, dict(operation="guide", section=picked or None, event_id=event_id, city=city))
 
 
 @main.command()

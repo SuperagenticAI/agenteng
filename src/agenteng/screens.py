@@ -111,16 +111,24 @@ def about(service: Service, request: Request) -> Result:
         "chair": record.chair.model_dump(mode="json") if record and record.chair else None,
         "associates": [a.model_dump(mode="json") for a in record.associates] if record else [],
         "contact_email": record.contact_email if record else None,
+        "truly_yours": record.truly_yours.model_dump(mode="json", exclude={"source_ids"})
+        if record and record.truly_yours
+        else None,
         "links": {
             "website": SITE + "/",
             "hq": SITE + "/agent-engineering-hq",
             "london": SITE + "/london",
             "san_francisco": SITE + "/san-francisco",
             "code_of_conduct": SITE + "/code-of-conduct",
+            **({"day_guide": str(service.catalogue.guide.url)} if service.catalogue.guide else {}),
         },
         "connect": connect,
     }
-    source_ids = (record.source_ids if record else []) + ["hq"]
+    source_ids = (
+        (record.source_ids if record else [])
+        + ["hq"]
+        + (record.truly_yours.source_ids if record and record.truly_yours else [])
+    )
     if request.section:
         if data.get(request.section) is None:
             return service.result(
@@ -140,6 +148,126 @@ def about(service: Service, request: Request) -> Result:
         + "."
     )
     return service.result(answer, data, [s for s in source_ids if s in service.sources])
+
+
+GUIDE_ALIASES = {
+    "facts": "facts",
+    "quick-facts": "facts",
+    "help": "help",
+    "contacts": "help",
+    "venue": "getting-here",
+    "directions": "getting-here",
+    "badges": "registration",
+    "q-a": "qna",
+    "questions": "qna",
+    "food": "lunch",
+    "after-party": "after",
+    "social": "after",
+}
+
+
+def _slug(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", text.casefold()).strip("-")
+
+
+def guide_phase(service: Service, request: Request, event) -> str:
+    """Website heroLead phase: before, eve, today or after, on the London calendar."""
+    today = local_now(service, request, event.timezone).date().isoformat()
+    day = event.date
+    if today == day:
+        return "today"
+    if today > day:
+        return "after"
+    eve = (datetime.fromisoformat(day) - timedelta(days=1)).date().isoformat()
+    return "eve" if today == eve else "before"
+
+
+def guide(service: Service, request: Request) -> Result:
+    """The published /guide day guide: quick facts, sections and help contacts."""
+    record = service.catalogue.guide
+    if not record:
+        return service.result("No published day guide in this catalogue.", status="not_found")
+    event = service.events.get(record.event_id)
+    wrong_event = request.event_id and request.event_id != record.event_id
+    wrong_city = request.city and event and request.city.casefold() != event.city.casefold()
+    if wrong_event or wrong_city:
+        return service.result(
+            f"The published day guide is for {event.title if event else record.event_id} only.",
+            {"event_id": record.event_id},
+            status="not_found",
+        )
+    venue = record.venue.model_dump(mode="json") if record.venue else None
+    if venue:
+        venue.pop("source_ids", None)
+    phase = guide_phase(service, request, event) if event else "before"
+    index = [{"id": "facts", "title": "Quick facts"}] + [
+        {"id": s.id, "title": s.title} for s in record.sections
+    ]
+    base = {
+        "event_id": record.event_id,
+        "title": record.title,
+        "url": str(record.url),
+        "phase": phase,
+        "lead": record.hero_lead.get(phase),
+    }
+    section_ids = {s.id for s in record.sections}
+    wanted = request.section
+    if wanted and wanted not in section_ids:
+        wanted = GUIDE_ALIASES.get(wanted) or next(
+            (s.id for s in record.sections if _slug(s.title) == wanted or s.id.startswith(wanted)),
+            wanted,
+        )
+    if wanted == "list":
+        return service.result(
+            f"{len(index)} day guide sections. Read one with agenteng guide SECTION.",
+            {**base, "sections": index},
+            list(record.source_ids[:1]),
+        )
+    if wanted == "facts":
+        return service.result(
+            "Quick facts from the published day guide.",
+            {**base, "section": "facts", "facts": [f.model_dump() for f in record.facts]},
+            list(record.source_ids[:1]),
+        )
+    if wanted:
+        row = next((s for s in record.sections if s.id == wanted), None)
+        if not row:
+            return service.result(
+                f"No day guide section {request.section!r}. Choose one of: "
+                + ", ".join(i["id"] for i in index)
+                + ".",
+                {**base, "sections": index},
+                status="not_found",
+            )
+        data = {**base, "section": row.id, "sections": [row.model_dump(mode="json")]}
+        if row.id == "help":
+            data["help"] = record.help.model_dump(mode="json")
+        if row.id == "getting-here" and venue:
+            data["venue"] = venue
+        ids = [f"guide-{row.id}"] + (
+            record.venue.source_ids if row.id == "getting-here" and record.venue else []
+        )
+        return service.result(
+            f"{row.title}, from the published day guide.",
+            data,
+            [i for i in ids if i in service.sources],
+        )
+    data = {
+        **base,
+        "description": record.description,
+        "intro": record.intro,
+        "facts": [f.model_dump() for f in record.facts],
+        "sections": [s.model_dump(mode="json") for s in record.sections],
+        "help": record.help.model_dump(mode="json"),
+        "venue": venue,
+    }
+    ids = list(record.source_ids) + (record.venue.source_ids if record.venue else [])
+    return service.result(
+        f"Day guide for {event.title if event else record.event_id}: "
+        f"{len(record.sections)} sections. See {record.url}",
+        data,
+        [i for i in ids if i in service.sources],
+    )
 
 
 def hq(service: Service, request: Request) -> Result:

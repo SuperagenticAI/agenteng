@@ -146,7 +146,7 @@ agenteng now agenteng-london-2026
 agenteng next agenteng-london-2026
 agenteng save samuel-colvin
 agenteng agenda --london
-agenteng tickets agenteng-london-2026
+agenteng guide arriving
 ```
 
 The catalogue is a dated snapshot. Follow the event's official registration link

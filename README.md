@@ -53,10 +53,10 @@ Explore the bundled catalogue with **no provider key or model calls**. Read card
 
 | What you can do | How AgentEng helps |
 | --- | --- |
-| **Find your next event** | Browse events, speakers, talks, agendas and official ticket links. |
+| **Find your next event** | Browse events, speakers, talks, agendas and the day guide. |
 | **Explore the discipline** | Search tools, models and infrastructure across 12 disciplines, with source attribution. |
 | **Bring your coding agent** | Connect Codex, Claude Code or Cursor through MCP; use A2A or HTTP for other clients. |
-| **Make the most of event day** | Browse the public agenda, follow the live now/next board and play talk bingo. |
+| **Make the most of event day** | Read the day guide and directions, follow the live now/next board and play talk bingo. |
 
 The catalogue is a snapshot. Follow official event and registration links for current details and ticket availability. See [data and attribution](docs/DATA.md).
 
@@ -95,7 +95,7 @@ agenteng events --upcoming
 agenteng event agenteng-london-2026
 agenteng speakers --city London
 agenteng agenda agenteng-london-2026
-agenteng tickets agenteng-london-2026
+agenteng guide                      # London day guide
 ```
 
 Use the IDs returned by `agenteng events` to explore other published events. Run `agenteng --help` or `agenteng COMMAND --help` for options. The short alias `ae` also works: `ae talks` is equivalent to `agenteng talks`.
@@ -187,7 +187,7 @@ The same typed request works as an A2A JSON data part or an HTTP body. Request s
 <details>
 <summary><strong>Public operations across CLI, MCP, A2A and HTTP</strong></summary>
 
-Public operations (CLI, MCP, A2A, HTTP) include: `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `live`, `bingo`, `about`, `hq`, `tickets`, `recordings`, `search`, `ask` and `participate`.
+Public operations (CLI, MCP, A2A, HTTP) include: `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `live`, `bingo`, `about`, `hq`, `guide`, `tickets`, `recordings`, `search`, `ask` and `participate`.
 
 Begin with `discover` for featured London/San Francisco events, or `events` for published IDs. Full command and flag reference: [docs/COMMANDS.md](docs/COMMANDS.md).
 
@@ -195,7 +195,12 @@ Begin with `discover` for featured London/San Francisco events, or `events` for 
 
 ## Event day
 
+AgentEng London is on Fri 16 October 2026 at Everyman Canary Wharf, Crossrail Place, London E14 5AR, and is fully booked. Doors 08:00, programme starts 9:00 sharp.
+
 ```sh
+agenteng guide                   # the website's day guide, every section
+agenteng guide arriving          # one section; agenteng guide --list shows them all
+agenteng venue london            # address, best way in, walk video, times, help
 agenteng live                    # full-screen now/next board (Ctrl-C exits)
 agenteng live --at 10:40          # preview the board at a given time
 agenteng bingo --seed 7           # talk bingo; same seed, same card
