@@ -94,6 +94,9 @@ class Event(Model):
     registration_url: HttpUrl | None = None
     recording_url: HttpUrl | None = None
     offers: list[Offer] = Field(default_factory=list)
+    tagline: str | None = None
+    registration_status: Literal["open", "fully_booked"] | None = None
+    registration_note: str | None = None
     source_ids: list[str]
 
     @model_validator(mode="after")
@@ -209,6 +212,15 @@ class Associate(Model):
     url: str
 
 
+class TrulyYours(Model):
+    """Homepage tagline and the 'Why this one is truly yours' block."""
+
+    tagline: str
+    title: str
+    text: str
+    source_ids: list[str]
+
+
 class About(Model):
     """Published definition, organiser and chair card from the website."""
 
@@ -217,6 +229,65 @@ class About(Model):
     chair: Chair | None = None
     associates: list[Associate] = Field(default_factory=list)
     contact_email: str | None = None
+    truly_yours: TrulyYours | None = None
+    source_ids: list[str]
+
+
+class GuideFact(Model):
+    label: str
+    value: str
+
+
+class GuideLink(Model):
+    label: str
+    url: HttpUrl
+
+
+class GuideSection(Model):
+    id: str = Field(pattern=r"^[a-z0-9-]+$")
+    title: str
+    paragraphs: list[str] = Field(min_length=1)
+    links: list[GuideLink] = Field(default_factory=list)
+
+
+class HelpPerson(Model):
+    name: str
+    role: str | None = None
+
+
+class GuideHelp(Model):
+    on_site: list[HelpPerson] = Field(default_factory=list)
+    online: list[GuideLink] = Field(default_factory=list)
+
+
+class GuideVenue(Model):
+    """Directions and arrival times published on the homepage venue card and /guide."""
+
+    address: str
+    best_way_in: str
+    getting_there: str = ""
+    walk_video_url: HttpUrl | None = None
+    registration: str = ""
+    doors: str
+    arrive: str
+    seated_by: str
+    programme_starts: str
+    source_ids: list[str]
+
+
+class Guide(Model):
+    """The published /guide day guide for one event, exported from the website."""
+
+    event_id: str
+    url: HttpUrl
+    title: str
+    description: str = ""
+    intro: str = ""
+    hero_lead: dict[Literal["before", "eve", "today", "after"], str] = Field(default_factory=dict)
+    facts: list[GuideFact] = Field(default_factory=list)
+    sections: list[GuideSection] = Field(min_length=1)
+    help: GuideHelp = Field(default_factory=GuideHelp)
+    venue: GuideVenue | None = None
     source_ids: list[str]
 
 
@@ -232,6 +303,7 @@ def canonical_city(value: str | None) -> str | None:
 
 
 HQ_SECTIONS = ("manifesto", "mindset", "reading")
+GUIDE_SECTION_PATTERN = r"^[a-z0-9][a-z0-9-]{0,63}$"
 ABOUT_SECTIONS = ("organiser", "chair", "connect")
 
 
@@ -250,6 +322,7 @@ class Catalogue(Model):
     themes: list[Theme] = Field(default_factory=list)
     hq: HQ | None = None
     about: About | None = None
+    guide: Guide | None = None
     sources: list[Source]
 
     @model_validator(mode="after")
@@ -272,7 +345,16 @@ class Catalogue(Model):
             {r.id for r in rows} for rows in [self.events, self.speakers, self.sources]
         )
         evidenced = [*self.events, *self.speakers, *self.sessions, *self.faqs]
-        for row in evidenced + [r for r in (self.hq, self.about) if r]:
+        extra = [r for r in (self.hq, self.about, self.guide) if r]
+        if self.about and self.about.truly_yours:
+            extra.append(self.about.truly_yours)
+        if self.guide and self.guide.venue:
+            extra.append(self.guide.venue)
+        if self.guide and self.guide.event_id not in events:
+            raise ValueError("Guide references an unknown event")
+        if self.guide and len({s.id for s in self.guide.sections}) != len(self.guide.sections):
+            raise ValueError("Duplicate guide section IDs")
+        for row in evidenced + extra:
             if not row.source_ids or not set(row.source_ids) <= sources:
                 raise ValueError(f"Missing evidence for {getattr(row, 'id', type(row).__name__)}")
         for row in self.faqs:
@@ -324,6 +406,7 @@ class Request(Model):
         "themes",
         "about",
         "hq",
+        "guide",
         "now",
         "next",
         "live",
@@ -349,9 +432,7 @@ class Request(Model):
     upcoming: bool = False
     past: bool = False
     format: Literal["json", "ics", "text", "svg", "html"] = "json"
-    section: Literal["manifesto", "mindset", "reading", "organiser", "chair", "connect"] | None = (
-        None
-    )
+    section: str | None = Field(default=None, max_length=64)
     at: datetime | None = None
     seed: int | None = Field(default=None, ge=0, le=2**53)
     size: Literal[4, 5] = 5
@@ -385,10 +466,11 @@ class Request(Model):
         if self.section and not (
             (self.operation == "hq" and self.section in HQ_SECTIONS)
             or (self.operation == "about" and self.section in ABOUT_SECTIONS)
+            or (self.operation == "guide" and re.match(GUIDE_SECTION_PATTERN, self.section))
         ):
             raise ValueError(
-                "section applies to hq (manifesto, mindset, reading) "
-                "or about (organiser, chair, connect)"
+                "section applies to hq (manifesto, mindset, reading), "
+                "about (organiser, chair, connect) or guide (a guide section id, or list)"
             )
         if self.at and self.operation not in {"now", "next", "live"}:
             raise ValueError("at only applies to now, next or live")

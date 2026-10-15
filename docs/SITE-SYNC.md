@@ -4,7 +4,7 @@ Every displayed AgentEng command must be accepted by the CLI. The hero Orchestra
 
 Run `python scripts/check-website-commands.py WEBSITE_REPO` against a website checkout with Node dependencies installed. It reads public TypeScript literals using the AST, validates them against the actual CLI, and executes public lookup/setup commands. Server loops and coding sessions are parsed without launching them. Dynamic speaker-profile command rendering is covered by the speaker fixture and website tests.
 
-The fixture contains 82 command locations. Tool CI executes each row and requires success. Update it when website commands change.
+The fixture contains 83 command locations. Tool CI executes each row and requires success. Update it when website commands change.
 
 | Command | Website source (`src/`) |
 | --- | --- |
@@ -90,6 +90,9 @@ The fixture contains 82 command locations. Tool CI executes each row and require
 | `agenteng speaker frederic-barthelet` | `data/speaker-stack.ts` |
 | `agenteng speaker stas-bichenko` | `data/speaker-stack.ts` |
 | `agenteng speaker jocelyn-darcy` | `data/speaker-stack.ts` |
+| `agenteng guide --london` | `pages/Guide.tsx` |
+
+`agenteng guide --london` is shown as text on the /guide page header, so it is listed by hand: the literal scanner only reads string literals. `components/TicketsSection.tsx` still contains `agenteng tickets --london`, but the homepage no longer renders that section; the command keeps working and now reports the site's fully booked wording. The exporter fails if the homepage renders `TicketsSection` again, so the registration status is reviewed before the next export.
 
 Personal agenda, bookmark, proposal and inbox commands are unsupported. Agenda topic filtering reads published programme text and creates no personal state.
 

@@ -31,13 +31,14 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
         "Agent Engineering HQ",
         instructions=(
             "Use the single agenteng tool for public events, agendas, speakers, talks, FAQ, venue, "
-            "sponsors, code of conduct, themes, tickets, recordings, search, now/next, "
+            "sponsors, code of conduct, themes, registration status (tickets), recordings, search, now/next, "
             "public agendas and participation policy. Start with operation=events to discover event_id. "
             "Use disciplines to find the twelve tool-directory filters, tools to browse/search with "
             "discipline, kind, category, query, limit and offset, and tool with tool_id for links. "
             "Continue pagination with next_offset and unchanged filters. Listings are not popularity rankings. "
             "AgentEng is the Agent Engineering Conference, organized by Agent Engineering HQ in London and San Francisco. "
-            "Use about for the organiser, chair and connection details, hq for the manifesto, "
+            "Use guide for the published London day guide (section arriving, getting-here, registration, qna, help, or list), "
+            "about for the organiser, chair and connection details, hq for the manifesto, "
             "mindset and further reading, live for a now/next venue-screen snapshot (at overrides the clock), "
             "and bingo for a reproducible talk bingo card in data (seed, size 4 or 5; format text, svg or html adds a printable copy in artifact). "
             "Use discover for featured public events and interfaces. No attendee records or submissions are accepted. "

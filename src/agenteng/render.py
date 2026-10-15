@@ -108,8 +108,14 @@ def _event_card(event: dict) -> Panel:
     if state:
         body.append("Status: ", style="ae.meta")
         body.append(state + "\n", style=_state_style(state))
+    if event.get("tagline"):
+        body.append(display_text(event["tagline"]) + "\n", style="ae.title")
     offer = _cheapest_offer(event.get("offers"))
-    if offer:
+    if event.get("registration_status") == "fully_booked":
+        body.append("Fully booked  ·  ", style="ae.meta")
+        body.append("agenteng guide", style="ae.accent")
+        body.append(" for the day guide\n", style="ae.meta")
+    elif offer:
         body.append("From ", style="ae.meta")
         body.append(
             _fmt_money(offer["amount"], offer.get("currency") or "GBP"),
@@ -118,7 +124,7 @@ def _event_card(event: dict) -> Panel:
         body.append(f" ({offer.get('name')})\n", style="ae.meta")
     elif event.get("offers"):
         body.append("Tickets: sold out in this snapshot\n", style="ae.sold")
-    if event.get("registration_url"):
+    if event.get("registration_url") and event.get("registration_status") != "fully_booked":
         body.append("Register: ", style="ae.meta")
         body.append(str(event["registration_url"]) + "\n", style=BLUE)
     if event.get("recording_url"):
@@ -317,6 +323,38 @@ def render_faq(console: Console, result: Result) -> None:
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
+def _times_table(data: dict) -> Table:
+    table = _kv_table()
+    for key, label in (
+        ("doors", "Doors"),
+        ("arrive", "Arrive"),
+        ("seated_by", "Be seated by"),
+        ("programme_starts", "Programme starts"),
+    ):
+        if data.get(key):
+            table.add_row(label, display_text(data[key]))
+    return table
+
+
+def _help_body(help_data: dict) -> Text:
+    body = Text()
+    people = help_data.get("on_site") or []
+    if people:
+        body.append("On site: ", style="ae.accent")
+        body.append(
+            ", ".join(
+                display_text(p["name"]) + (f" ({p['role']})" if p.get("role") else "")
+                for p in people
+            )
+            + "\n"
+        )
+    for link in help_data.get("online") or []:
+        body.append(display_text(link["label"]) + ": ", style="ae.meta")
+        body.append(str(link["url"]) + "\n", style=BLUE)
+    body.rstrip()
+    return body
+
+
 def render_venue(console: Console, result: Result) -> None:
     data = result.data if isinstance(result.data, dict) else {}
     body = Text()
@@ -326,12 +364,28 @@ def render_venue(console: Console, result: Result) -> None:
         body.append(
             f"{data['city']}  ·  track: {data.get('track') or 'single'}\n", style="ae.accent"
         )
+    if data.get("best_way_in"):
+        body.append("\nBest way in: ", style="ae.accent")
+        body.append(display_text(data["best_way_in"]) + "\n")
+    if data.get("getting_there"):
+        body.append(display_text(data["getting_there"]) + "\n")
+    if data.get("walk_video_url"):
+        body.append("Walk video: ", style="ae.meta")
+        body.append(str(data["walk_video_url"]) + "\n", style=BLUE)
+    if data.get("registration"):
+        body.append(display_text(data["registration"]) + "\n")
     if data.get("venue_tour_url"):
         body.append("Tour: ", style="ae.meta")
         body.append(str(data["venue_tour_url"]) + "\n", style=BLUE)
     if data.get("accessibility"):
         body.append("\n" + display_text(data["accessibility"]))
     console.print(_panel("Venue", body, border=BLUE))
+    if data.get("doors"):
+        console.print(_panel("Times", _times_table(data), border=VIOLET))
+    if data.get("help"):
+        console.print(_panel("Need help on the day", _help_body(data["help"]), border=MAGENTA))
+    if data.get("day_guide_url"):
+        console.print(f"[ae.meta]Day guide:[/] {data['day_guide_url']}  ·  agenteng guide")
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
@@ -437,6 +491,21 @@ def render_agenda(console: Console, result: Result, *, title: str = "Agenda") ->
 
 def render_tickets(console: Console, result: Result) -> None:
     data = result.data if isinstance(result.data, dict) else {}
+    if data.get("registration_status") == "fully_booked":
+        body = Text()
+        body.append(f"Event: {data.get('event_id') or ''}\n", style="ae.meta")
+        body.append("Registration: ", style="ae.meta")
+        body.append("fully booked\n", style="ae.accent")
+        if data.get("registration_note"):
+            body.append(display_text(data["registration_note"]) + "\n")
+        if data.get("day_guide_url"):
+            body.append("Day guide: ", style="ae.meta")
+            body.append(str(data["day_guide_url"]) + "\n", style=BLUE)
+            body.append("Run ", style="ae.meta")
+            body.append("agenteng guide", style="ae.accent")
+            body.append(" for arriving, directions and help on the day.", style="ae.meta")
+        console.print(_panel("Registration", body, border=VIOLET))
+        return
     offers = data.get("current_offers") or []
     published = data.get("published_offers") or []
     body = Text()
@@ -769,6 +838,7 @@ def render_result(result: Result, operation: str, console: Console | None = None
         "themes": render_themes,
         "about": render_about,
         "hq": render_hq,
+        "guide": render_guide,
         "bingo": render_bingo,
         "live": lambda c, r: c.print(live_board(r), height=min(c.size.height, 40)),
         "now": lambda c, r: render_live(c, r, title="Now"),
@@ -799,9 +869,70 @@ def _kv_table() -> Table:
     return table
 
 
+def render_guide(console: Console, result: Result) -> None:
+    data = result.data if isinstance(result.data, dict) else {}
+    section = data.get("section")
+    full = not section and data.get("facts") is not None and data.get("intro") is not None
+    if full or section == "facts":
+        head = Text()
+        if data.get("lead"):
+            head.append(display_text(data["lead"]) + "\n", style="ae.title")
+        table = _kv_table()
+        for row in data.get("facts") or []:
+            table.add_row(display_text(row["label"]), display_text(row["value"]))
+        group = [head, table] if data.get("lead") else [table]
+        if full and data.get("intro"):
+            group.append(Text("\n" + display_text(data["intro"]), style="italic"))
+        console.print(_panel("Day guide: quick facts", Group(*group), border=MAGENTA))
+    sections = data.get("sections") or []
+    if not section and not full:
+        table = _kv_table()
+        for row in sections:
+            table.add_row(row["id"], display_text(row["title"]))
+        console.print(_panel("Day guide sections", table, border=VIOLET))
+        console.print("[ae.meta]Read one with[/] agenteng guide SECTION")
+        return
+    for row in sections:
+        if "paragraphs" not in row:
+            continue
+        body = Text()
+        for i, paragraph in enumerate(row["paragraphs"]):
+            body.append(("\n\n" if i else "") + display_text(paragraph))
+        for i, link in enumerate(row.get("links") or []):
+            body.append(
+                ("\n\n" if not i else "\n") + display_text(link["label"]) + ": ", style="ae.meta"
+            )
+            body.append(str(link["url"]), style=BLUE)
+        if row["id"] == "help" and data.get("help", {}).get("on_site"):
+            people = data["help"]["on_site"]
+            body.append("\nOn site: ", style="ae.accent")
+            body.append(
+                ", ".join(
+                    display_text(p["name"]) + (f" ({p['role']})" if p.get("role") else "")
+                    for p in people
+                )
+            )
+        console.print(_panel(row["title"], body, border=BLUE if row["id"] != "help" else MAGENTA))
+    venue = data.get("venue")
+    if section == "getting-here" and venue:
+        body = Text()
+        body.append(display_text(venue.get("address") or "") + "\n")
+        body.append("Best way in: ", style="ae.accent")
+        body.append(display_text(venue.get("best_way_in") or ""))
+        console.print(_panel("Venue", body, border=VIOLET))
+    if full:
+        console.print(f"[ae.meta]{data.get('url')}  ·  agenteng guide --list[/]")
+
+
 def render_about(console: Console, result: Result) -> None:
     data = result.data if isinstance(result.data, dict) else {}
     section = data.get("section")
+    truly = data.get("truly_yours")
+    if not section and truly:
+        body = Text()
+        body.append(display_text(truly["tagline"]) + "\n\n", style="ae.title")
+        body.append(display_text(truly["text"]))
+        console.print(_panel(truly["title"], body, border=MAGENTA))
     if not section:
         intro = Text()
         if data.get("summary"):
@@ -845,6 +976,7 @@ def render_about(console: Console, result: Result) -> None:
             "london": "London",
             "san_francisco": "San Francisco",
             "code_of_conduct": "Code of conduct",
+            "day_guide": "Day guide",
         }
         for key, url in links.items():
             table.add_row(labels.get(key, key), url)

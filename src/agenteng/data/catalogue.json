@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-be9f1718f197",
-  "published_at": "2026-10-11T20:07:29.539Z",
-  "source_commit": "fe2724119fccbb8cc13c19ec94bc0bd39631d684",
-  "source_hash": "be9f1718f1976a2813660d3c228eb0cc495c0a565a16bf8404d143cbb0d4f9c7",
+  "version": "website-a5ca1e832630",
+  "published_at": "2026-10-15T12:25:39.557Z",
+  "source_commit": "9a899d842e4445e83f81c246f2abacfd2f602a52",
+  "source_hash": "a5ca1e83263033a8b276abd0ce0f69f6dcb61ce836faffe7f6c4e94bd2a83a9e",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -48,8 +48,13 @@
         "agenteng-london-2026",
         "london-ticket-terms",
         "london-calendar",
-        "london-participation-policy"
-      ]
+        "london-participation-policy",
+        "guide",
+        "truly-yours"
+      ],
+      "tagline": "There are many Agent conferences. This one is truly yours.",
+      "registration_status": "fully_booked",
+      "registration_note": "We are fully booked and it will be busy, but there will be seats for everyone."
     },
     {
       "id": "london-harness-engineering-with-amazon",
@@ -1192,7 +1197,7 @@
     {
       "id": "faq-9",
       "question": "How does Q&A work during talks?",
-      "answer": "Five minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
+      "answer": "Five minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person, per talk. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-9"
@@ -1471,6 +1476,250 @@
     "contact_email": "events@agentengineering.world",
     "source_ids": [
       "about"
+    ],
+    "truly_yours": {
+      "tagline": "There are many Agent conferences. This one is truly yours.",
+      "title": "Why this one is truly yours",
+      "text": "Most agent conferences answer to sponsors. Their programme is shaped by booths, paid talk slots and vendor pressure, with hundreds of people deciding what gets on stage. We don't have any of that. One organiser curated every talk for one reason only: what engineers building agents actually need to hear. Your ticket paid for the day, so the day belongs to you.",
+      "source_ids": [
+        "truly-yours"
+      ]
+    }
+  },
+  "guide": {
+    "event_id": "agenteng-london-2026",
+    "url": "https://agentengineering.world/guide",
+    "title": "Day guide | Agent Engineering London 2026",
+    "description": "Everything you need for Agent Engineering London on Friday 16 October 2026 at Everyman Canary Wharf. Doors 08:00, programme starts 9:00 sharp.",
+    "intro": "There are many Agent conferences. This one is truly yours. No sponsor shaped the programme, every talk was curated for the people in the room.",
+    "hero_lead": {
+      "today": "See you today at Everyman, Canary Wharf. Doors 08:00, talks start 9:00 sharp.",
+      "after": "Thanks for coming to Agent Engineering London.",
+      "eve": "See you tomorrow at Everyman, Canary Wharf. Doors 08:00, talks start 9:00 sharp.",
+      "before": "See you on 16 October at Everyman, Canary Wharf."
+    },
+    "facts": [
+      {
+        "label": "Venue",
+        "value": "Everyman Canary Wharf, Crossrail Place, London E14 5AR"
+      },
+      {
+        "label": "Date",
+        "value": "Fri 16 October 2026"
+      },
+      {
+        "label": "Doors",
+        "value": "08:00"
+      },
+      {
+        "label": "Arrive",
+        "value": "8:30 to 8:45"
+      },
+      {
+        "label": "Be seated by",
+        "value": "8:50"
+      },
+      {
+        "label": "Programme starts",
+        "value": "9:00 sharp"
+      }
+    ],
+    "sections": [
+      {
+        "id": "arriving",
+        "title": "Arriving",
+        "paragraphs": [
+          "Doors and registration open at 08:00. Please aim to arrive between 8:30 and 8:45 AM so you have enough time to find the venue, check in, grab some tea or coffee, meet a few people and get seated.",
+          "The programme starts at 9:00 AM sharp. Our agenda is very tight, so we cannot delay the start. Please don't plan to arrive at 9:00 itself.",
+          "There will be tea, coffee and freshly baked pastries before the programme starts."
+        ],
+        "links": []
+      },
+      {
+        "id": "getting-here",
+        "title": "Getting here",
+        "paragraphs": [
+          "Finding Everyman can be a little tricky if you haven't been there before. If you can get to Canary Wharf Elizabeth line station, you are 80% there.",
+          "If you are coming by Jubilee, DLR or car, head to the Elizabeth line station first and follow the video from there. Please watch it before you travel and allow a little extra time for the walk."
+        ],
+        "links": [
+          {
+            "label": "Walk from Canary Wharf Elizabeth line station to Everyman",
+            "url": "https://www.youtube.com/watch?v=GPmvi7qjiwA"
+          }
+        ]
+      },
+      {
+        "id": "registration",
+        "title": "Registration and badges",
+        "paragraphs": [
+          "Registration is on the left-hand side when you arrive at Everyman. You will get your badge and lanyard there. Please wear your badge throughout the day.",
+          "Arriving later? Don't worry. James, Gloria (our Associates), Shashi, or a member of the Everyman team will guide you to the right screen."
+        ],
+        "links": []
+      },
+      {
+        "id": "social-area",
+        "title": "Social area",
+        "paragraphs": [
+          "The bar is the social area throughout the day, for networking."
+        ],
+        "links": []
+      },
+      {
+        "id": "speaker-area",
+        "title": "Speaker area",
+        "paragraphs": [
+          "There is a dedicated speaker area close to registration, for speakers to prepare, meet and take a break. Please respect speakers' privacy when they are busy."
+        ],
+        "links": []
+      },
+      {
+        "id": "lunch",
+        "title": "Lunch and drinks",
+        "paragraphs": [
+          "Lunch is Everyman's special pizzas, with different pizza options and drinks, and plenty to go around. We have kept it simple to keep the organiser's cognitive load (and dietary requirements) under control.",
+          "Tea and coffee are available throughout the day.",
+          "If you have a serious allergy or a specific dietary requirement, let us know and we will do our best to help."
+        ],
+        "links": []
+      },
+      {
+        "id": "qna",
+        "title": "Questions and Q&A",
+        "paragraphs": [
+          "There is dedicated Q&A time in each session. One question per person, per talk, and please keep it focused and concise.",
+          "Long questions, personal work problems, or questions mainly there to promote yourself will be discouraged.",
+          "Come curious, come prepared, and don't be afraid to ask the difficult question."
+        ],
+        "links": []
+      },
+      {
+        "id": "photography",
+        "title": "Photography and content",
+        "paragraphs": [
+          "There will be official photography and some official video recording.",
+          "The conference is not a content creation spot for marketing. Please don't film or create content involving other attendees or speakers without their consent."
+        ],
+        "links": []
+      },
+      {
+        "id": "phones",
+        "title": "Phones, laptops and work",
+        "paragraphs": [
+          "Please keep your phone on silent during talks.",
+          "Laptops are absolutely fine, just be mindful of people around you. If you need to work for a while, feel free to step aside and do it when appropriate."
+        ],
+        "links": []
+      },
+      {
+        "id": "seating",
+        "title": "Seating",
+        "paragraphs": [
+          "We are fully booked and it will be busy, but there will be seats for everyone. Please take your seat a few minutes before each session so we can keep the programme on time."
+        ],
+        "links": []
+      },
+      {
+        "id": "help",
+        "title": "Need help on the day",
+        "paragraphs": [
+          "Find James, Gloria, Shashi or the Everyman staff. You can also message Shashi on X or LinkedIn, or tag AgentEngHQ on X or LinkedIn."
+        ],
+        "links": [
+          {
+            "label": "Shashi on X",
+            "url": "https://x.com/Shashikant86"
+          },
+          {
+            "label": "Shashi on LinkedIn",
+            "url": "https://www.linkedin.com/in/shashikantjagtap"
+          },
+          {
+            "label": "AgentEngHQ on X",
+            "url": "https://x.com/AgentEngHQ"
+          },
+          {
+            "label": "AgentEngHQ on LinkedIn",
+            "url": "https://www.linkedin.com/company/agent-engineering-hq/"
+          }
+        ]
+      },
+      {
+        "id": "after",
+        "title": "After-event social",
+        "paragraphs": [
+          "Details will be shared during the day. It will most likely be at the venue, and you buy your own drinks."
+        ],
+        "links": []
+      }
+    ],
+    "help": {
+      "on_site": [
+        {
+          "name": "James",
+          "role": "Associate"
+        },
+        {
+          "name": "Gloria",
+          "role": "Associate"
+        },
+        {
+          "name": "Shashi",
+          "role": null
+        },
+        {
+          "name": "Everyman staff",
+          "role": null
+        }
+      ],
+      "online": [
+        {
+          "label": "Shashi on X",
+          "url": "https://x.com/Shashikant86"
+        },
+        {
+          "label": "Shashi on LinkedIn",
+          "url": "https://www.linkedin.com/in/shashikantjagtap"
+        },
+        {
+          "label": "AgentEngHQ on X",
+          "url": "https://x.com/AgentEngHQ"
+        },
+        {
+          "label": "AgentEngHQ on LinkedIn",
+          "url": "https://www.linkedin.com/company/agent-engineering-hq/"
+        }
+      ]
+    },
+    "venue": {
+      "address": "Everyman Canary Wharf, Crossrail Place, London E14 5AR",
+      "best_way_in": "Canary Wharf Elizabeth line station. Coming another way, by Jubilee, DLR or car, head to the Elizabeth line station first and follow the video from there.",
+      "getting_there": "Crossrail Place sits right above Canary Wharf Elizabeth line station.",
+      "walk_video_url": "https://www.youtube.com/watch?v=GPmvi7qjiwA",
+      "registration": "Registration is on the left as you walk in.",
+      "doors": "08:00",
+      "arrive": "8:30 to 8:45",
+      "seated_by": "8:50",
+      "programme_starts": "9:00 sharp",
+      "source_ids": [
+        "london-venue-directions"
+      ]
+    },
+    "source_ids": [
+      "guide",
+      "guide-arriving",
+      "guide-getting-here",
+      "guide-registration",
+      "guide-social-area",
+      "guide-speaker-area",
+      "guide-lunch",
+      "guide-qna",
+      "guide-photography",
+      "guide-phones",
+      "guide-seating",
+      "guide-help",
+      "guide-after"
     ]
   },
   "sources": [
@@ -1883,7 +2132,7 @@
     {
       "id": "faq-9",
       "url": "https://agentengineering.world/#faq",
-      "text": "How does Q&A work during talks?\nFive minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
+      "text": "How does Q&A work during talks?\nFive minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person, per talk. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
@@ -2088,6 +2337,111 @@
       "url": "https://agentengineering.world/",
       "text": "Agent Engineering is the discipline of designing, building, evaluating, and operating AI agents. It covers prompt, context, harness, inference, memory, evaluation, and code.\nOrganised by Superagentic AI: Advancing the Agent Engineering discipline and practice\nShashi Jagtap, Conference Chair & Curator · Ex-Apple Engineer (6 years) · Organizer, London Agentic AI & Agent Engineering HQ. Building the bridge from Developer Experience to Agent Experience. Transatlantic connections between London and Silicon Valley, with programming shaped by a broader technical community.\nAssociates: James Hua, Gloria Gong",
       "event_id": null,
+      "kind": "about"
+    },
+    {
+      "id": "guide",
+      "url": "https://agentengineering.world/guide",
+      "text": "There are many Agent conferences. This one is truly yours. No sponsor shaped the programme, every talk was curated for the people in the room.\nVenue: Everyman Canary Wharf, Crossrail Place, London E14 5AR\nDate: Fri 16 October 2026\nDoors: 08:00\nArrive: 8:30 to 8:45\nProgramme starts: 9:00 sharp",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-arriving",
+      "url": "https://agentengineering.world/guide#arriving",
+      "text": "Arriving\nDoors and registration open at 08:00. Please aim to arrive between 8:30 and 8:45 AM so you have enough time to find the venue, check in, grab some tea or coffee, meet a few people and get seated.\nThe programme starts at 9:00 AM sharp. Our agenda is very tight, so we cannot delay the start. Please don't plan to arrive at 9:00 itself.\nThere will be tea, coffee and freshly baked pastries before the programme starts.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-getting-here",
+      "url": "https://agentengineering.world/guide#getting-here",
+      "text": "Getting here\nFinding Everyman can be a little tricky if you haven't been there before. If you can get to Canary Wharf Elizabeth line station, you are 80% there.\nIf you are coming by Jubilee, DLR or car, head to the Elizabeth line station first and follow the video from there. Please watch it before you travel and allow a little extra time for the walk.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-registration",
+      "url": "https://agentengineering.world/guide#registration",
+      "text": "Registration and badges\nRegistration is on the left-hand side when you arrive at Everyman. You will get your badge and lanyard there. Please wear your badge throughout the day.\nArriving later? Don't worry. James, Gloria (our Associates), Shashi, or a member of the Everyman team will guide you to the right screen.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-social-area",
+      "url": "https://agentengineering.world/guide#social-area",
+      "text": "Social area\nThe bar is the social area throughout the day, for networking.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-speaker-area",
+      "url": "https://agentengineering.world/guide#speaker-area",
+      "text": "Speaker area\nThere is a dedicated speaker area close to registration, for speakers to prepare, meet and take a break. Please respect speakers' privacy when they are busy.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-lunch",
+      "url": "https://agentengineering.world/guide#lunch",
+      "text": "Lunch and drinks\nLunch is Everyman's special pizzas, with different pizza options and drinks, and plenty to go around. We have kept it simple to keep the organiser's cognitive load (and dietary requirements) under control.\nTea and coffee are available throughout the day.\nIf you have a serious allergy or a specific dietary requirement, let us know and we will do our best to help.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-qna",
+      "url": "https://agentengineering.world/guide#qna",
+      "text": "Questions and Q&A\nThere is dedicated Q&A time in each session. One question per person, per talk, and please keep it focused and concise.\nLong questions, personal work problems, or questions mainly there to promote yourself will be discouraged.\nCome curious, come prepared, and don't be afraid to ask the difficult question.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-photography",
+      "url": "https://agentengineering.world/guide#photography",
+      "text": "Photography and content\nThere will be official photography and some official video recording.\nThe conference is not a content creation spot for marketing. Please don't film or create content involving other attendees or speakers without their consent.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-phones",
+      "url": "https://agentengineering.world/guide#phones",
+      "text": "Phones, laptops and work\nPlease keep your phone on silent during talks.\nLaptops are absolutely fine, just be mindful of people around you. If you need to work for a while, feel free to step aside and do it when appropriate.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-seating",
+      "url": "https://agentengineering.world/guide#seating",
+      "text": "Seating\nWe are fully booked and it will be busy, but there will be seats for everyone. Please take your seat a few minutes before each session so we can keep the programme on time.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-help",
+      "url": "https://agentengineering.world/guide#help",
+      "text": "Need help on the day\nFind James, Gloria, Shashi or the Everyman staff. You can also message Shashi on X or LinkedIn, or tag AgentEngHQ on X or LinkedIn.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "guide-after",
+      "url": "https://agentengineering.world/guide#after",
+      "text": "After-event social\nDetails will be shared during the day. It will most likely be at the venue, and you buy your own drinks.",
+      "event_id": "agenteng-london-2026",
+      "kind": "guide"
+    },
+    {
+      "id": "london-venue-directions",
+      "url": "https://agentengineering.world/#venue",
+      "text": "Best way in: Canary Wharf Elizabeth line station. Coming another way, by Jubilee, DLR or car, head to the Elizabeth line station first and follow the video from there.\nCrossrail Place sits right above Canary Wharf Elizabeth line station.\nRegistration is on the left as you walk in.\nWalk video: https://www.youtube.com/watch?v=GPmvi7qjiwA",
+      "event_id": "agenteng-london-2026",
+      "kind": "venue"
+    },
+    {
+      "id": "truly-yours",
+      "url": "https://agentengineering.world/#truly-yours",
+      "text": "There are many Agent conferences. This one is truly yours.\nWhy this one is truly yours\nMost agent conferences answer to sponsors. Their programme is shaped by booths, paid talk slots and vendor pressure, with hundreds of people deciding what gets on stage. We don't have any of that. One organiser curated every talk for one reason only: what engineers building agents actually need to hear. Your ticket paid for the day, so the day belongs to you.",
+      "event_id": "agenteng-london-2026",
       "kind": "about"
     }
   ]

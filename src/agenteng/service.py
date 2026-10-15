@@ -597,6 +597,14 @@ class Service:
                 "end": event.end.isoformat() if event.end else None,
             }
             source_ids = list(event.source_ids)
+            guide = self.catalogue.guide
+            if guide and guide.event_id == event.id and guide.venue:
+                directions = guide.venue.model_dump(mode="json")
+                source_ids.extend(directions.pop("source_ids"))
+                directions.pop("address", None)
+                data.update(directions)
+                data["day_guide_url"] = str(guide.url)
+                data["help"] = guide.help.model_dump(mode="json")
             if accessibility:
                 source_ids.extend(accessibility.source_ids)
             return self.result(
@@ -664,7 +672,7 @@ class Service:
                 source_ids,
                 status="ok" if rows else "not_found",
             )
-        if request.operation in {"about", "hq", "live", "bingo"}:
+        if request.operation in {"about", "hq", "guide", "live", "bingo"}:
             from . import screens
 
             return getattr(screens, request.operation)(self, request)
@@ -779,10 +787,34 @@ class Service:
                 and not o.sold_out
                 and self.state(event) not in {"past", "cancelled"}
             ]
+            if event.registration_status == "fully_booked":
+                guide = self.catalogue.guide
+                return self.result(
+                    f"{event.title}: {event.registration_note or 'Fully booked.'}"
+                    + (f" Day guide: {guide.url}" if guide and guide.event_id == event.id else ""),
+                    {
+                        "event_id": event.id,
+                        "registration_status": "fully_booked",
+                        "registration_note": event.registration_note,
+                        "current_offers": [],
+                        "published_offers": [],
+                        "state": self.state(event),
+                        "day_guide_url": str(guide.url)
+                        if guide and guide.event_id == event.id
+                        else None,
+                        "live_availability_verified": False,
+                    },
+                    [
+                        i
+                        for i in [*event.source_ids, "guide-seating"]
+                        if i in self.sources and self.sources[i].kind != "tickets"
+                    ],
+                )
             return self.result(
                 "Published price window only. Availability and approval must be confirmed on the registration page.",
                 {
                     "event_id": event.id,
+                    "registration_status": event.registration_status or "open",
                     "current_offers": current,
                     "published_offers": [o.model_dump(mode="json") for o in event.offers],
                     "registration_url": str(event.registration_url)
@@ -819,7 +851,7 @@ class Service:
         answer = (
             "Published source excerpts matched your query."
             if rows
-            else "No published sources matched. Try events, agenda, tickets or a more specific query."
+            else "No published sources matched. Try events, agenda, guide or a more specific query."
         )
         return self.result(
             answer,

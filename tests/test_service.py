@@ -28,6 +28,15 @@ def test_unknown_references_rejected():
         Catalogue.model_validate(data)
 
 
+def open_registration_catalogue() -> Catalogue:
+    """The London snapshot as if registration were still open, to test price windows."""
+    data = load_catalogue().model_dump(mode="json")
+    london = next(e for e in data["events"] if e["id"] == LONDON)
+    london["registration_status"] = None
+    london["registration_note"] = None
+    return Catalogue.model_validate(data)
+
+
 @pytest.mark.parametrize(
     "now,amount",
     [
@@ -39,7 +48,7 @@ def test_unknown_references_rejected():
     ],
 )
 def test_ticket_boundaries(now, amount):
-    s = Service(clock=lambda: datetime.fromisoformat(now))
+    s = Service(catalogue=open_registration_catalogue(), clock=lambda: datetime.fromisoformat(now))
     result = s.lookup(Request(operation="tickets", event_id=LONDON))
     offers = result.data["current_offers"]
     assert (offers[0]["amount"] if offers else None) == amount
@@ -122,8 +131,23 @@ async def test_request_cannot_enable_or_authorize_a_model():
     assert result.status == "unavailable" and "credential" in result.answer
 
 
+def test_fully_booked_tickets_are_neutral(service):
+    result = service.lookup(Request(operation="tickets", event_id=LONDON))
+    assert result.status == "ok"
+    assert result.data["registration_status"] == "fully_booked"
+    assert result.data["current_offers"] == [] and result.data["published_offers"] == []
+    assert "registration_url" not in result.data
+    assert "fully booked" in result.answer and "/guide" in result.answer
+    assert {s.kind for s in result.sources}.isdisjoint({"tickets"})
+    assert "guide-seating" in {s.id for s in result.sources}
+
+
 def test_model_free_question_routing(service):
     price = service.lookup(Request(operation="ask", query="What are London ticket prices?"))
+    assert price.data["registration_status"] == "fully_booked"
+    assert price.data["current_offers"] == []
+    open_service = Service(catalogue=open_registration_catalogue(), clock=service.clock)
+    price = open_service.lookup(Request(operation="ask", query="What are London ticket prices?"))
     assert price.data["current_offers"][0]["amount"] == 149
     agenda = service.lookup(Request(operation="ask", query="London agenda"))
     assert len(agenda.data) == 17

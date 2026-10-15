@@ -95,7 +95,8 @@ async def test_real_mcp_streamable_http(service):
         )
         assert not called.isError
         result = called.structuredContent
-        assert result["data"]["current_offers"][0]["amount"] == 149
+        assert result["data"]["registration_status"] == "fully_booked"
+        assert result["data"]["current_offers"] == []
         assert result["sources"]
         participation = await session.call_tool(
             "agenteng", {"request": {"operation": "participate"}}

@@ -95,27 +95,30 @@ def _show(ctx, payload: dict) -> None:
 def _event_submenu(ctx, event: dict) -> None:
     event_id = event.get("id") or ""
     header = event_label(event)
+    booked = event.get("registration_status") == "fully_booked"
+    has_guide = event.get("city") == "London" and event.get("state") in {"upcoming", "ongoing"}
     while True:
-        action = _select(
-            header,
-            [
-                Choice("Overview", "overview"),
-                Choice("Speakers", "speakers"),
-                Choice("Talks and abstracts", "talks"),
-                Choice("Agenda", "agenda"),
-                Choice("What's on now / next", "live"),
-                Choice("Venue", "venue"),
-                Choice("FAQ", "faq"),
-                Choice("Tickets", "tickets"),
-                Choice("Recordings", "recordings"),
-                Choice("Open registration link", "register"),
-                Choice("Back", "back"),
-            ],
-        )
+        choices = [
+            Choice("Overview", "overview"),
+            *([Choice("Day guide", "guide")] if has_guide else []),
+            Choice("Speakers", "speakers"),
+            Choice("Talks and abstracts", "talks"),
+            Choice("Agenda", "agenda"),
+            Choice("What's on now / next", "live"),
+            Choice("Venue and directions", "venue"),
+            Choice("FAQ", "faq"),
+            Choice("Registration status" if booked else "Tickets", "tickets"),
+            Choice("Recordings", "recordings"),
+            *([] if booked else [Choice("Open registration link", "register")]),
+            Choice("Back", "back"),
+        ]
+        action = _select(header, choices)
         if action in {None, "back"}:
             return
         if action == "overview":
             _show(ctx, dict(operation="event", event_id=event_id))
+        elif action == "guide":
+            _show(ctx, dict(operation="guide", event_id=event_id))
         elif action == "speakers":
             _show(ctx, dict(operation="speakers", event_id=event_id))
         elif action == "talks":
@@ -281,6 +284,7 @@ def run_menu(ctx) -> None:
                 "What would you like to do?",
                 [
                     Choice("Browse events", "events"),
+                    Choice("Day guide: London, Fri 16 Oct 2026", "guide"),
                     Choice("Search the catalogue", "search"),
                     Choice("FAQ / code of conduct", "faq"),
                     Choice("Sponsors and support", "sponsors"),
@@ -329,7 +333,7 @@ def run_menu(ctx) -> None:
                 ctx.invoke(live_cmd)
             elif action == "bingo":
                 _bingo(ctx)
-            elif action in {"about", "hq"}:
+            elif action in {"about", "hq", "guide"}:
                 _show(ctx, dict(operation=action))
             elif action == "tools":
                 _browse_tools(ctx)

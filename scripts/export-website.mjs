@@ -324,10 +324,153 @@ const about = {definition, organiser:{name:organiserName, url:organiserUrl, blur
   chair:{name:chairName, title:chairTitle, bio:chairBio, links:chairLinks.map(l => ({label:l.label, url:l.url}))},
   associates:associateMatches,
   contact_email:constant('ORGANISER_EMAIL'), source_ids:[aboutSource]};
+// Event-day guide (/guide), hero tagline, the "truly yours" block and venue
+// directions. JSX prose only; links come from literal href/label pairs.
+const clean = text => text.replace(/\s*\u2014\s*/g, ', ').replace(/\u2013/g, '-')
+  .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').replace(/\s+([.,;:])/g, '$1').trim();
+const guideFile = 'src/pages/Guide.tsx';
+read(guideFile);
+read('src/lib/event-day.ts');
+read('src/components/HeroSection.tsx');
+read('src/components/WhyDifferentSection.tsx');
+read('src/components/VenueSection.tsx');
+read('src/components/VenueWalkVideo.tsx');
+read('src/pages/Agenda.tsx');
+const indexText = read('src/pages/Index.tsx');
+function declaration(file, name) {
+  let found = null;
+  walk(trees.get(file), n => {
+    if (ts.isVariableDeclaration(n) && ts.isIdentifier(n.name) && n.name.text === name) found = n.initializer;
+  });
+  if (!found) throw new Error(`Missing ${name} in ${file}`);
+  return found;
+}
+// Text of a JSX node; ext(href, label) calls contribute their label and a link.
+function richText(n, links) {
+  if (ts.isJsxText(n)) return n.text;
+  if (ts.isJsxExpression(n)) {
+    const e = n.expression;
+    if (!e) return '';
+    if (ts.isStringLiteral(e) || ts.isNoSubstitutionTemplateLiteral(e)) return e.text;
+    if (ts.isCallExpression(e) && ts.isIdentifier(e.expression) && e.expression.text === 'ext') {
+      const [href, label] = e.arguments.map(evaluate);
+      links.push({label, url: href, at: null});
+      return '\u0000' + (links.length - 1) + '\u0000' + label;
+    }
+    return '';
+  }
+  if (ts.isJsxElement(n) || ts.isJsxFragment(n)) return n.children.map(c => richText(c, links)).join('');
+  return '';
+}
+const guideSections = declaration(guideFile, 'sections').elements.map(element => {
+  const prop = key => element.properties.find(p => ts.isPropertyAssignment(p) && p.name.text === key);
+  const id = evaluate(prop('id').initializer);
+  const title = evaluate(prop('title').initializer);
+  const paragraphs = [];
+  const links = [];
+  walk(prop('body').initializer, n => {
+    if (tagName(n) !== 'p') return;
+    const raw = richText(n, links);
+    // Attribute each link to the last "<Name> on" before it ("Shashi on X or LinkedIn").
+    let owner = null;
+    raw.split(/\u0000(\d+)\u0000/).forEach((part, i, parts) => {
+      if (i % 2) { links[Number(part)].owner = owner; return; }
+      const hits = [...part.replace(/[\u0000\d]/g, '').matchAll(/([A-Z][\w.]+) on\s*$|([A-Z][\w.]+) on\b/g)];
+      if (hits.length) { const h = hits[hits.length - 1]; owner = h[1] || h[2]; }
+    });
+    paragraphs.push(clean(raw.replace(/\u0000\d+\u0000/g, '')));
+  });
+  if (!id || !title || !paragraphs.length) throw new Error('Guide section drift: ' + id);
+  return {id, title: clean(title), paragraphs,
+    links: links.map(l => ({label: l.owner ? `${l.owner} on ${l.label}` : l.label, url: l.url}))};
+});
+const expectedGuide = ['arriving','getting-here','registration','social-area','speaker-area','lunch',
+  'qna','photography','phones','seating','help','after'];
+if (guideSections.map(s => s.id).join() !== expectedGuide.join()) {
+  throw new Error('Guide sections changed: ' + guideSections.map(s => s.id).join());
+}
+const guideFacts = evaluate(declaration(guideFile, 'facts')).map(f => ({label: clean(f.label), value: clean(f.value)}));
+const fact = label => only(guideFacts, f => f.label === label, 'guide fact '+label).value;
+const guideVenue = fact('Venue');
+if (guideVenue !== events[0].venue) throw new Error('Guide venue drift: ' + guideVenue);
+const walkUrl = evaluate(declaration('src/components/VenueWalkVideo.tsx', 'WATCH_URL'));
+if (!/^https:\/\/www\.youtube\.com\/watch\?v=[\w-]+$/.test(walkUrl)) throw new Error('Walk video drift');
+const walkText = fs.readFileSync(path.join(root, 'src/components/VenueWalkVideo.tsx'), 'utf8');
+const walkLabel = (walkText.match(/aria-label="Play video: ([^"]+)"/) || [])[1];
+if (!walkLabel) throw new Error('Walk video label drift');
+guideSections.find(s => s.id === 'getting-here').links.push({label: clean(walkLabel.replace(/^./, c => c.toUpperCase())), url: walkUrl});
+const agendaLine = only(jsxTexts('src/pages/Agenda.tsx', 'p'), t => /please be seated by/.test(t), 'agenda seated line');
+const seatedBy = (agendaLine.match(/please be seated by (\d{1,2}:\d{2})/) || [])[1];
+if (!seatedBy) throw new Error('Seated-by drift');
+const section = id => only(guideSections, s => s.id === id, 'guide section '+id);
+const firstSentence = text => clean(text).match(/^.*?\.(?=\s|$)/)[0];
+const venueParas = jsxTexts('src/components/VenueSection.tsx', 'p').map(clean);
+const bestWay = only(venueParas, t => t.startsWith('Best way in:'), 'best way in').replace(/^Best way in:\s*/, '');
+const venueRegistration = firstSentence(only(venueParas, t => t.startsWith('Registration is on the left'), 'venue registration'));
+const venueGetting = only(pickFields('venueDetails', ['title', 'detail']), d => d.title === 'Getting There', 'getting there').detail;
+const helpSection = section('help');
+const onSiteSentence = firstSentence(helpSection.paragraphs[0]);
+const onSite = (onSiteSentence.match(/^Find (.+)\.$/) || [])[1];
+if (!onSite) throw new Error('Help drift');
+const associatesOnSite = (section('registration').paragraphs.join(' ').match(/([A-Z]\w+(?:, [A-Z]\w+)*) \(our Associates\)/) || [])[1];
+if (!associatesOnSite) throw new Error('Associates on site drift');
+const helpContacts = {
+  on_site: onSite.split(/, | or /).map(name => name.replace(/^the /, '')).map(name => ({
+    name: name.replace(/^./, c => c.toUpperCase()),
+    role: associatesOnSite.split(', ').includes(name) ? 'Associate' : null})),
+  online: helpSection.links,
+};
+for (const want of ['https://x.com/Shashikant86', 'https://www.linkedin.com/in/shashikantjagtap',
+  'https://x.com/AgentEngHQ', 'https://www.linkedin.com/company/agent-engineering-hq/']) {
+  if (!helpContacts.online.some(l => l.url === want)) throw new Error('Help contact drift: ' + want);
+}
+// heroLead(phase): phase === "today" ? A : phase === "after" ? B : ... : default.
+const heroLead = {};
+let cond = declaration('src/lib/event-day.ts', 'heroLead').body;
+while (ts.isConditionalExpression(cond)) {
+  heroLead[cond.condition.right.text] = clean(cond.whenTrue.text);
+  cond = cond.whenFalse;
+}
+heroLead.before = clean(cond.text);
+if (Object.keys(heroLead).sort().join() !== 'after,before,eve,today') throw new Error('heroLead drift');
+const tagline = clean(only(jsxTexts('src/components/HeroSection.tsx', 'span'),
+  t => t.startsWith('There are many Agent conferences'), 'hero tagline'));
+if (tagline !== 'There are many Agent conferences. This one is truly yours.') throw new Error('Tagline drift: ' + tagline);
+const guideIntro = clean(only(jsxTexts(guideFile, 'p'), t => t.startsWith(tagline), 'guide intro'));
+const trulyTitle = clean(only(jsxTexts('src/components/WhyDifferentSection.tsx', 'h3'),
+  t => t.startsWith('Why this one is'), 'truly yours title'));
+const trulyText = clean(only(jsxTexts('src/components/WhyDifferentSection.tsx', 'p'),
+  t => t.startsWith('Most agent conferences'), 'truly yours text'));
+const seating = section('seating').paragraphs[0];
+const fullyBooked = firstSentence(seating);
+if (!/fully booked/.test(fullyBooked)) throw new Error('Registration status drift: ' + fullyBooked);
+if (/<TicketsSection\b/.test(indexText)) throw new Error('Homepage promotes tickets again; review registration status');
+const guideUrl = site + '/guide';
+const guideSourceIds = [
+  source('guide', guideUrl, [guideIntro, ...guideFacts.map(f => `${f.label}: ${f.value}`)].join('\n'), london, 'guide'),
+  ...guideSections.map(s => source('guide-' + s.id, guideUrl + '#' + s.id,
+    s.title + '\n' + s.paragraphs.join('\n'), london, 'guide')),
+];
+const venueSource = source('london-venue-directions', site + '/#venue',
+  [`Best way in: ${bestWay}`, venueGetting, venueRegistration, `Walk video: ${walkUrl}`].join('\n'), london, 'venue');
+const taglineSource = source('truly-yours', site + '/#truly-yours',
+  [tagline, trulyTitle, trulyText].join('\n'), london, 'about');
+const guide = {event_id: london, url: guideUrl, title: clean(evaluate(declaration(guideFile, 'TITLE'))),
+  description: clean(evaluate(declaration(guideFile, 'DESCRIPTION'))), intro: guideIntro,
+  hero_lead: heroLead, facts: [...guideFacts.slice(0, 4), {label: 'Be seated by', value: seatedBy}, ...guideFacts.slice(4)],
+  sections: guideSections, help: helpContacts,
+  venue: {address: guideVenue, best_way_in: bestWay, getting_there: venueGetting,
+    walk_video_url: walkUrl, registration: venueRegistration,
+    doors: fact('Doors'), arrive: fact('Arrive'), seated_by: seatedBy, programme_starts: fact('Programme starts'),
+    source_ids: [venueSource]},
+  source_ids: guideSourceIds};
+Object.assign(events[0], {tagline, registration_status: 'fully_booked', registration_note: fullyBooked});
+events[0].source_ids.push(guideSourceIds[0] , taglineSource);
+const truly_yours = {tagline, title: trulyTitle, text: trulyText, source_ids: [taglineSource]};
 const source_hash=hash.digest('hex');
 const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),published_at:new Date().toISOString(),
   source_commit:execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),source_hash,
-  events,speakers,sessions,faqs,sponsors,support_options,themes,hq:hq_content,about,sources};
+  events,speakers,sessions,faqs,sponsors,support_options,themes,hq:hq_content,about:{...about,truly_yours},guide,sources};
 fs.mkdirSync(path.dirname(output),{recursive:true});
 fs.writeFileSync(output,JSON.stringify(catalogue,null,2)+'\n');
-console.log(`Exported ${events.length} events, ${speakers.length} speakers, ${sessions.length} sessions, ${faqs.length} faqs to ${output}`);
+console.log(`Exported ${events.length} events, ${speakers.length} speakers, ${sessions.length} sessions, ${faqs.length} faqs, ${guide.sections.length} guide sections to ${output}`);
