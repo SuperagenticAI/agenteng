@@ -113,7 +113,9 @@ def test_unrelated_help_is_not_the_help_section(eve):
 
 
 def test_retired_ticket_text_is_never_cited_or_searched(eve):
-    assert {"london-ticket-terms", "faq-3"} <= eve.retired_sources
+    assert "london-ticket-terms" in eve.retired_sources
+    # The site now publishes fully booked wording for faq-3, so it stays live.
+    assert "faq-3" not in eve.retired_sources
     assert "faq-6" not in eve.retired_sources  # invoices stay practical
     for request in [
         Request(operation="event", event_id=LONDON),
@@ -126,9 +128,11 @@ def test_retired_ticket_text_is_never_cited_or_searched(eve):
     ]:
         result = eve.lookup(request)
         cited = {s.id for s in result.sources}
-        assert not cited & {"london-ticket-terms", "faq-3"}, request
+        assert "london-ticket-terms" not in cited, request
         if isinstance(result.data, list) and result.data and "excerpt" in result.data[0]:
             assert not any("£" in row["excerpt"] for row in result.data)
+    booked = eve.lookup(Request(operation="ask", query="Can I still get a ticket?"))
+    assert "fully booked" in booked.answer.lower()
     sf = eve.lookup(Request(operation="tickets", event_id="sf-code-engineering-2026"))
     assert sf.sources
 

@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.0.20 - 2026-10-15
 
+- Catalogue re-exported from site commit 84f1011: the ticket FAQ is now "Can I still get a ticket?" with fully booked wording, and the team seats answer is updated.
 - Plain-English `ask`, `chat` and A2A text questions about every day guide topic now answer from the matching guide section, defaulting to the upcoming London event: lunch, food, drinks and coffee; the bar and social area; the speaker area; Q&A; photography; phones and laptops; seating; help and contacts; and the after-event social (not the sponsorship option). "Where is ...?" questions about these topics no longer fall back to the events list.
 - "What is the next talk?", "What's on now?" and "Who is speaking at 10:00?" use the now, next and agenda-at-time lookups. Speaker-name questions such as "Who is Alexander Korchagin?" lead with the speaker card.
 - For fully booked events the old ticket FAQ (Luma purchase and prices) is no longer offered as a search excerpt, and the ticket terms source is no longer cited anywhere.

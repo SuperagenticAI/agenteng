@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-a5ca1e832630",
-  "published_at": "2026-10-15T12:25:39.557Z",
-  "source_commit": "9a899d842e4445e83f81c246f2abacfd2f602a52",
-  "source_hash": "a5ca1e83263033a8b276abd0ce0f69f6dcb61ce836faffe7f6c4e94bd2a83a9e",
+  "version": "website-964ad0e20e1b",
+  "published_at": "2026-10-15T13:38:01.801Z",
+  "source_commit": "84f10112f9fd21ad4460a28d1dcf8139db7e140a",
+  "source_hash": "964ad0e20e1b43b0b29b107d9d52145e2a865fbddc17ab125c2862f1e1eb3fc8",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -1142,8 +1142,8 @@
     },
     {
       "id": "faq-3",
-      "question": "How do I get tickets?",
-      "answer": "Get your ticket on Luma. Early bird is sold out. Regular is £149 until 8 October 2026, and late bird is £199 from 9 October 2026. There is a lightweight approval step to keep the room technical and high signal, usually cleared within a few hours and always within 24 hours. You are only charged once you are in. A ticket covers the full day: ten technical sessions on a single track, and the talk recordings afterwards. The Founders Edition is invitation only, held for the early access list. Those invitations have been sent by email.",
+      "question": "Can I still get a ticket?",
+      "answer": "London is fully booked. We are fully booked and it will be busy, but there will be seats for everyone who has a ticket. Everything you need for the day is in the Day guide at https://agentengineering.world/guide",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-3"
@@ -1152,7 +1152,7 @@
     {
       "id": "faq-4",
       "question": "Can I book seats for a team?",
-      "answer": "Yes. For three or more seats, email events@agentengineering.world and we will help you register the group.",
+      "answer": "London is fully booked, so we cannot add new seats for a team. If a ticket holder on your team can no longer attend, email events@agentengineering.world before the event about moving their place to a colleague.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-4"
@@ -2090,14 +2090,14 @@
     {
       "id": "faq-3",
       "url": "https://agentengineering.world/#faq",
-      "text": "How do I get tickets?\nGet your ticket on Luma. Early bird is sold out. Regular is £149 until 8 October 2026, and late bird is £199 from 9 October 2026. There is a lightweight approval step to keep the room technical and high signal, usually cleared within a few hours and always within 24 hours. You are only charged once you are in. A ticket covers the full day: ten technical sessions on a single track, and the talk recordings afterwards. The Founders Edition is invitation only, held for the early access list. Those invitations have been sent by email.",
+      "text": "Can I still get a ticket?\nLondon is fully booked. We are fully booked and it will be busy, but there will be seats for everyone who has a ticket. Everything you need for the day is in the Day guide at https://agentengineering.world/guide",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-4",
       "url": "https://agentengineering.world/#faq",
-      "text": "Can I book seats for a team?\nYes. For three or more seats, email events@agentengineering.world and we will help you register the group.",
+      "text": "Can I book seats for a team?\nLondon is fully booked, so we cannot add new seats for a team. If a ticket holder on your team can no longer attend, email events@agentengineering.world before the event about moving their place to a colleague.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
