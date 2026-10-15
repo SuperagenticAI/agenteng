@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- New `agenteng a2a-talks` (and the website badge `agenteng --agent-to-agent`) lists the Agent-to-Agent (A2A) Talks from site commit 79be9bf: 10 short AI-generated videos with titles, YouTube links, 00:30 durations and discipline tags. `--topic` filters by tag and `--json` gives the structured result.
+- The same list is available as the `a2a-talks` request operation over REST, MCP and A2A, with a new `agenteng-a2a-talks` agent card skill. The A2A protocol is unchanged.
+- Every answer carries the published disclaimer: "These videos are produced by the Agent Engineering team using AI. They are separate from the conference programme and are not created, reviewed or endorsed by our speakers." The videos never appear in speakers, talks or the agenda, and general search and chat leave them out unless the question names A2A or Agent-to-Agent.
+
 ## 0.0.21 - 2026-10-15
 
 - Catalogue re-exported from site commit 094ab77: the after-event social now reads "Details will be shared during the day. Drinks are buy your own.", and the agenda and FAQ say "Informal networking from 16:30. Details shared on the day."

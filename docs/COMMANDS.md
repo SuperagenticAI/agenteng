@@ -85,7 +85,7 @@ These exit `0`. Their Result JSON is unchanged, so `status` is still `not_found`
 with an empty list (or a snapshot whose `session` is `null`). Check `data`, not
 the exit code, to tell empty from full. The commands this applies to are
 `events`, `speakers`, `talks`, `faq`, `themes`, `sponsors`, `recordings`,
-`search`, `ask`, `agenda`, `now`, `next` and `live`.
+`a2a-talks`, `search`, `ask`, `agenda`, `now`, `next` and `live`.
 
 An unknown ID still exits `1` with `status` `not_found`: `agenteng event nope`,
 `agenteng speaker nope`, `agenteng tool nope`, `agenteng talk nope` or
@@ -325,6 +325,24 @@ agenteng recordings [OPTIONS]
 ```sh
 agenteng recordings --city London
 ```
+
+### agenteng a2a-talks
+
+List the Agent-to-Agent (A2A) Talks: AI-generated videos, not conference talks.
+
+```text
+agenteng a2a-talks [OPTIONS]
+```
+
+| Option | Meaning | Default |
+| --- | --- | --- |
+| `--topic` TEXT | Only videos with this discipline tag, for example memory. |  |
+
+```sh
+agenteng a2a-talks --topic memory
+```
+
+These videos are produced by the Agent Engineering team using AI. They are separate from the conference programme and are not created, reviewed or endorsed by our speakers. Every answer carries this disclaimer, and the videos never appear in `speakers`, `talks` or `agenda`. Over MCP, A2A and REST use `{"operation":"a2a-talks"}` with an optional `topic`. The website badge `agenteng --agent-to-agent` runs the same command.
 
 ## At the event
 

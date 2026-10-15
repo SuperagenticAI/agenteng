@@ -307,6 +307,30 @@ GUIDE_SECTION_PATTERN = r"^[a-z0-9][a-z0-9-]{0,63}$"
 ABOUT_SECTIONS = ("organiser", "chair", "connect")
 
 
+class A2ATalk(Model):
+    """One AI-generated Agent-to-Agent video. Never a speaker, talk or session."""
+
+    id: str
+    session: str
+    title: str
+    youtube_id: str
+    url: HttpUrl
+    tag: str
+    duration_sec: int | None = None
+    duration: str | None = None
+
+
+class A2ATalks(Model):
+    """The published /agent-to-agent page: AI-generated videos, separate from the programme."""
+
+    url: HttpUrl
+    title: str
+    intro: str = ""
+    disclaimer: str
+    videos: list[A2ATalk] = Field(default_factory=list)
+    source_ids: list[str] = Field(default_factory=list)
+
+
 class Catalogue(Model):
     schema_version: Literal[1] = 1
     version: str
@@ -323,6 +347,7 @@ class Catalogue(Model):
     hq: HQ | None = None
     about: About | None = None
     guide: Guide | None = None
+    a2a_talks: A2ATalks | None = None
     sources: list[Source]
 
     @model_validator(mode="after")
@@ -350,6 +375,10 @@ class Catalogue(Model):
             extra.append(self.about.truly_yours)
         if self.guide and self.guide.venue:
             extra.append(self.guide.venue)
+        if self.a2a_talks:
+            extra.append(self.a2a_talks)
+            if len({v.id for v in self.a2a_talks.videos}) != len(self.a2a_talks.videos):
+                raise ValueError("Duplicate A2A talk IDs")
         if self.guide and self.guide.event_id not in events:
             raise ValueError("Guide references an unknown event")
         if self.guide and len({s.id for s in self.guide.sections}) != len(self.guide.sections):
@@ -413,6 +442,7 @@ class Request(Model):
         "bingo",
         "tickets",
         "recordings",
+        "a2a-talks",
         "search",
         "ask",
         "chat",

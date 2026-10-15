@@ -4,7 +4,7 @@ Every displayed AgentEng command must be accepted by the CLI. The hero Orchestra
 
 Run `python scripts/check-website-commands.py WEBSITE_REPO` against a website checkout with Node dependencies installed. It reads public TypeScript literals using the AST, validates them against the actual CLI, and executes public lookup/setup commands. Server loops and coding sessions are parsed without launching them. Dynamic speaker-profile command rendering is covered by the speaker fixture and website tests.
 
-The fixture contains 83 command locations. Tool CI executes each row and requires success. Update it when website commands change.
+The fixture contains 84 command locations. Tool CI executes each row and requires success. Update it when website commands change.
 
 | Command | Website source (`src/`) |
 | --- | --- |
@@ -43,6 +43,7 @@ The fixture contains 83 command locations. Tool CI executes each row and require
 | `agenteng hq mindset` | `data/agent-activities.ts` |
 | `agenteng tools --discipline memory` | `components/AgentToolingSection.tsx` |
 | `agenteng connect cursor` | `components/AgentToolingSection.tsx` |
+| `agenteng --agent-to-agent` (runs `agenteng a2a-talks`) | `pages/AgentToAgent.tsx` |
 | `agenteng connect a2a` | `components/AgentToolingSection.tsx` |
 | `agenteng connect a2a` | `data/agent-activities.ts` |
 | `agenteng participate` | `data/agent-activities.ts` |
@@ -97,3 +98,7 @@ The fixture contains 83 command locations. Tool CI executes each row and require
 Personal agenda, bookmark, proposal and inbox commands are unsupported. Agenda topic filtering reads published programme text and creates no personal state.
 
 Run `python scripts/check-website-stability.py WEBSITE_REPO` to verify public session/source IDs survive agenda reordering and duplicate IDs are rejected before export.
+
+## Agent-to-Agent (A2A) Talks
+
+`scripts/export-website.mjs` reads `src/data/agentToAgent.ts` (session, title, YouTube ID, tag and duration) and the page copy in `src/pages/AgentToAgent.tsx` (title, intro and the exact disclaimer) into `a2a_talks` in the catalogue, with one `a2a-talks` source. The export fails if the data shape changes. These AI-generated videos are never exported as speakers, talks or sessions, and general search and chat leave them out unless the question names A2A or Agent-to-Agent.

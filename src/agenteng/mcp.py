@@ -41,6 +41,8 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
             "about for the organiser, chair and connection details, hq for the manifesto, "
             "mindset and further reading, live for a now/next venue-screen snapshot (at overrides the clock), "
             "and bingo for a reproducible talk bingo card in data (seed, size 4 or 5; format text, svg or html adds a printable copy in artifact). "
+            "Use a2a-talks for the Agent-to-Agent (A2A) Talks: AI-generated videos by the Agent Engineering team, "
+            "separate from the conference programme and never speakers or talks (optional topic filters by tag). "
             "Use discover for featured public events and interfaces. No attendee records or submissions are accepted. "
             "Default lookup and auto use no server-side model. Standard and RLM engines are operator-only. "
             "The separate opt-in chat operation uses bounded public catalogue tools and lookup fallback."
