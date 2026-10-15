@@ -44,6 +44,45 @@ def terms(text: str) -> set[str]:
     return {x for x in re.findall(r"[\w]+", text.casefold()) if x not in stop and len(x) > 1}
 
 
+# Plain-English guide topics, first match wins. Checked after the registration desk
+# and before tickets, so "Where is lunch?" never falls back to the events list.
+GUIDE_TOPICS: tuple[tuple[str, str], ...] = (
+    (
+        "after",
+        r"\bafter[- ]?(?:party|parties|event|the event|the conference|the talks|wards)\b"
+        r"|\bwhat'?s on after\b|\bwhat is on after\b|\bafter\?|\bevening\b|\bpub\b",
+    ),
+    (
+        "speaker-area",
+        r"\bspeakers?'? ?(?:area|room|lounge)\b|\bgreen room\b"
+        r"|\bwhere (?:do|should|can) (?:the )?speakers\b",
+    ),
+    (
+        "help",
+        r"\b(?:need|get|find|any) help\b|\bhelp on the day\b|\bstuck\b|\blost\b|\bemergency\b"
+        r"|\bwho (?:do|can|should) i (?:contact|ask|talk to|message)\b"
+        r"|\bcontact (?:someone|the organi[sz]ers?|for help|on the day)\b",
+    ),
+    ("social-area", r"\b(?:bar|social area|networking area|network)\b"),
+    (
+        "qna",
+        r"\bq ?(?:&|and) ?a\b|\bqna\b|\bask (?:a|my|the|any) questions?\b"
+        r"|\b(?:can|may) i ask\b|\bquestions? (?:for|to) (?:the )?speakers?\b",
+    ),
+    (
+        "photography",
+        r"\b(?:photos?|photograph\w*|pictures?|camera|film(?:ing)?|content creat\w*)\b",
+    ),
+    ("phones", r"\b(?:phones?|laptops?|mobile|silent|do (?:some )?work|work on)\b"),
+    ("seating", r"\b(?:seats?|seating|sit|sitting)\b"),
+    (
+        "lunch",
+        r"\b(?:lunch|food|eat|eating|pizzas?|dietary|diet|allerg\w*|vegan|vegetarian"
+        r"|coffee|tea|drinks?|pastr\w*|breakfast|snacks?|refreshments?)\b",
+    ),
+)
+
+
 class Service:
     def __init__(
         self,
@@ -63,6 +102,21 @@ class Service:
         self.tool_directory = tool_directory or load_tool_directory()
         self.sources = {s.id: s for s in self.catalogue.sources}
         self.events = {e.id: e for e in self.catalogue.events}
+        # Ticket terms and old "buy on Luma / £ price" FAQ text are retired for fully
+        # booked events: never cited and never offered as search excerpts.
+        booked = {e.id for e in self.catalogue.events if e.registration_status == "fully_booked"}
+        self.retired_sources = {
+            s.id
+            for s in self.catalogue.sources
+            if s.event_id in booked
+            and (
+                s.kind == "tickets"
+                or (
+                    s.kind == "faq"
+                    and re.search(r"£\s?\d|\bget your ticket\b", s.text, re.IGNORECASE)
+                )
+            )
+        }
         # Optional inference is serialized per process; it is operator-only.
         self._model_slot = threading.Lock()
         self._chat_runtime = None
@@ -76,7 +130,9 @@ class Service:
         return Result(
             answer=answer,
             data={} if data is None else data,
-            sources=[self.sources[s] for s in dict.fromkeys(source_ids)],
+            sources=[
+                self.sources[s] for s in dict.fromkeys(source_ids) if s not in self.retired_sources
+            ],
             catalogue_version=self.catalogue.version,
             evaluated_at=now,
             published_at=self.catalogue.published_at,
@@ -209,6 +265,16 @@ class Service:
             return [i for i in ids if i in self.sources]
 
         venue_ids = venue.source_ids if venue else []
+        timed = self.time_answer(request, default, plain)
+        if timed is not None:
+            return timed
+        speaker = (
+            None
+            if re.search(r"\b(?:session|talk|start|starts|time|when|where|presenting)\b", plain)
+            else self.speaker_named(plain, default.id)
+        )
+        if speaker is not None:
+            return self.lookup(Request(operation="speaker", speaker_id=speaker.id))
         if re.search(r"\bwhere\b.*\b(?:registration|register|check[- ]?in|badges?)\b", plain) or (
             re.search(r"\b(?:registration desk|check[- ]?in desk)\b", plain)
         ):
@@ -225,6 +291,28 @@ class Service:
                 },
                 cite(*venue_ids, "guide-registration"),
             )
+        topic = next((sid for sid, pattern in GUIDE_TOPICS if re.search(pattern, plain)), None)
+        if topic == "help" and query_terms & {
+            "proposal",
+            "proposals",
+            "propose",
+            "talk",
+            "sponsor",
+        }:
+            topic = None
+        if topic and topic in sections:
+            row = sections[topic]
+            answer = " ".join(row.paragraphs)
+            data = {
+                "event_id": default.id,
+                "section": topic,
+                "sections": section_payload(topic),
+                "day_guide_url": str(guide.url),
+            }
+            if topic == "help":
+                data["help"] = guide.help.model_dump(mode="json")
+                answer += " " + "; ".join(f"{link.label}: {link.url}" for link in guide.help.online)
+            return self.result(answer, data, cite(f"guide-{topic}"))
         ticket_words = {
             "ticket",
             "tickets",
@@ -237,8 +325,6 @@ class Service:
             "availability",
             "register",
             "registration",
-            "seat",
-            "seats",
         }
         if query_terms & ticket_words:
             return self.lookup(
@@ -293,6 +379,41 @@ class Service:
                 },
                 cite(*venue_ids, "guide-getting-here"),
             )
+        return None
+
+    def speaker_named(self, plain: str, event_id: str) -> Speaker | None:
+        """A published speaker whose full name (or unique surname) appears in the question."""
+        speakers = [s for s in self.catalogue.speakers if event_id in s.event_ids]
+        full = [s for s in speakers if s.name.casefold() in plain]
+        if len(full) == 1:
+            return full[0]
+        surname = [
+            s
+            for s in speakers
+            if len(s.name.split()) > 1
+            and re.search(rf"\b{re.escape(s.name.split()[-1].casefold())}\b", plain)
+        ]
+        return surname[0] if len(surname) == 1 else None
+
+    def time_answer(self, request: Request, event: Event, plain: str) -> Result | None:
+        """Next talk, what's on now and 'who is speaking at HH:MM' for the default event."""
+        clock = re.search(r"\b(?:at\s+)?([01]?\d|2[0-3])[:.]([0-5]\d)\b", plain)
+        if clock and re.search(r"\b(?:speak\w*|talk\w*|on|session|happening|presenting)\b", plain):
+            local = datetime.fromisoformat(
+                f"{event.date}T{int(clock.group(1)):02d}:{clock.group(2)}:00"
+            ).replace(tzinfo=ZoneInfo(event.timezone))
+            return self.lookup(Request(operation="now", event_id=event.id, at=local))
+        if re.search(
+            r"\bnext (?:talk|session|speaker|up)\b|\bwhat'?s next\b|\bwhat is next\b|\bup next\b",
+            plain,
+        ):
+            return self.lookup(Request(operation="next", event_id=event.id))
+        if re.search(
+            r"\bwhat'?s on now\b|\bwhat is on now\b|\bhappening now\b|\bon stage now\b|"
+            r"\bcurrent (?:talk|session)\b|\bwho is speaking now\b",
+            plain,
+        ):
+            return self.lookup(Request(operation="now", event_id=event.id))
         return None
 
     def lookup(self, request: Request) -> Result:
@@ -357,13 +478,13 @@ class Service:
             if terms(request.query) & {"travel", "accommodation", "visa", "visas"}:
                 return focused_search(self, request.query, request.limit, allow_faq=True)
 
-            talk_answer = published_talk_answer(self, request)
-            if talk_answer is not None:
-                return talk_answer
             query_terms = terms(request.query)
             event_day = self.event_day_answer(request, query_terms)
             if event_day is not None:
                 return event_day
+            talk_answer = published_talk_answer(self, request)
+            if talk_answer is not None:
+                return talk_answer
             if (
                 not request.event_id
                 and not request.city
@@ -958,7 +1079,8 @@ class Service:
         candidates = [
             s
             for s in self.catalogue.sources
-            if (
+            if s.id not in self.retired_sources
+            and (
                 s.event_id in ids
                 or (not request.event_id and not request.city and s.event_id is None)
             )

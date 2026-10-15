@@ -747,6 +747,90 @@ def render_participate(console: Console, result: Result) -> None:
     console.print(_panel("Participate", body, border=VIOLET))
 
 
+def render_ask(console: Console, result: Result) -> None:
+    """Cards for every answer shape ask can route to; never raw JSON."""
+    data = result.data
+    if isinstance(data, list):
+        if data and isinstance(data[0], dict) and "excerpt" in data[0]:
+            render_search(console, result)
+        elif data and isinstance(data[0], dict) and "city" in data[0]:
+            render_events(console, result)
+        elif data and isinstance(data[0], dict) and "kind" in data[0]:
+            render_agenda(console, result)
+        elif data and isinstance(data[0], dict) and "name" in data[0] and "role" in data[0]:
+            render_speakers(console, result)
+        else:
+            render_search(console, result)
+        return
+    data = data if isinstance(data, dict) else {}
+    if not data:
+        console.print(f"[ae.title]{display_text(result.answer)}[/]")
+        return
+    if "registration_status" in data and "current_offers" in data:
+        render_tickets(console, result)
+        return
+    if "as_of" in data and "session" in data:
+        title = "Next" if result.answer.startswith("Next") else "Now"
+        render_live(console, result, title=title)
+        return
+    if "talk_title" in data and "name" in data:
+        render_speaker(console, result)
+        return
+    if "organizer_email" in data:
+        render_participate(console, result)
+        return
+    if "items" in data and "directory" in data:
+        render_tools(console, result)
+        return
+    if "sections" in data or "facts" in data or "best_way_in" in data:
+        body = Text(display_text(result.answer))
+        rows = data.get("sections") or []
+        title = "Day guide: " + rows[0]["title"] if len(rows) == 1 else "Day guide"
+        console.print(_panel(title, body, border=MAGENTA))
+        if data.get("facts"):
+            table = _kv_table()
+            for row in data["facts"]:
+                table.add_row(display_text(row["label"]), display_text(row["value"]))
+            console.print(_panel("Quick facts", table, border=VIOLET))
+        for row in data.get("sections") or []:
+            if row.get("id") == "help":
+                continue
+            links = Text()
+            for i, link in enumerate(row.get("links") or []):
+                links.append(
+                    ("\n" if i else "") + display_text(link["label"]) + ": ", style="ae.meta"
+                )
+                links.append(str(link["url"]), style=BLUE)
+            if links:
+                console.print(_panel(row["title"] + " links", links, border=BLUE))
+        if data.get("walk_video_url"):
+            console.print(f"[ae.meta]Walk video:[/] {data['walk_video_url']}")
+        if data.get("help") and not any(r.get("id") == "help" for r in data.get("sections") or []):
+            console.print(_panel("Need help on the day", _help_body(data["help"]), border=MAGENTA))
+        if data.get("day_guide_url"):
+            console.print(f"[ae.meta]Day guide:[/] {data['day_guide_url']}  ·  agenteng guide")
+        return
+    if "start" in data and "title" in data:
+        console.print(_panel(data.get("title") or "Session", _talk_body(data), border=VIOLET))
+        console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+        return
+    render_generic_table(console, result)
+
+
+def render_generic_table(console: Console, result: Result) -> None:
+    """Answer plus a flat key/value card; nested values are summarised, not dumped."""
+    console.print(f"[ae.title]{display_text(result.answer)}[/]")
+    data = result.data if isinstance(result.data, dict) else {}
+    table = _kv_table()
+    for key, value in data.items():
+        if isinstance(value, (str, int, float)) and value != "":
+            table.add_row(key.replace("_", " "), display_text(str(value)))
+        elif isinstance(value, list) and value:
+            table.add_row(key.replace("_", " "), f"{len(value)} item(s); use --json for detail")
+    if table.row_count:
+        console.print(_panel("Details", table, border=BLUE))
+
+
 def render_generic(console: Console, result: Result) -> None:
     console.print(f"[ae.title]{display_text(result.answer)}[/]")
     data = result.data
@@ -818,6 +902,10 @@ def render_result(result: Result, operation: str, console: Console | None = None
             style = "ae.err"
         else:
             style = "ae.warn"
+        if operation in {"ask", "chat"} and result.data:
+            render_ask(console, result)
+            _footer(console, result)
+            return
         console.print(Text(display_text(result.answer), style=style))
         if result.data:
             console.print_json(data=result.data)
@@ -847,7 +935,8 @@ def render_result(result: Result, operation: str, console: Console | None = None
         "tickets": render_tickets,
         "recordings": render_recordings,
         "search": render_search,
-        "ask": render_search if isinstance(result.data, list) else render_generic,
+        "ask": render_ask,
+        "chat": render_ask,
         "disciplines": render_disciplines,
         "tools": render_tools,
         "tool": render_tool,

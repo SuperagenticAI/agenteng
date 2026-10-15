@@ -106,7 +106,8 @@ def focused_search(service, question, limit, *, allow_faq=None):
         (
             (len(wanted & terms(source.text)), source)
             for source in service.catalogue.sources
-            if allow_faq or source.kind not in {"faq", "conduct", "tickets"}
+            if source.id not in service.retired_sources
+            and (allow_faq or source.kind not in {"faq", "conduct", "tickets"})
         ),
         key=lambda item: (-item[0], item[1].id),
     )
