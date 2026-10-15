@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.19 - 2026-10-15
 
 - Plain-English `ask`, `chat` and A2A text questions with no city now default to the upcoming London conference while it is upcoming or today. Named San Francisco questions are unchanged.
 - "When do doors open?" and "What time does it start?" answer from the day guide: doors 08:00, arrive 8:30 to 8:45, be seated by 8:50, programme starts 9:00 sharp, citing the quick facts and arriving section.
