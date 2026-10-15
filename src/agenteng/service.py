@@ -168,6 +168,133 @@ class Service:
         london = next((e for e in day if e.id == "agenteng-london-2026"), None)
         return london.id if london else (day[0].id if day else None)
 
+    def default_conference(self) -> Event | None:
+        """The one upcoming or ongoing conference with a published day guide (London 2026)."""
+        guide = self.catalogue.guide
+        event = self.events.get(guide.event_id) if guide else None
+        if event and self.state(event) in {"upcoming", "ongoing"}:
+            return event
+        return None
+
+    def named_city(self, request: Request) -> str | None:
+        plain = request.query.casefold()
+        city = request.city or next((c for c in CITIES if c.casefold() in plain), None)
+        if not city and re.search(r"\bsf\b", plain):
+            city = "San Francisco"
+        return city
+
+    def event_day_answer(self, request: Request, query_terms: set[str]) -> Result | None:
+        """Doors, directions, registration desk and ticket questions for the guide event.
+
+        With no city named, questions default to the single upcoming conference while it
+        is upcoming or today. A named San Francisco question is left to the normal routes.
+        """
+        guide = self.catalogue.guide
+        default = self.default_conference()
+        if not guide or not default:
+            return None
+        city = self.named_city(request)
+        if request.event_id and request.event_id != default.id:
+            return None
+        if city and city.casefold() != default.city.casefold():
+            return None
+        plain = request.query.casefold()
+        sections = {s.id: s for s in guide.sections}
+        venue = guide.venue
+
+        def section_payload(*ids):
+            return [sections[i].model_dump(mode="json") for i in ids if i in sections]
+
+        def cite(*ids):
+            return [i for i in ids if i in self.sources]
+
+        venue_ids = venue.source_ids if venue else []
+        if re.search(r"\bwhere\b.*\b(?:registration|register|check[- ]?in|badges?)\b", plain) or (
+            re.search(r"\b(?:registration desk|check[- ]?in desk)\b", plain)
+        ):
+            where = venue.registration if venue else ""
+            first = sections["registration"].paragraphs[0] if "registration" in sections else ""
+            rest = " ".join(re.split(r"(?<=\.)\s+", first)[1:]) if where else first
+            return self.result(
+                f"{where} {rest}".strip(),
+                {
+                    "event_id": default.id,
+                    "registration": where,
+                    "sections": section_payload("registration"),
+                    "day_guide_url": str(guide.url),
+                },
+                cite(*venue_ids, "guide-registration"),
+            )
+        ticket_words = {
+            "ticket",
+            "tickets",
+            "sold",
+            "buy",
+            "booked",
+            "price",
+            "prices",
+            "cost",
+            "availability",
+            "register",
+            "registration",
+            "seat",
+            "seats",
+        }
+        if query_terms & ticket_words:
+            return self.lookup(
+                Request(operation="tickets", event_id=default.id, limit=request.limit)
+            )
+        times = query_terms & {"doors", "arrival", "arrive", "arriving", "checkin", "early"} or (
+            re.search(r"\bwhat time\b|\b(?:open|opens|start|starts|begin|begins)\b", plain)
+            and not re.search(r"\b(?:talk|talks|session|sessions|speaker|next)\b", plain)
+        )
+        if times and venue:
+            return self.result(
+                f"Doors {venue.doors}. Arrive {venue.arrive}, be seated by {venue.seated_by}; "
+                f"the programme starts {venue.programme_starts}. {default.venue}.",
+                {
+                    "event_id": default.id,
+                    "facts": [f.model_dump() for f in guide.facts],
+                    "sections": section_payload("arriving"),
+                    "day_guide_url": str(guide.url),
+                },
+                cite("guide", "guide-arriving"),
+            )
+        directions = query_terms & {
+            "directions",
+            "venue",
+            "everyman",
+            "station",
+            "tube",
+            "elizabeth",
+            "jubilee",
+            "dlr",
+            "address",
+            "located",
+            "location",
+            "walk",
+        } or re.search(
+            r"\bget (?:to|there)\b|\bhow (?:do|can|should) (?:i|we|you) find (?:it|the|everyman)\b",
+            plain,
+        )
+        if directions and venue:
+            return self.result(
+                f"{default.venue}. Best way in: {venue.best_way_in} "
+                f"Walk video: {venue.walk_video_url}",
+                {
+                    "event_id": default.id,
+                    "venue": default.venue,
+                    "best_way_in": venue.best_way_in,
+                    "getting_there": venue.getting_there,
+                    "walk_video_url": str(venue.walk_video_url) if venue.walk_video_url else None,
+                    "registration": venue.registration,
+                    "sections": section_payload("getting-here"),
+                    "day_guide_url": str(guide.url),
+                },
+                cite(*venue_ids, "guide-getting-here"),
+            )
+        return None
+
     def lookup(self, request: Request) -> Result:
         if request.operation == "chat":
             return self.lookup(Request(operation="ask", query=request.query, limit=request.limit))
@@ -234,29 +361,9 @@ class Service:
             if talk_answer is not None:
                 return talk_answer
             query_terms = terms(request.query)
-            if query_terms & {"doors", "arrival", "arrive", "checkin"}:
-                city = request.city or next(
-                    (city for city in CITIES if city.casefold() in request.query.casefold()), None
-                )
-                events = self.matching_events(request.model_copy(update={"city": city}))
-                events = [e for e in events if self.state(e) in {"upcoming", "ongoing"}]
-                if len(events) == 1:
-                    event = events[0]
-                    opening = next(
-                        (
-                            s
-                            for s in self.catalogue.sessions
-                            if s.event_id == event.id and s.kind == "open" and s.start
-                        ),
-                        None,
-                    )
-                    if opening:
-                        local = opening.start.astimezone(ZoneInfo(event.timezone))
-                        return self.result(
-                            f"{opening.title}: {local:%H:%M} on {local:%d %B %Y} ({event.timezone}), at {event.venue}.",
-                            self.talk_payload(opening),
-                            opening.source_ids,
-                        )
+            event_day = self.event_day_answer(request, query_terms)
+            if event_day is not None:
+                return event_day
             if (
                 not request.event_id
                 and not request.city
@@ -369,7 +476,12 @@ class Service:
                 city = "San Francisco"
             scope = self.matching_events(request.model_copy(update={"city": city}))
             current = [e for e in scope if self.state(e) in {"upcoming", "ongoing"}]
-            target = request.event_id or (current[0].id if len(current) == 1 else None)
+            default = self.default_conference() if not city else None
+            target = (
+                request.event_id
+                or (current[0].id if len(current) == 1 else None)
+                or (default.id if default else None)
+            )
             operation = None
             if query_terms & {
                 "ticket",
@@ -767,8 +879,16 @@ class Service:
                         status="unavailable",
                     )
                 artifact = calendar(event, timed, self.clock())
+            agenda_event = self.events.get(request.event_id or "") or (
+                events[0] if len(events) == 1 else None
+            )
             return self.result(
-                f"{len(rows)} agenda entry/entries matched. This is the published agenda; attendance is subject to registration.",
+                f"{len(rows)} agenda entry/entries matched. This is the published agenda"
+                + (
+                    ". The event is fully booked; see the day guide for arriving and getting here."
+                    if agenda_event and agenda_event.registration_status == "fully_booked"
+                    else "; attendance is subject to registration."
+                ),
                 [s.model_dump(mode="json") for s in rows],
                 [i for s in rows for i in s.source_ids],
                 artifact=artifact,

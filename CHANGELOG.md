@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Plain-English `ask`, `chat` and A2A text questions with no city now default to the upcoming London conference while it is upcoming or today. Named San Francisco questions are unchanged.
+- "When do doors open?" and "What time does it start?" answer from the day guide: doors 08:00, arrive 8:30 to 8:45, be seated by 8:50, programme starts 9:00 sharp, citing the quick facts and arriving section.
+- "How do I get to the venue?" and "How do I get to Everyman?" answer with the address, the best way in via Canary Wharf Elizabeth line station and the walk video, citing the getting here section.
+- "Where is registration?" answers "Registration is on the left as you walk in." with the registration and badges section.
+- "Are tickets available?", "Can I still buy a ticket?" and "Is London sold out?" give the site's fully booked wording without the old ticket terms source.
+- The agenda answer for a fully booked event no longer says attendance is subject to registration.
+
 ## 0.0.18 - 2026-10-15
 
 - New `agenteng guide` command and public `guide` operation (CLI, HTTP, MCP and A2A) mirroring the website's /guide day guide for AgentEng London on Fri 16 October 2026: quick facts, arriving, getting here, registration and badges, social area, speaker area, lunch and drinks, questions and Q&A, photography, phones and laptops, seating, help on the day and the after-event social. `agenteng guide SECTION`, `--section`, `--list` and `--json` are supported; the website wording `agenteng guide --london` works too. The A2A event-day skill, MCP instructions, interactive menu and rich terminal cards include it.
