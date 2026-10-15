@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.22 - 2026-10-15
 
 - New `agenteng a2a-talks` (and the website badge `agenteng --agent-to-agent`) lists the Agent-to-Agent (A2A) Talks from site commit 79be9bf: 10 short AI-generated videos with titles, YouTube links, 00:30 durations and discipline tags. `--topic` filters by tag and `--json` gives the structured result.
 - The same list is available as the `a2a-talks` request operation over REST, MCP and A2A, with a new `agenteng-a2a-talks` agent card skill. The A2A protocol is unchanged.
