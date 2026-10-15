@@ -38,8 +38,8 @@ def ask(service, query, operation="ask"):
         ("How does Q&A work?", "qna", "dedicated Q&A time"),
         ("Who do I contact for help?", "help", "https://x.com/AgentEngHQ"),
         ("I need help", "help", "Find James, Gloria, Shashi or the Everyman staff."),
-        ("What's on after?", "after", "most likely be at the venue"),
-        ("Is there an after party?", "after", "you buy your own drinks"),
+        ("What's on after?", "after", "Details will be shared during the day"),
+        ("Is there an after party?", "after", "Drinks are buy your own"),
         ("Where do speakers go?", "speaker-area", "dedicated speaker area"),
         ("Is there a speaker room?", "speaker-area", "close to registration"),
         ("Can I take photos?", "photography", "official photography"),
@@ -171,3 +171,10 @@ def test_ask_json_output_unchanged():
     payload = json.loads(out.output)
     assert payload["data"]["registration"] == "Registration is on the left as you walk in."
     assert set(payload) >= {"status", "answer", "data", "sources"}
+
+
+def test_after_social_answer_is_only_the_published_wording(eve):
+    for query in ["What's on after?", "Is there an after party?", "Where is the after party?"]:
+        result = eve.lookup(Request(operation="ask", query=query))
+        assert result.answer == "Details will be shared during the day. Drinks are buy your own."
+        assert [s.id for s in result.sources] == ["guide-after"]

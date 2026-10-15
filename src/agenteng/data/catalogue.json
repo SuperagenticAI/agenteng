@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-964ad0e20e1b",
-  "published_at": "2026-10-15T13:38:01.801Z",
-  "source_commit": "84f10112f9fd21ad4460a28d1dcf8139db7e140a",
-  "source_hash": "964ad0e20e1b43b0b29b107d9d52145e2a865fbddc17ab125c2862f1e1eb3fc8",
+  "version": "website-b2a5665179a3",
+  "published_at": "2026-10-15T16:54:17.439Z",
+  "source_commit": "094ab77879d23019bee8ebf8911aa8677c70f696",
+  "source_hash": "b2a5665179a3b73c57dc062be7092eb702b041ead73cae3f453148c7b02f2571",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -1206,7 +1206,7 @@
     {
       "id": "faq-10",
       "question": "Is there networking after the conference?",
-      "answer": "The programme closes at 16:30 and informal networking continues at the venue or at a separate side event.",
+      "answer": "The programme closes at 16:30. Informal networking. Details shared on the day.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-10"
@@ -1562,7 +1562,8 @@
         "id": "social-area",
         "title": "Social area",
         "paragraphs": [
-          "The bar is the social area throughout the day, for networking."
+          "The bar is the social area throughout the day, for networking.",
+          "Between talks, watch our Agent-to-Agent experiments, short AI-generated conversations: /agent-to-agent"
         ],
         "links": []
       },
@@ -1649,7 +1650,7 @@
         "id": "after",
         "title": "After-event social",
         "paragraphs": [
-          "Details will be shared during the day. It will most likely be at the venue, and you buy your own drinks."
+          "Details will be shared during the day. Drinks are buy your own."
         ],
         "links": []
       }
@@ -1936,7 +1937,7 @@
     {
       "id": "london-session-16",
       "url": "https://agentengineering.world/agenda",
-      "text": "16:30 Informal networking. . Continues at the venue or at a separate side event.",
+      "text": "16:30 Informal networking. . Details shared on the day.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
@@ -2139,7 +2140,7 @@
     {
       "id": "faq-10",
       "url": "https://agentengineering.world/#faq",
-      "text": "Is there networking after the conference?\nThe programme closes at 16:30 and informal networking continues at the venue or at a separate side event.",
+      "text": "Is there networking after the conference?\nThe programme closes at 16:30. Informal networking. Details shared on the day.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
@@ -2370,7 +2371,7 @@
     {
       "id": "guide-social-area",
       "url": "https://agentengineering.world/guide#social-area",
-      "text": "Social area\nThe bar is the social area throughout the day, for networking.",
+      "text": "Social area\nThe bar is the social area throughout the day, for networking.\nBetween talks, watch our Agent-to-Agent experiments, short AI-generated conversations: /agent-to-agent",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
@@ -2426,7 +2427,7 @@
     {
       "id": "guide-after",
       "url": "https://agentengineering.world/guide#after",
-      "text": "After-event social\nDetails will be shared during the day. It will most likely be at the venue, and you buy your own drinks.",
+      "text": "After-event social\nDetails will be shared during the day. Drinks are buy your own.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
