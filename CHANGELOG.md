@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Plain-English `ask`, `chat` and A2A text questions about every day guide topic now answer from the matching guide section, defaulting to the upcoming London event: lunch, food, drinks and coffee; the bar and social area; the speaker area; Q&A; photography; phones and laptops; seating; help and contacts; and the after-event social (not the sponsorship option). "Where is ...?" questions about these topics no longer fall back to the events list.
+- "What is the next talk?", "What's on now?" and "Who is speaking at 10:00?" use the now, next and agenda-at-time lookups. Speaker-name questions such as "Who is Alexander Korchagin?" lead with the speaker card.
+- For fully booked events the old ticket FAQ (Luma purchase and prices) is no longer offered as a search excerpt, and the ticket terms source is no longer cited anywhere.
+- `agenteng ask` in a terminal renders cards for every answer shape (guide sections, quick facts, directions, now and next, speaker, registration, tools, participation) with no raw JSON. `--json` output is unchanged.
+- "Is there wifi?" stays an honest search: nothing about wifi is published.
+
 ## 0.0.19 - 2026-10-15
 
 - Plain-English `ask`, `chat` and A2A text questions with no city now default to the upcoming London conference while it is upcoming or today. Named San Francisco questions are unchanged.
