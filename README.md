@@ -83,7 +83,7 @@ pip install -U 'agenteng[server]'
 To pin the installer to a release, pass the version to `sh`:
 
 ```sh
-curl -fsSL https://agentengineering.world/install.sh | AGENTENG_VERSION=0.0.17 sh
+curl -fsSL https://agentengineering.world/install.sh | AGENTENG_VERSION=0.0.18 sh
 ```
 
 ### 2. Discover an event

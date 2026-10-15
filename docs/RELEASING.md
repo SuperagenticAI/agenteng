@@ -26,15 +26,15 @@ PyPI release (override with `AGENTENG_VERSION` at install time). Update the chan
 and release-facing documentation. Check locally:
 
 ```sh
-uv run --frozen python scripts/check-release-metadata.py --tag v0.0.17
+uv run --frozen python scripts/check-release-metadata.py --tag v0.0.18
 ```
 
 Commit and push the workflow and version changes first. Then tag the intended
 commit and push that tag:
 
 ```sh
-git tag -a v0.0.17 -m 'AgentEng 0.0.17'
-git push origin v0.0.17
+git tag -a v0.0.18 -m 'AgentEng 0.0.18'
+git push origin v0.0.18
 ```
 
 The tag must exactly match `v` plus the package version. Canonical tags such as

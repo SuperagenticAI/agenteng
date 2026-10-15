@@ -82,12 +82,12 @@ agenteng connect cursor
 The installer reads these optional environment variables. Put them before `sh`:
 
 ```sh
-curl -fsSL https://agentengineering.world/install.sh | AGENTENG_VERSION=0.0.17 sh
+curl -fsSL https://agentengineering.world/install.sh | AGENTENG_VERSION=0.0.18 sh
 ```
 
 | Variable | Default | What it does |
 | --- | --- | --- |
-| `AGENTENG_VERSION` | latest on PyPI | Pin a PyPI version, for example `0.0.17`. |
+| `AGENTENG_VERSION` | latest on PyPI | Pin a PyPI version, for example `0.0.18`. |
 | `AGENTENG_EXTRAS` | `server` | Extras to install (`server` is MCP + A2A). Set it empty for the CLI only, or add `acp` as in `server,acp`. |
 | `AGENTENG_INSTALL_VERBOSE` | `0` | Set to `1` to stream package manager output instead of writing it to a log. |
 | `AGENTENG_UV_INSTALLER_URL` | `https://astral.sh/uv/install.sh` | Alternate uv installer URL, used only when uv is missing. |
@@ -111,7 +111,7 @@ snapshot, so event lookup, tool browsing  work offline with
 
 On a terminal, `agenteng` opens an interactive menu and commands render tables and cards.
 Pass `--json`, set `AGENTENG_OUTPUT=json`, or pipe stdout to get the shared Result
-JSON used by MCP and A2A. This source tracks the **0.0.17 alpha** release.
+JSON used by MCP and A2A. This source tracks the **0.0.18 alpha** release.
 Run `agenteng --help` to explore commands, or `agenteng COMMAND --help` for options.
 Every command, flag and exit code is listed in the [command reference](COMMANDS.md).
 Installing the CLI does not start or publish a hosted service.
