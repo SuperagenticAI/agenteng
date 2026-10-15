@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-b2a5665179a3",
-  "published_at": "2026-10-15T16:54:17.439Z",
-  "source_commit": "094ab77879d23019bee8ebf8911aa8677c70f696",
-  "source_hash": "b2a5665179a3b73c57dc062be7092eb702b041ead73cae3f453148c7b02f2571",
+  "version": "website-eabb0df3a368",
+  "published_at": "2026-10-15T17:03:26.389Z",
+  "source_commit": "79be9bfccaf627b39645bad1691253891c70d8d8",
+  "source_hash": "eabb0df3a36806f2310ed6eebc25734c8ae1e7e51a291f3fb32197b1d67b44d0",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -1563,7 +1563,7 @@
         "title": "Social area",
         "paragraphs": [
           "The bar is the social area throughout the day, for networking.",
-          "Between talks, watch our Agent-to-Agent experiments, short AI-generated conversations: /agent-to-agent"
+          "Between sessions, you can watch our Agent-to-Agent (A2A) Talks, short AI-generated conversations between two AI agents: /agent-to-agent"
         ],
         "links": []
       },
@@ -1721,6 +1721,117 @@
       "guide-seating",
       "guide-help",
       "guide-after"
+    ]
+  },
+  "a2a_talks": {
+    "url": "https://agentengineering.world/agent-to-agent",
+    "title": "Agent-to-Agent (A2A) Talks",
+    "intro": "A series of short AI-generated conversations between two AI agents, each focused on one engineering discipline from the conference themes. Each video is around 30 seconds.",
+    "disclaimer": "These videos are produced by the Agent Engineering team using AI. They are separate from the conference programme and are not created, reviewed or endorsed by our speakers.",
+    "videos": [
+      {
+        "id": "a2a-001",
+        "session": "001",
+        "title": "Coding Agent Engineering",
+        "youtube_id": "ZVYEIFYx-ME",
+        "url": "https://www.youtube.com/watch?v=ZVYEIFYx-ME",
+        "tag": "coding-agents",
+        "duration_sec": 30,
+        "duration": "00:30"
+      },
+      {
+        "id": "a2a-002",
+        "session": "002",
+        "title": "Inference Engineering",
+        "youtube_id": "7EmnKaM9UkQ",
+        "url": "https://www.youtube.com/watch?v=7EmnKaM9UkQ",
+        "tag": "inference",
+        "duration_sec": 30,
+        "duration": "00:30"
+      },
+      {
+        "id": "a2a-003",
+        "session": "003",
+        "title": "Software Optimisation Engineering",
+        "youtube_id": "VwzeMfJGZ2I",
+        "url": "https://www.youtube.com/watch?v=VwzeMfJGZ2I",
+        "tag": "optimisation",
+        "duration_sec": 30,
+        "duration": "00:30"
+      },
+      {
+        "id": "a2a-004",
+        "session": "004",
+        "title": "Search Engineering",
+        "youtube_id": "-iLD6n8ggcg",
+        "url": "https://www.youtube.com/watch?v=-iLD6n8ggcg",
+        "tag": "search",
+        "duration_sec": 30,
+        "duration": "00:30"
+      },
+      {
+        "id": "a2a-005",
+        "session": "005",
+        "title": "Code Engineering",
+        "youtube_id": "G_26Mubidms",
+        "url": "https://www.youtube.com/watch?v=G_26Mubidms",
+        "tag": "code",
+        "duration_sec": 30,
+        "duration": "00:30"
+      },
+      {
+        "id": "a2a-006",
+        "session": "006",
+        "title": "Voice Engineering",
+        "youtube_id": "5Hv8xfb6g1I",
+        "url": "https://www.youtube.com/watch?v=5Hv8xfb6g1I",
+        "tag": "voice",
+        "duration_sec": 30,
+        "duration": "00:30"
+      },
+      {
+        "id": "a2a-007",
+        "session": "007",
+        "title": "MCP App Engineering",
+        "youtube_id": "FF6Uo6Lskz4",
+        "url": "https://www.youtube.com/watch?v=FF6Uo6Lskz4",
+        "tag": "mcp",
+        "duration_sec": 30,
+        "duration": "00:30"
+      },
+      {
+        "id": "a2a-008",
+        "session": "008",
+        "title": "Security Engineering",
+        "youtube_id": "nOAlnJn3I38",
+        "url": "https://www.youtube.com/watch?v=nOAlnJn3I38",
+        "tag": "security",
+        "duration_sec": 30,
+        "duration": "00:30"
+      },
+      {
+        "id": "a2a-009",
+        "session": "009",
+        "title": "Benchmark Engineering",
+        "youtube_id": "a1v82hpibw4",
+        "url": "https://www.youtube.com/watch?v=a1v82hpibw4",
+        "tag": "benchmarks",
+        "duration_sec": 30,
+        "duration": "00:30"
+      },
+      {
+        "id": "a2a-010",
+        "session": "010",
+        "title": "Memory Engineering",
+        "youtube_id": "tumzJBGV79U",
+        "url": "https://www.youtube.com/watch?v=tumzJBGV79U",
+        "tag": "memory",
+        "duration_sec": 30,
+        "duration": "00:30"
+      }
+    ],
+    "source_ids": [
+      "a2a-talks"
     ]
   },
   "sources": [
@@ -2371,7 +2482,7 @@
     {
       "id": "guide-social-area",
       "url": "https://agentengineering.world/guide#social-area",
-      "text": "Social area\nThe bar is the social area throughout the day, for networking.\nBetween talks, watch our Agent-to-Agent experiments, short AI-generated conversations: /agent-to-agent",
+      "text": "Social area\nThe bar is the social area throughout the day, for networking.\nBetween sessions, you can watch our Agent-to-Agent (A2A) Talks, short AI-generated conversations between two AI agents: /agent-to-agent",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
@@ -2444,6 +2555,13 @@
       "text": "There are many Agent conferences. This one is truly yours.\nWhy this one is truly yours\nMost agent conferences answer to sponsors. Their programme is shaped by booths, paid talk slots and vendor pressure, with hundreds of people deciding what gets on stage. We don't have any of that. One organiser curated every talk for one reason only: what engineers building agents actually need to hear. Your ticket paid for the day, so the day belongs to you.",
       "event_id": "agenteng-london-2026",
       "kind": "about"
+    },
+    {
+      "id": "a2a-talks",
+      "url": "https://agentengineering.world/agent-to-agent",
+      "text": "Agent-to-Agent (A2A) Talks\nA series of short AI-generated conversations between two AI agents, each focused on one engineering discipline from the conference themes. Each video is around 30 seconds.\nThese videos are produced by the Agent Engineering team using AI. They are separate from the conference programme and are not created, reviewed or endorsed by our speakers.\n001 Coding Agent Engineering (coding-agents)\n002 Inference Engineering (inference)\n003 Software Optimisation Engineering (optimisation)\n004 Search Engineering (search)\n005 Code Engineering (code)\n006 Voice Engineering (voice)\n007 MCP App Engineering (mcp)\n008 Security Engineering (security)\n009 Benchmark Engineering (benchmarks)\n010 Memory Engineering (memory)",
+      "event_id": null,
+      "kind": "a2a-talks"
     }
   ]
 }

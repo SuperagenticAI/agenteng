@@ -38,6 +38,7 @@ from .tool_directory import DISCIPLINES, ToolKind
 @click.option("--themes", "site_shortcut", flag_value="themes", hidden=True)
 @click.option("--list-cities", "site_shortcut", flag_value="discover", hidden=True)
 @click.option("--info", "site_shortcut", flag_value="about", hidden=True)
+@click.option("--agent-to-agent", "site_shortcut", flag_value="a2a-talks", hidden=True)
 @click.pass_context
 def main(ctx, catalogue, remote, as_json, site_shortcut):
     """Agent Engineering HQ events, CLI, MCP and A2A.
@@ -536,6 +537,14 @@ def tickets(ctx, event_id, city=None):
 
     event_id = event_or_city(ctx, event_id, city)
     dispatch(ctx, dict(operation="tickets", event_id=require_event_id(ctx, event_id)))
+
+
+@main.command("a2a-talks")
+@click.option("--topic", help="Only videos with this discipline tag, for example memory.")
+@click.pass_context
+def a2a_talks(ctx, topic):
+    """List the Agent-to-Agent (A2A) Talks: AI-generated videos, not conference talks."""
+    dispatch(ctx, dict(operation="a2a-talks", topic=topic))
 
 
 @main.command()

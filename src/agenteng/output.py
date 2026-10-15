@@ -80,6 +80,7 @@ EMPTY_OK_OPERATIONS = frozenset(
         "themes",
         "sponsors",
         "recordings",
+        "a2a-talks",
         "search",
         "ask",
         "agenda",

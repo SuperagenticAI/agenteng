@@ -113,6 +113,22 @@ def agent_card(service):
                 ],
             ),
             AgentSkill(
+                id="agenteng-a2a-talks",
+                name="Agent-to-Agent (A2A) Talks",
+                description="The published Agent-to-Agent (A2A) Talks page (a2a-talks; optional "
+                "topic filters by discipline tag such as memory or security): short AI-generated "
+                "videos of two AI agents discussing one engineering discipline, with titles, "
+                "YouTube links, durations and tags. These videos are produced by the Agent "
+                "Engineering team using AI. They are separate from the conference programme and "
+                "are not created, reviewed or endorsed by our speakers. They are never returned as "
+                "speakers, talks or sessions. Model-free.",
+                tags=["a2a-talks", "agent-to-agent", "videos", "ai-generated"],
+                examples=[
+                    '{"operation":"a2a-talks"}',
+                    '{"operation":"a2a-talks","topic":"memory"}',
+                ],
+            ),
+            AgentSkill(
                 id="agenteng-tools",
                 name="Agent-engineering tool directory",
                 description="Browse public tool names and links across twelve disciplines using "

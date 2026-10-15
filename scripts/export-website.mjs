@@ -467,10 +467,32 @@ const guide = {event_id: london, url: guideUrl, title: clean(evaluate(declaratio
 Object.assign(events[0], {tagline, registration_status: 'fully_booked', registration_note: fullyBooked});
 events[0].source_ids.push(guideSourceIds[0] , taglineSource);
 const truly_yours = {tagline, title: trulyTitle, text: trulyText, source_ids: [taglineSource]};
+// Agent-to-Agent (A2A) Talks (/agent-to-agent): AI-generated videos, kept apart
+// from speakers, talks and sessions on purpose.
+const a2aDataFile = 'src/data/agentToAgent.ts';
+const a2aPageFile = 'src/pages/AgentToAgent.tsx';
+read(a2aDataFile); read(a2aPageFile);
+const a2aText = fs.readFileSync(path.join(root, a2aDataFile), 'utf8');
+const a2aRows = [...a2aText.matchAll(/\{\s*session:\s*"(\d+)",\s*title:\s*"([^"]+)",\s*videoId:\s*"([^"]+)",\s*tag:\s*"([^"]+)"(?:,\s*durationSec:\s*(\d+))?/g)];
+if (a2aRows.length !== (a2aText.match(/\bsession:\s*"/g) || []).length || !a2aRows.length)
+  throw new Error('A2A talk data shape changed');
+const a2aUrl = site + '/agent-to-agent';
+const a2aDisclaimer = clean(only(jsxTexts(a2aPageFile, 'p'), t => t.startsWith('These videos are produced'), 'A2A disclaimer'));
+const a2aIntro = clean(only(jsxTexts(a2aPageFile, 'p'), t => t.startsWith('A series of short'), 'A2A intro'));
+const a2aTitle = clean(only(jsxTexts(a2aPageFile, 'span'), t => t.startsWith('Agent-to-Agent'), 'A2A title'));
+const mmss = n => `${String(Math.floor(n / 60)).padStart(2, '0')}:${String(n % 60).padStart(2, '0')}`;
+const a2aVideos = a2aRows.map(([, session, title, videoId, tag, dur]) => ({
+  id: 'a2a-' + session, session, title: clean(title), youtube_id: videoId,
+  url: 'https://www.youtube.com/watch?v=' + videoId, tag,
+  duration_sec: dur ? Number(dur) : null, duration: dur ? mmss(Number(dur)) : null}));
+const a2aSource = source('a2a-talks', a2aUrl, [a2aTitle, a2aIntro, a2aDisclaimer,
+  ...a2aVideos.map(v => `${v.session} ${v.title} (${v.tag})`)].join('\n'), null, 'a2a-talks');
+const a2a_talks = {url: a2aUrl, title: a2aTitle, intro: a2aIntro, disclaimer: a2aDisclaimer,
+  videos: a2aVideos, source_ids: [a2aSource]};
 const source_hash=hash.digest('hex');
 const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),published_at:new Date().toISOString(),
   source_commit:execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),source_hash,
-  events,speakers,sessions,faqs,sponsors,support_options,themes,hq:hq_content,about:{...about,truly_yours},guide,sources};
+  events,speakers,sessions,faqs,sponsors,support_options,themes,hq:hq_content,about:{...about,truly_yours},guide,a2a_talks,sources};
 fs.mkdirSync(path.dirname(output),{recursive:true});
 fs.writeFileSync(output,JSON.stringify(catalogue,null,2)+'\n');
-console.log(`Exported ${events.length} events, ${speakers.length} speakers, ${sessions.length} sessions, ${faqs.length} faqs, ${guide.sections.length} guide sections to ${output}`);
+console.log(`Exported ${events.length} events, ${speakers.length} speakers, ${sessions.length} sessions, ${faqs.length} faqs, ${guide.sections.length} guide sections, ${a2aVideos.length} A2A talks to ${output}`);

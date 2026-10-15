@@ -583,6 +583,32 @@ def render_recordings(console: Console, result: Result) -> None:
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
+def render_a2a_talks(console: Console, result: Result) -> None:
+    data = result.data if isinstance(result.data, dict) else {}
+    videos = data.get("videos") or []
+    console.print(
+        Text(display_text(data.get("title")) or "Agent-to-Agent (A2A) Talks", style="ae.title")
+    )
+    if data.get("intro"):
+        console.print(display_text(data["intro"]))
+    if data.get("disclaimer"):
+        console.print(_panel("AI-generated", Text(display_text(data["disclaimer"])), border=VIOLET))
+    if videos:
+        table = Table(box=None, pad_edge=False)
+        table.add_column("Title", no_wrap=True)
+        table.add_column("Tag, length", style="ae.meta", no_wrap=True)
+        table.add_column("Watch", style=BLUE, no_wrap=True)
+        for v in videos:
+            meta = ", ".join(x for x in [v.get("tag"), v.get("duration")] if x)
+            watch = f"youtu.be/{v['youtube_id']}" if v.get("youtube_id") else v.get("url")
+            table.add_row(display_text(v.get("title")), display_text(meta), display_text(watch))
+        console.print(table)
+    else:
+        console.print(f"[ae.meta]{display_text(result.answer)}[/]")
+    if data.get("url"):
+        console.print(f"[ae.meta]Page: {display_text(data['url'])}[/]")
+
+
 def render_search(console: Console, result: Result) -> None:
     rows = result.data if isinstance(result.data, list) else []
     console.print(f"[ae.title]{display_text(result.answer)}[/]")
@@ -934,6 +960,7 @@ def render_result(result: Result, operation: str, console: Console | None = None
         "agenda": render_agenda,
         "tickets": render_tickets,
         "recordings": render_recordings,
+        "a2a-talks": render_a2a_talks,
         "search": render_search,
         "ask": render_ask,
         "chat": render_ask,

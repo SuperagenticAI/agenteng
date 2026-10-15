@@ -46,6 +46,9 @@ def terms(text: str) -> set[str]:
 
 # Plain-English guide topics, first match wins. Checked after the registration desk
 # and before tickets, so "Where is lunch?" never falls back to the events list.
+A2A_TALKS_QUESTION = re.compile(r"\bagent[- ]to[- ]agent\b|\ba2a\b", re.I)
+A2A_TALKS_WORDS = re.compile(r"\b(?:talks?|videos?|series|conversations?|clips?)\b", re.I)
+
 GUIDE_TOPICS: tuple[tuple[str, str], ...] = (
     (
         "after",
@@ -124,6 +127,33 @@ class Service:
     def authorized(self, token: str | None) -> bool:
         expected = self.settings.operator_token
         return bool(expected and token and hmac.compare_digest(expected.encode(), token.encode()))
+
+    def a2a_talks_result(self, tag: str = "") -> Result:
+        """AI-generated Agent-to-Agent videos. Kept apart from speakers, talks and sessions."""
+        page = self.catalogue.a2a_talks
+        if page is None:
+            return self.result(
+                "No Agent-to-Agent (A2A) Talks are published in this catalogue.",
+                [],
+                status="not_found",
+            )
+        wanted = re.sub(r"[^a-z0-9]+", "-", tag.lower()).strip("-")
+        videos = [v for v in page.videos if not wanted or wanted in {v.tag, v.id, v.session}]
+        data = {
+            "title": page.title,
+            "url": str(page.url),
+            "intro": page.intro,
+            "disclaimer": page.disclaimer,
+            "ai_generated": True,
+            "part_of_programme": False,
+            "videos": [v.model_dump(mode="json") for v in videos],
+        }
+        return self.result(
+            f"{len(videos)} Agent-to-Agent (A2A) Talk video(s). {page.disclaimer}",
+            data,
+            page.source_ids,
+            status="ok" if videos else "not_found",
+        )
 
     def result(self, answer: str, data=None, source_ids=(), **kwargs) -> Result:
         now = self.clock()
@@ -472,8 +502,13 @@ class Service:
                 },
                 [contact.id],
             )
+        if request.operation == "a2a-talks":
+            return self.a2a_talks_result(request.topic or request.query)
         if request.operation == "ask":
             from .chat_context import focused_search, published_talk_answer
+
+            if A2A_TALKS_QUESTION.search(request.query) and A2A_TALKS_WORDS.search(request.query):
+                return self.a2a_talks_result("")
 
             if terms(request.query) & {"travel", "accommodation", "visa", "visas"}:
                 return focused_search(self, request.query, request.limit, allow_faq=True)
@@ -1076,10 +1111,12 @@ class Service:
             )
         # Search/ask returns literal, attributed excerpts. It never paraphrases with a model.
         wanted = terms(request.query)
+        a2a_wanted = bool(A2A_TALKS_QUESTION.search(request.query))
         candidates = [
             s
             for s in self.catalogue.sources
             if s.id not in self.retired_sources
+            and (s.kind != "a2a-talks" or a2a_wanted)
             and (
                 s.event_id in ids
                 or (not request.event_id and not request.city and s.event_id is None)
