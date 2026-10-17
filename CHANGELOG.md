@@ -10,6 +10,7 @@
   - Event and ticket cards label a past event's link "Event page:" instead of "Register:".
   - The interactive menu labels the guide "Day guide (archive)" and removes the live now/next board; the guide card is titled "Day guide (archive)".
   - The discovery prompt becomes "Show the AgentEng London 2026 programme".
+  - Time answers never say "Now:" or "Next:": "Who is speaking at 10:00?" answers "At 10:00 on 16 October 2026: <talk> (presented by <speaker>).", and now/next questions say the event has ended and point to the published agenda.
 - Plain-English questions fall back to the London event once it is over: doors and arrival questions answer in the past tense ("Doors opened at 08:00 ..."), agenda, programme and ticket questions use London, talk answers say "presented" and "Held on", and guide topics point to the archived day guide. San Francisco questions are unchanged.
 
 ## 0.0.23 - 2026-10-15

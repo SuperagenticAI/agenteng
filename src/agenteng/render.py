@@ -456,7 +456,8 @@ def render_live(console: Console, result: Result, *, title: str) -> None:
         if nxt:
             console.print(_panel("Next up", _talk_body(nxt), border=BLUE))
         return
-    console.print(_panel(title, _talk_body(session), border=MAGENTA))
+    heading = display_text(data.get("heading")) or title
+    console.print(_panel(heading, _talk_body(session), border=MAGENTA))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 

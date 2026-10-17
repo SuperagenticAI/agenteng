@@ -228,6 +228,48 @@ class Service:
     def session_map(self) -> dict[str, Session]:
         return {s.id: s for s in self.catalogue.sessions}
 
+    def past_live_answer(self, request: Request, event: Event, now, current) -> Result:
+        """Now/next after the event: past tense, never 'Now:' or 'Next:'."""
+        day = long_date(event.date)
+        agenda_url = next(
+            (
+                str(self.sources[i].url)
+                for s in self.catalogue.sessions
+                if s.event_id == event.id
+                for i in s.source_ids
+                if i in self.sources
+            ),
+            None,
+        )
+        base = {"event_id": event.id, "state": "past", "as_of": now.isoformat()}
+        if request.operation == "now" and request.at is not None:
+            at = f"{now:%H:%M}"
+            if current:
+                payload = self.talk_payload(current)
+                by = payload.get("speaker_name")
+                answer = f"At {at} on {day}: {current.title}" + (
+                    f" (presented by {by})." if by else "."
+                )
+                return self.result(
+                    answer,
+                    {**base, "heading": f"At {at} on {day}", "session": payload},
+                    current.source_ids,
+                )
+            return self.result(
+                f"Nothing was scheduled at {at} on {day} in the published agenda.",
+                {**base, "session": None},
+                event.source_ids,
+                status="not_found",
+            )
+        return self.result(
+            f"{event.title} ended on {day}. Nothing is on now or next. "
+            f"See the published agenda"
+            + (f" at {agenda_url}" if agenda_url else "")
+            + f" or run agenteng agenda {event.id}.",
+            {**base, "session": None, "agenda_url": agenda_url},
+            event.source_ids,
+        )
+
     def talk_payload(self, session: Session) -> dict:
         speaker = self.speaker_map().get(session.speaker_id) if session.speaker_id else None
         payload = session.model_dump(mode="json")
@@ -1080,6 +1122,8 @@ class Service:
             timed.sort(key=lambda s: s.start)
             current = next((s for s in timed if s.start <= now < s.end), None)
             upcoming = next((s for s in timed if s.start > now), None)
+            if self.state(event) == "past":
+                return self.past_live_answer(request, event, now, current)
             if request.operation == "now":
                 if current:
                     return self.result(

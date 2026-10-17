@@ -162,3 +162,27 @@ def test_no_em_dashes_in_post_event_answers(after):
         ]
     )
     assert "\u2014" not in payload
+
+
+def test_time_answers_are_past_tense(after, before):
+    at_ten = ask(after, "Who is speaking at 10:00?")
+    assert at_ten.answer == (
+        "At 10:00 on 16 October 2026: Inference Engineering for Long-Running Agents "
+        "(presented by Meryem Arik)."
+    )
+    assert [s.id for s in at_ten.sources] == ["london-session-3"]
+    for query in ["What is the next talk?", "What's on now?"]:
+        answer = ask(after, query).answer
+        assert answer.startswith("AgentEng London 2026 ended on 16 October 2026.")
+        assert "https://agentengineering.world/agenda" in answer
+        assert "agenteng agenda agenteng-london-2026" in answer
+    for op in ("now", "next"):
+        answer = after.lookup(Request(operation=op, event_id=LONDON)).answer
+        assert not answer.startswith(("Now:", "Next:")), op
+    early = ask(after, "Who is speaking at 7:00?")
+    assert early.status == "not_found" and "Nothing was scheduled at 07:00" in early.answer
+    text = card(after, "now", event_id=LONDON, at=datetime(2026, 10, 16, 9, tzinfo=UTC))
+    assert "At 10:00 on 16 October 2026" in text and "Now" not in text.split("\n")[0]
+    # Before the event the live wording stays.
+    assert ask(before, "Who is speaking at 10:00?").answer.startswith("Now:")
+    assert ask(before, "What is the next talk?").answer.startswith("Next:")
