@@ -135,7 +135,7 @@ def test_tty_uses_rich_not_raw_json():
     ):
         result = runner.invoke(main, ["events", "--upcoming"])
     assert result.exit_code == 0, result.output
-    assert "AgentEng London" in result.output
+    assert "Code Engineering" in result.output
     assert "upcoming" in result.output
     # Should not be a bare Result JSON document.
     with pytest.raises(json.JSONDecodeError):

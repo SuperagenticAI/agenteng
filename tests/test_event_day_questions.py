@@ -52,7 +52,9 @@ def test_directions(eve, query):
 @pytest.mark.parametrize("query", ["Where is registration?", "Where is registration in London?"])
 def test_registration_location(eve, query):
     result = ask(eve, query)
-    assert result.answer.startswith("Registration is on the left as you walk in.")
+    assert result.answer.startswith(
+        "Registration is on the left-hand side when you arrive at Everyman."
+    )
     assert "badge and lanyard" in result.answer
     assert result.answer.count("Registration is on the left") == 1
     assert [s["id"] for s in result.data["sections"]] == ["registration"]

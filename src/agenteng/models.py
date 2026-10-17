@@ -264,7 +264,7 @@ class GuideVenue(Model):
     """Directions and arrival times published on the homepage venue card and /guide."""
 
     address: str
-    best_way_in: str
+    best_way_in: str | None = None
     getting_there: str = ""
     walk_video_url: HttpUrl | None = None
     registration: str = ""

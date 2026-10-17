@@ -6,7 +6,7 @@ import asyncio
 import hmac
 import re
 import threading
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from zoneinfo import ZoneInfo
 
 from .calendar import calendar
@@ -46,6 +46,15 @@ def terms(text: str) -> set[str]:
 
 # Plain-English guide topics, first match wins. Checked after the registration desk
 # and before tickets, so "Where is lunch?" never falls back to the events list.
+PAST_FULLY_BOOKED = "The event was fully booked."
+
+
+def long_date(iso: str) -> str:
+    """2026-10-16 -> 16 October 2026."""
+    day = date.fromisoformat(iso)
+    return f"{day.day} {day.strftime('%B')} {day.year}"
+
+
 A2A_TALKS_QUESTION = re.compile(r"\bagent[- ]to[- ]agent\b|\ba2a\b", re.I)
 A2A_TALKS_WORDS = re.compile(r"\b(?:talks?|videos?|series|conversations?|clips?)\b", re.I)
 
@@ -198,7 +207,10 @@ class Service:
         )
 
     def event_data(self, event):
-        return {**event.model_dump(mode="json"), "state": self.state(event)}
+        data = {**event.model_dump(mode="json"), "state": self.state(event)}
+        if data["state"] == "past" and event.registration_status == "fully_booked":
+            data["registration_note"] = PAST_FULLY_BOOKED
+        return data
 
     def matching_events(self, request):
         return [
@@ -269,6 +281,88 @@ class Service:
             city = "San Francisco"
         return city
 
+    def past_conference(self) -> Event | None:
+        """The guide event once it is over, while no other day-guide conference is upcoming."""
+        guide = self.catalogue.guide
+        event = self.events.get(guide.event_id) if guide else None
+        return event if event and self.state(event) == "past" else None
+
+    def past_event_day_answer(self, request: Request, query_terms: set[str]) -> Result | None:
+        """After the event: doors and ticket questions answer in the past tense."""
+        event = self.past_conference()
+        guide = self.catalogue.guide
+        if not event or not guide:
+            return None
+        city = self.named_city(request)
+        if request.event_id and request.event_id != event.id:
+            return None
+        if city and city.casefold() != event.city.casefold():
+            return None
+        plain = request.query.casefold()
+        held = f"{event.title} took place on {long_date(event.date)} at {event.venue}."
+        timed = self.time_answer(request, event, plain)
+        if timed is not None:
+            return timed
+        speaker = (
+            None
+            if re.search(r"\b(?:session|talk|start|starts|time|when|where|presenting)\b", plain)
+            else self.speaker_named(plain, event.id)
+        )
+        if speaker is not None:
+            return self.lookup(Request(operation="speaker", speaker_id=speaker.id))
+        if query_terms & {"ticket", "tickets", "sold", "buy", "booked", "register", "registration"}:
+            return self.lookup(Request(operation="tickets", event_id=event.id))
+        if query_terms & {"agenda", "programme", "program", "schedule", "running"}:
+            return self.lookup(
+                Request(operation="agenda", event_id=event.id, limit=request.limit or 20)
+            )
+        times = query_terms & {"doors", "arrival", "arrive", "arriving", "checkin"} or (
+            re.search(r"\bwhat time\b|\b(?:open|opens|start|starts|begin|begins)\b", plain)
+            and not re.search(r"\b(?:talk|talks|session|sessions|speaker|next)\b", plain)
+        )
+        venue = guide.venue
+        if times and venue:
+            return self.result(
+                f"{event.title} took place on {long_date(event.date)} at {event.venue}. "
+                f"Doors opened at {venue.doors} and the programme started at "
+                f"{venue.programme_starts.replace(' sharp', '')}.",
+                {
+                    "event_id": event.id,
+                    "state": "past",
+                    "facts": [f.model_dump() for f in guide.facts],
+                    "day_guide_url": str(guide.url),
+                },
+                [i for i in ("guide", "guide-arriving") if i in self.sources],
+            )
+        directions = query_terms & {"directions", "venue", "everyman", "address", "located"} or (
+            re.search(r"\bget (?:to|there)\b", plain)
+        )
+        if directions and venue:
+            return self.result(
+                f"{held} {venue.getting_there}",
+                {
+                    "event_id": event.id,
+                    "state": "past",
+                    "venue": event.venue,
+                    "getting_there": venue.getting_there,
+                    "walk_video_url": str(venue.walk_video_url) if venue.walk_video_url else None,
+                },
+                venue.source_ids,
+            )
+        topic = next((sid for sid, pattern in GUIDE_TOPICS if re.search(pattern, plain)), None)
+        if topic and topic != "help" and topic in {s.id for s in guide.sections}:
+            return self.result(
+                f"{held} The day guide is kept for reference at {guide.url}#{topic}.",
+                {
+                    "event_id": event.id,
+                    "state": "past",
+                    "section": topic,
+                    "day_guide_url": str(guide.url),
+                },
+                [i for i in (f"guide-{topic}",) if i in self.sources],
+            )
+        return None
+
     def event_day_answer(self, request: Request, query_terms: set[str]) -> Result | None:
         """Doors, directions, registration desk and ticket questions for the guide event.
 
@@ -278,7 +372,7 @@ class Service:
         guide = self.catalogue.guide
         default = self.default_conference()
         if not guide or not default:
-            return None
+            return self.past_event_day_answer(request, query_terms)
         city = self.named_city(request)
         if request.event_id and request.event_id != default.id:
             return None
@@ -395,8 +489,13 @@ class Service:
         )
         if directions and venue:
             return self.result(
-                f"{default.venue}. Best way in: {venue.best_way_in} "
-                f"Walk video: {venue.walk_video_url}",
+                f"{default.venue}. "
+                + (
+                    f"Best way in: {venue.best_way_in} "
+                    if venue.best_way_in
+                    else f"{venue.getting_there} "
+                )
+                + f"Walk video: {venue.walk_video_url}",
                 {
                     "event_id": default.id,
                     "venue": default.venue,
@@ -633,10 +732,16 @@ class Service:
             scope = self.matching_events(request.model_copy(update={"city": city}))
             current = [e for e in scope if self.state(e) in {"upcoming", "ongoing"}]
             default = self.default_conference() if not city else None
+            # Once the guide event is over and nothing else is current, its
+            # published agenda and registration status stay the default answer.
+            recent = self.past_conference() if not current else None
+            if recent and city and city.casefold() != recent.city.casefold():
+                recent = None
             target = (
                 request.event_id
                 or (current[0].id if len(current) == 1 else None)
                 or (default.id if default else None)
+                or (recent.id if recent else None)
             )
             operation = None
             if query_terms & {
@@ -870,9 +975,16 @@ class Service:
                 directions = guide.venue.model_dump(mode="json")
                 source_ids.extend(directions.pop("source_ids"))
                 directions.pop("address", None)
+                past = self.state(event) == "past"
+                if past:
+                    # Doors, arrival times and on-the-day help only matter before the event.
+                    for key in ("doors", "arrive", "seated_by", "programme_starts"):
+                        directions.pop(key, None)
                 data.update(directions)
                 data["day_guide_url"] = str(guide.url)
-                data["help"] = guide.help.model_dump(mode="json")
+                if not past:
+                    data["help"] = guide.help.model_dump(mode="json")
+            data["state"] = self.state(event)
             if accessibility:
                 source_ids.extend(accessibility.source_ids)
             return self.result(
@@ -1041,7 +1153,9 @@ class Service:
             return self.result(
                 f"{len(rows)} agenda entry/entries matched. This is the published agenda"
                 + (
-                    ". The event is fully booked; see the day guide for arriving and getting here."
+                    f" from {long_date(agenda_event.date)}."
+                    if agenda_event and self.state(agenda_event) == "past"
+                    else ". The event is fully booked; see the day guide for arriving and getting here."
                     if agenda_event and agenda_event.registration_status == "fully_booked"
                     else "; attendance is subject to registration."
                 ),
@@ -1065,25 +1179,29 @@ class Service:
             ]
             if event.registration_status == "fully_booked":
                 guide = self.catalogue.guide
+                past = self.state(event) == "past"
+                guide_url = (
+                    str(guide.url) if guide and guide.event_id == event.id and not past else None
+                )
+                note = PAST_FULLY_BOOKED if past else event.registration_note or "Fully booked."
                 return self.result(
-                    f"{event.title}: {event.registration_note or 'Fully booked.'}"
-                    + (f" Day guide: {guide.url}" if guide and guide.event_id == event.id else ""),
+                    f"{event.title}: {note}" + (f" Day guide: {guide_url}" if guide_url else ""),
                     {
                         "event_id": event.id,
                         "registration_status": "fully_booked",
-                        "registration_note": event.registration_note,
+                        "registration_note": note,
                         "current_offers": [],
                         "published_offers": [],
                         "state": self.state(event),
-                        "day_guide_url": str(guide.url)
-                        if guide and guide.event_id == event.id
-                        else None,
+                        "day_guide_url": guide_url,
                         "live_availability_verified": False,
                     },
                     [
                         i
-                        for i in [*event.source_ids, "guide-seating"]
-                        if i in self.sources and self.sources[i].kind != "tickets"
+                        for i in [*event.source_ids, *([] if past else ["guide-seating"])]
+                        if i in self.sources
+                        and self.sources[i].kind
+                        not in ({"tickets", "guide"} if past else {"tickets"})
                     ],
                 )
             return self.result(

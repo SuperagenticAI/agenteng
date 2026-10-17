@@ -14,6 +14,11 @@ DESCRIPTION = (
 )
 
 
+def london_past(service) -> bool:
+    event = service.events.get("agenteng-london-2026")
+    return bool(event) and service.state(event) == "past"
+
+
 def featured_events(service):
     rows = []
     for city in CITIES:
@@ -62,7 +67,9 @@ def discovery(service, city=None):
             "Find the next Agent Engineering Conference in London",
             "Show Agent Engineering HQ events in San Francisco",
             "Which London sessions cover evaluation or agent harnesses?",
-            "Show the public agenda for AgentEng London",
+            "Show the AgentEng London 2026 programme"
+            if london_past(service)
+            else "Show the public agenda for AgentEng London",
             "List tools for memory engineering",
         ],
         "participation": {

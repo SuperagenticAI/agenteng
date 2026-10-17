@@ -405,8 +405,13 @@ if (!seatedBy) throw new Error('Seated-by drift');
 const section = id => only(guideSections, s => s.id === id, 'guide section '+id);
 const firstSentence = text => clean(text).match(/^.*?\.(?=\s|$)/)[0];
 const venueParas = jsxTexts('src/components/VenueSection.tsx', 'p').map(clean);
-const bestWay = only(venueParas, t => t.startsWith('Best way in:'), 'best way in').replace(/^Best way in:\s*/, '');
-const venueRegistration = firstSentence(only(venueParas, t => t.startsWith('Registration is on the left'), 'venue registration'));
+// After the event the homepage venue block dropped its "Best way in" and
+// registration lines; the guide keeps the registration wording.
+const bestWayPara = venueParas.filter(t => t.startsWith('Best way in:'));
+if (bestWayPara.length > 1) throw new Error('Expected at most one best way in');
+const bestWay = bestWayPara.length ? bestWayPara[0].replace(/^Best way in:\s*/, '') : null;
+const venueRegPara = venueParas.filter(t => t.startsWith('Registration is on the left'));
+const venueRegistration = firstSentence(venueRegPara.length ? venueRegPara[0] : section('registration').paragraphs[0]);
 const venueGetting = only(pickFields('venueDetails', ['title', 'detail']), d => d.title === 'Getting There', 'getting there').detail;
 const helpSection = section('help');
 const onSiteSentence = firstSentence(helpSection.paragraphs[0]);
@@ -452,7 +457,7 @@ const guideSourceIds = [
     s.title + '\n' + s.paragraphs.join('\n'), london, 'guide')),
 ];
 const venueSource = source('london-venue-directions', site + '/#venue',
-  [`Best way in: ${bestWay}`, venueGetting, venueRegistration, `Walk video: ${walkUrl}`].join('\n'), london, 'venue');
+  [...(bestWay ? [`Best way in: ${bestWay}`] : []), venueGetting, venueRegistration, `Walk video: ${walkUrl}`].join('\n'), london, 'venue');
 const taglineSource = source('truly-yours', site + '/#truly-yours',
   [tagline, trulyTitle, trulyText].join('\n'), london, 'about');
 const guide = {event_id: london, url: guideUrl, title: clean(evaluate(declaration(guideFile, 'TITLE'))),

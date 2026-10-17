@@ -241,7 +241,7 @@ agenteng faq --search tickets
 
 Read venue address, directions, arrival times, help contacts and accessibility notes.
 
-For London this includes the best way in (Canary Wharf Elizabeth line station), the walk video, where registration is, doors, arrival and start times, and the published help contacts.
+For London this includes how to get there from Canary Wharf Elizabeth line station, the walk video and where registration was. Before and on the day it also shows doors, arrival and start times and the published help contacts; once the event is over (16 October 2026) those are hidden and the day guide is labelled as an archive.
 
 EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
 
@@ -297,7 +297,7 @@ agenteng themes
 
 Read the published registration status (London is fully booked).
 
-London is fully booked, so this prints the site's wording and points to the day guide; it no longer lists prices or a registration link. For an event with open registration it shows the published price window and the official registration link.
+London was fully booked. Before the event this printed the site's wording and pointed to the day guide; since 16 October 2026 it prints "The event was fully booked." with no guide pointer. It never lists prices or a registration link for London. For an event with open registration it shows the published price window and the official registration link. Event cards label the link of a past event "Event page:" instead of "Register:".
 
 EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
 
@@ -350,7 +350,7 @@ These videos are produced by the Agent Engineering team using AI. They are separ
 
 The published day guide: arriving, getting here, registration, Q&A and help.
 
-SECTION is optional, for example arriving, getting-here, registration, qna, help or facts. Omit it for the whole guide; use --list to see every section.
+SECTION is optional, for example arriving, getting-here, registration, qna, help or facts. Omit it for the whole guide; use --list to see every section. After the event the guide is shown as "Day guide (archive)" with the site's past-tense lead, and the interactive menu drops the live now/next board.
 
 ```text
 agenteng guide [OPTIONS] [SECTION]

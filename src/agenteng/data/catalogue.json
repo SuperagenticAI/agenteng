@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-eabb0df3a368",
-  "published_at": "2026-10-15T17:03:26.389Z",
-  "source_commit": "79be9bfccaf627b39645bad1691253891c70d8d8",
-  "source_hash": "eabb0df3a36806f2310ed6eebc25734c8ae1e7e51a291f3fb32197b1d67b44d0",
+  "version": "website-fedcc0e88444",
+  "published_at": "2026-10-17T11:42:24.741Z",
+  "source_commit": "a3cd566e55c27d1be61fc0ced558db1303e55d01",
+  "source_hash": "fedcc0e884442f9842895390f1d400d2089a38e024524e7e2b400a675d744835",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -1133,8 +1133,8 @@
     },
     {
       "id": "faq-2",
-      "question": "When and where is the conference?",
-      "answer": "The first Agent Engineering Conference takes place in London on 16 October 2026 at Everyman, Canary Wharf, London. It is a one-day, single-track conference of ten 30-minute technical talks, with limited seats.",
+      "question": "When and where was the conference?",
+      "answer": "The first Agent Engineering Conference took place in London on 16 October 2026 at Everyman, Canary Wharf, London. It was a one-day, single-track conference of ten 30-minute technical talks.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-2"
@@ -1143,7 +1143,7 @@
     {
       "id": "faq-3",
       "question": "Can I still get a ticket?",
-      "answer": "London is fully booked. We are fully booked and it will be busy, but there will be seats for everyone who has a ticket. Everything you need for the day is in the Day guide at https://agentengineering.world/guide",
+      "answer": "Agent Engineering London took place on 16 October 2026 and was fully booked. Future events are announced on the Luma calendars at https://luma.com/agent-engineering and https://luma.com/londonagenticai.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-3"
@@ -1151,8 +1151,8 @@
     },
     {
       "id": "faq-4",
-      "question": "Can I book seats for a team?",
-      "answer": "London is fully booked, so we cannot add new seats for a team. If a ticket holder on your team can no longer attend, email events@agentengineering.world before the event about moving their place to a colleague.",
+      "question": "How do I get an invoice?",
+      "answer": "After payment, open luma.com/settings/payment, choose Download Invoice, and add your company name, billing address, and tax details. Save the PDF for finance. You are only charged once a registration is approved.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-4"
@@ -1160,8 +1160,8 @@
     },
     {
       "id": "faq-5",
-      "question": "Why is there an approval step?",
-      "answer": "This is a single track. Everyone sits in the same room for the whole day, so the people beside you are a large part of what a ticket buys. There is a lightweight approval step to keep the room technical and high signal, and it is aimed at people who build, evaluate and operate agent systems. That is what keeps the questions in each session worth hearing and the breaks worth staying for. It is quick: most registrations clear well inside 24 hours. Nothing is charged until you are in, so there is no risk in registering.",
+      "question": "Is the venue accessible?",
+      "answer": "Access follows Everyman Canary Wharf. Please check the cinema's accessibility information at https://www.everymancinema.com/venues-list/x0vpb-everyman-canary-wharf/, or email events@agentengineering.world.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-5"
@@ -1169,8 +1169,8 @@
     },
     {
       "id": "faq-6",
-      "question": "How do I get an invoice?",
-      "answer": "After payment, open luma.com/settings/payment, choose Download Invoice, and add your company name, billing address, and tax details. Save the PDF for finance. You are only charged once a registration is approved.",
+      "question": "How does Q&A work during talks?",
+      "answer": "Five minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person, per talk. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-6"
@@ -1178,8 +1178,8 @@
     },
     {
       "id": "faq-7",
-      "question": "What food is provided?",
-      "answer": "Tea, pastries and lunch. Dietary needs can be raised on the day.",
+      "question": "Is there networking after the conference?",
+      "answer": "The programme closes at 16:30. Informal networking. Details shared on the day.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-7"
@@ -1187,8 +1187,8 @@
     },
     {
       "id": "faq-8",
-      "question": "Is the venue accessible?",
-      "answer": "Access follows Everyman Canary Wharf. Please check the cinema's accessibility information at https://www.everymancinema.com/venues-list/x0vpb-everyman-canary-wharf/, or email events@agentengineering.world.",
+      "question": "Is there a code of conduct?",
+      "answer": "Yes, and it applies to everyone taking part: attendees, speakers, partners, volunteers and organisers. It covers the venue, any social gathering connected to the conference, and our online channels, before and during the event as well as afterwards. Harassment, discrimination and intimidation are not tolerated. If you experience or witness something, you can report it on the day or afterwards to conduct@super-agentic.ai, and reports are handled confidentially with no retaliation against anyone raising a concern in good faith. Read it in full at https://agentengineering.world/code-of-conduct, alongside the event terms at https://agentengineering.world/terms",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-8"
@@ -1196,8 +1196,8 @@
     },
     {
       "id": "faq-9",
-      "question": "How does Q&A work during talks?",
-      "answer": "Five minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person, per talk. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
+      "question": "Who is speaking?",
+      "answer": "The lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-9"
@@ -1205,8 +1205,8 @@
     },
     {
       "id": "faq-10",
-      "question": "Is there networking after the conference?",
-      "answer": "The programme closes at 16:30. Informal networking. Details shared on the day.",
+      "question": "Can I still apply to speak?",
+      "answer": "Speaker applications were closed for this edition. The talks were invited by the programme team, and the full lineup is at https://agentengineering.world/speakers.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-10"
@@ -1214,8 +1214,8 @@
     },
     {
       "id": "faq-11",
-      "question": "Can I get a refund or pass my ticket to someone else?",
-      "answer": "Tickets are not refundable, and they cannot be transferred without our approval first. If something comes up and you can no longer attend, contact us before the event and we will where possible move your place to a replacement attendee. Because the audience is curated, that person goes through the same lightweight approval, so please do not pass a ticket on until we confirm the transfer. If we cancel the conference, ticket holders are offered a refund. Full detail is in the event terms at https://agentengineering.world/terms",
+      "question": "Is there a call for papers on Sessionize?",
+      "answer": "This edition did not have a call for papers on Sessionize or elsewhere. The lineup was invited by the programme team and is published at https://agentengineering.world/speakers.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-11"
@@ -1223,8 +1223,8 @@
     },
     {
       "id": "faq-12",
-      "question": "Is there a code of conduct?",
-      "answer": "Yes, and it applies to everyone taking part: attendees, speakers, partners, volunteers and organisers. It covers the venue, any social gathering connected to the conference, and our online channels, before and during the event as well as afterwards. Harassment, discrimination and intimidation are not tolerated. If you experience or witness something, you can report it on the day or afterwards to conduct@super-agentic.ai, and reports are handled confidentially with no retaliation against anyone raising a concern in good faith. Read it in full at https://agentengineering.world/code-of-conduct, alongside the event terms at https://agentengineering.world/terms",
+      "question": "What topics will be covered?",
+      "answer": "The conference focuses on deep technical sessions across Prompt Engineering, Context Engineering, Harness Engineering, Eval Engineering, Memory Engineering, Inference Engineering, Loop Engineering, Protocol Engineering, Graph Engineering, Search Engineering, Agentic Engineering, and Code Engineering, plus program themes like Agent Optimization, Agent Experience (AX), and the Future of Coding.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-12"
@@ -1232,8 +1232,8 @@
     },
     {
       "id": "faq-13",
-      "question": "Who is speaking?",
-      "answer": "The lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
+      "question": "How is this different from other AI conferences?",
+      "answer": "The conference covers the engineering discipline behind AI agents. It is one track of ten technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-13"
@@ -1241,8 +1241,8 @@
     },
     {
       "id": "faq-14",
-      "question": "Can I still apply to speak?",
-      "answer": "Speaker applications are closed for this edition. The remaining talks are invited by the programme team. Confirmed names appear at https://agentengineering.world/speakers as they are announced.",
+      "question": "Are there sponsorship opportunities?",
+      "answer": "We are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/support",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-14"
@@ -1250,8 +1250,8 @@
     },
     {
       "id": "faq-15",
-      "question": "Is there a call for papers on Sessionize?",
-      "answer": "This edition does not have a call for papers on Sessionize or elsewhere. The lineup is invited by the programme team and published at https://agentengineering.world/speakers as each speaker is confirmed.",
+      "question": "Will talks be recorded?",
+      "answer": "Yes. Talks are recorded and shared with ticket holders after the day.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-15"
@@ -1259,8 +1259,8 @@
     },
     {
       "id": "faq-16",
-      "question": "What topics will be covered?",
-      "answer": "The conference focuses on deep technical sessions across Prompt Engineering, Context Engineering, Harness Engineering, Eval Engineering, Memory Engineering, Inference Engineering, Loop Engineering, Protocol Engineering, Graph Engineering, Search Engineering, Agentic Engineering, and Code Engineering, plus program themes like Agent Optimization, Agent Experience (AX), and the Future of Coding.",
+      "question": "Do you cover travel and accommodation costs?",
+      "answer": "Unfortunately, no. This conference is a Founders Edition funded by ticket sales and the organiser. We cannot cover travel or accommodation costs for speakers or attendees.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-16"
@@ -1268,47 +1268,11 @@
     },
     {
       "id": "faq-17",
-      "question": "How is this different from other AI conferences?",
-      "answer": "The conference covers the engineering discipline behind AI agents. It is one track of ten technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
-      "event_id": "agenteng-london-2026",
-      "source_ids": [
-        "faq-17"
-      ]
-    },
-    {
-      "id": "faq-18",
-      "question": "Are there sponsorship opportunities?",
-      "answer": "We are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/support",
-      "event_id": "agenteng-london-2026",
-      "source_ids": [
-        "faq-18"
-      ]
-    },
-    {
-      "id": "faq-19",
-      "question": "Will talks be recorded?",
-      "answer": "Yes. Talks are recorded and shared with ticket holders after the day.",
-      "event_id": "agenteng-london-2026",
-      "source_ids": [
-        "faq-19"
-      ]
-    },
-    {
-      "id": "faq-20",
-      "question": "Do you cover travel and accommodation costs?",
-      "answer": "Unfortunately, no. This conference is a Founders Edition funded by ticket sales and the organiser. We cannot cover travel or accommodation costs for speakers or attendees.",
-      "event_id": "agenteng-london-2026",
-      "source_ids": [
-        "faq-20"
-      ]
-    },
-    {
-      "id": "faq-21",
       "question": "Can I get a visa invitation letter?",
       "answer": "Unfortunately, no. To keep the organisation of this conference manageable, we do not provide visa invitation letters or handle visa-related matters.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
-        "faq-21"
+        "faq-17"
       ]
     }
   ],
@@ -1490,7 +1454,7 @@
     "event_id": "agenteng-london-2026",
     "url": "https://agentengineering.world/guide",
     "title": "Day guide | Agent Engineering London 2026",
-    "description": "Everything you need for Agent Engineering London on Friday 16 October 2026 at Everyman Canary Wharf. Doors 08:00, programme starts 9:00 sharp.",
+    "description": "The attendee guide for Agent Engineering London, held on Friday 16 October 2026 at Everyman Canary Wharf. Kept here for reference.",
     "intro": "There are many Agent conferences. This one is truly yours. No sponsor shaped the programme, every talk was curated for the people in the room.",
     "hero_lead": {
       "today": "See you today at Everyman, Canary Wharf. Doors 08:00, talks start 9:00 sharp.",
@@ -1529,7 +1493,7 @@
         "id": "arriving",
         "title": "Arriving",
         "paragraphs": [
-          "Doors and registration open at 08:00. Please aim to arrive between 8:30 and 8:45 AM so you have enough time to find the venue, check in, grab some tea or coffee, meet a few people and get seated.",
+          "Doors and registration opened at 08:00. Please aim to arrive between 8:30 and 8:45 AM so you have enough time to find the venue, check in, grab some tea or coffee, meet a few people and get seated.",
           "The programme starts at 9:00 AM sharp. Our agenda is very tight, so we cannot delay the start. Please don't plan to arrive at 9:00 itself.",
           "There will be tea, coffee and freshly baked pastries before the programme starts."
         ],
@@ -1695,10 +1659,10 @@
     },
     "venue": {
       "address": "Everyman Canary Wharf, Crossrail Place, London E14 5AR",
-      "best_way_in": "Canary Wharf Elizabeth line station. Coming another way, by Jubilee, DLR or car, head to the Elizabeth line station first and follow the video from there.",
+      "best_way_in": null,
       "getting_there": "Crossrail Place sits right above Canary Wharf Elizabeth line station.",
       "walk_video_url": "https://www.youtube.com/watch?v=GPmvi7qjiwA",
-      "registration": "Registration is on the left as you walk in.",
+      "registration": "Registration is on the left-hand side when you arrive at Everyman.",
       "doors": "08:00",
       "arrive": "8:30 to 8:45",
       "seated_by": "8:50",
@@ -1859,7 +1823,7 @@
     {
       "id": "london-calendar",
       "url": "https://agentengineering.world/agenteng-london-2026.ics",
-      "text": "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//AgentEng//Agent Engineering London//EN\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\nBEGIN:VEVENT\nUID:agenteng-london-2026@agentengineering.world\nDTSTAMP:20260715T090000Z\nDTSTART:20261016T070000Z\nDTEND:20261016T153000Z\nSUMMARY:Agent Engineering London\nDESCRIPTION:Agent Engineering London. A one-day technical conference on designing\\, building\\, evaluating\\, and operating production AI agents. Doors 08:00\\, programme from 09:00. Details: https://agentengineering.world/\nLOCATION:Everyman Canary Wharf\\, Crossrail Place\\, London E14 5AR\nURL:https://agentengineering.world/\nSTATUS:CONFIRMED\nEND:VEVENT\nEND:VCALENDAR\n",
+      "text": "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//AgentEng//Agent Engineering London//EN\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\nBEGIN:VEVENT\nUID:agenteng-london-2026@agentengineering.world\nDTSTAMP:20260715T090000Z\nDTSTART:20261016T070000Z\nDTEND:20261016T153000Z\nSUMMARY:Agent Engineering London\nDESCRIPTION:Agent Engineering London. A one-day technical conference on designing\\, building\\, evaluating\\, and operating production AI agents. Details: https://agentengineering.world/\nLOCATION:Everyman Canary Wharf\\, Crossrail Place\\, London E14 5AR\nURL:https://agentengineering.world/\nSTATUS:CONFIRMED\nEND:VEVENT\nEND:VCALENDAR\n",
       "event_id": "agenteng-london-2026",
       "kind": "calendar"
     },
@@ -2195,138 +2159,110 @@
     {
       "id": "faq-2",
       "url": "https://agentengineering.world/#faq",
-      "text": "When and where is the conference?\nThe first Agent Engineering Conference takes place in London on 16 October 2026 at Everyman, Canary Wharf, London. It is a one-day, single-track conference of ten 30-minute technical talks, with limited seats.",
+      "text": "When and where was the conference?\nThe first Agent Engineering Conference took place in London on 16 October 2026 at Everyman, Canary Wharf, London. It was a one-day, single-track conference of ten 30-minute technical talks.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-3",
       "url": "https://agentengineering.world/#faq",
-      "text": "Can I still get a ticket?\nLondon is fully booked. We are fully booked and it will be busy, but there will be seats for everyone who has a ticket. Everything you need for the day is in the Day guide at https://agentengineering.world/guide",
+      "text": "Can I still get a ticket?\nAgent Engineering London took place on 16 October 2026 and was fully booked. Future events are announced on the Luma calendars at https://luma.com/agent-engineering and https://luma.com/londonagenticai.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-4",
       "url": "https://agentengineering.world/#faq",
-      "text": "Can I book seats for a team?\nLondon is fully booked, so we cannot add new seats for a team. If a ticket holder on your team can no longer attend, email events@agentengineering.world before the event about moving their place to a colleague.",
+      "text": "How do I get an invoice?\nAfter payment, open luma.com/settings/payment, choose Download Invoice, and add your company name, billing address, and tax details. Save the PDF for finance. You are only charged once a registration is approved.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-5",
       "url": "https://agentengineering.world/#faq",
-      "text": "Why is there an approval step?\nThis is a single track. Everyone sits in the same room for the whole day, so the people beside you are a large part of what a ticket buys. There is a lightweight approval step to keep the room technical and high signal, and it is aimed at people who build, evaluate and operate agent systems. That is what keeps the questions in each session worth hearing and the breaks worth staying for. It is quick: most registrations clear well inside 24 hours. Nothing is charged until you are in, so there is no risk in registering.",
+      "text": "Is the venue accessible?\nAccess follows Everyman Canary Wharf. Please check the cinema's accessibility information at https://www.everymancinema.com/venues-list/x0vpb-everyman-canary-wharf/, or email events@agentengineering.world.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-6",
       "url": "https://agentengineering.world/#faq",
-      "text": "How do I get an invoice?\nAfter payment, open luma.com/settings/payment, choose Download Invoice, and add your company name, billing address, and tax details. Save the PDF for finance. You are only charged once a registration is approved.",
+      "text": "How does Q&A work during talks?\nFive minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person, per talk. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-7",
       "url": "https://agentengineering.world/#faq",
-      "text": "What food is provided?\nTea, pastries and lunch. Dietary needs can be raised on the day.",
+      "text": "Is there networking after the conference?\nThe programme closes at 16:30. Informal networking. Details shared on the day.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-8",
       "url": "https://agentengineering.world/#faq",
-      "text": "Is the venue accessible?\nAccess follows Everyman Canary Wharf. Please check the cinema's accessibility information at https://www.everymancinema.com/venues-list/x0vpb-everyman-canary-wharf/, or email events@agentengineering.world.",
+      "text": "Is there a code of conduct?\nYes, and it applies to everyone taking part: attendees, speakers, partners, volunteers and organisers. It covers the venue, any social gathering connected to the conference, and our online channels, before and during the event as well as afterwards. Harassment, discrimination and intimidation are not tolerated. If you experience or witness something, you can report it on the day or afterwards to conduct@super-agentic.ai, and reports are handled confidentially with no retaliation against anyone raising a concern in good faith. Read it in full at https://agentengineering.world/code-of-conduct, alongside the event terms at https://agentengineering.world/terms",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-9",
       "url": "https://agentengineering.world/#faq",
-      "text": "How does Q&A work during talks?\nFive minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person, per talk. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
+      "text": "Who is speaking?\nThe lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-10",
       "url": "https://agentengineering.world/#faq",
-      "text": "Is there networking after the conference?\nThe programme closes at 16:30. Informal networking. Details shared on the day.",
+      "text": "Can I still apply to speak?\nSpeaker applications were closed for this edition. The talks were invited by the programme team, and the full lineup is at https://agentengineering.world/speakers.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-11",
       "url": "https://agentengineering.world/#faq",
-      "text": "Can I get a refund or pass my ticket to someone else?\nTickets are not refundable, and they cannot be transferred without our approval first. If something comes up and you can no longer attend, contact us before the event and we will where possible move your place to a replacement attendee. Because the audience is curated, that person goes through the same lightweight approval, so please do not pass a ticket on until we confirm the transfer. If we cancel the conference, ticket holders are offered a refund. Full detail is in the event terms at https://agentengineering.world/terms",
+      "text": "Is there a call for papers on Sessionize?\nThis edition did not have a call for papers on Sessionize or elsewhere. The lineup was invited by the programme team and is published at https://agentengineering.world/speakers.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-12",
       "url": "https://agentengineering.world/#faq",
-      "text": "Is there a code of conduct?\nYes, and it applies to everyone taking part: attendees, speakers, partners, volunteers and organisers. It covers the venue, any social gathering connected to the conference, and our online channels, before and during the event as well as afterwards. Harassment, discrimination and intimidation are not tolerated. If you experience or witness something, you can report it on the day or afterwards to conduct@super-agentic.ai, and reports are handled confidentially with no retaliation against anyone raising a concern in good faith. Read it in full at https://agentengineering.world/code-of-conduct, alongside the event terms at https://agentengineering.world/terms",
+      "text": "What topics will be covered?\nThe conference focuses on deep technical sessions across Prompt Engineering, Context Engineering, Harness Engineering, Eval Engineering, Memory Engineering, Inference Engineering, Loop Engineering, Protocol Engineering, Graph Engineering, Search Engineering, Agentic Engineering, and Code Engineering, plus program themes like Agent Optimization, Agent Experience (AX), and the Future of Coding.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-13",
       "url": "https://agentengineering.world/#faq",
-      "text": "Who is speaking?\nThe lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
+      "text": "How is this different from other AI conferences?\nThe conference covers the engineering discipline behind AI agents. It is one track of ten technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-14",
       "url": "https://agentengineering.world/#faq",
-      "text": "Can I still apply to speak?\nSpeaker applications are closed for this edition. The remaining talks are invited by the programme team. Confirmed names appear at https://agentengineering.world/speakers as they are announced.",
+      "text": "Are there sponsorship opportunities?\nWe are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/support",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-15",
       "url": "https://agentengineering.world/#faq",
-      "text": "Is there a call for papers on Sessionize?\nThis edition does not have a call for papers on Sessionize or elsewhere. The lineup is invited by the programme team and published at https://agentengineering.world/speakers as each speaker is confirmed.",
+      "text": "Will talks be recorded?\nYes. Talks are recorded and shared with ticket holders after the day.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-16",
       "url": "https://agentengineering.world/#faq",
-      "text": "What topics will be covered?\nThe conference focuses on deep technical sessions across Prompt Engineering, Context Engineering, Harness Engineering, Eval Engineering, Memory Engineering, Inference Engineering, Loop Engineering, Protocol Engineering, Graph Engineering, Search Engineering, Agentic Engineering, and Code Engineering, plus program themes like Agent Optimization, Agent Experience (AX), and the Future of Coding.",
-      "event_id": "agenteng-london-2026",
-      "kind": "faq"
-    },
-    {
-      "id": "faq-17",
-      "url": "https://agentengineering.world/#faq",
-      "text": "How is this different from other AI conferences?\nThe conference covers the engineering discipline behind AI agents. It is one track of ten technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
-      "event_id": "agenteng-london-2026",
-      "kind": "faq"
-    },
-    {
-      "id": "faq-18",
-      "url": "https://agentengineering.world/#faq",
-      "text": "Are there sponsorship opportunities?\nWe are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/support",
-      "event_id": "agenteng-london-2026",
-      "kind": "faq"
-    },
-    {
-      "id": "faq-19",
-      "url": "https://agentengineering.world/#faq",
-      "text": "Will talks be recorded?\nYes. Talks are recorded and shared with ticket holders after the day.",
-      "event_id": "agenteng-london-2026",
-      "kind": "faq"
-    },
-    {
-      "id": "faq-20",
-      "url": "https://agentengineering.world/#faq",
       "text": "Do you cover travel and accommodation costs?\nUnfortunately, no. This conference is a Founders Edition funded by ticket sales and the organiser. We cannot cover travel or accommodation costs for speakers or attendees.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
-      "id": "faq-21",
+      "id": "faq-17",
       "url": "https://agentengineering.world/#faq",
       "text": "Can I get a visa invitation letter?\nUnfortunately, no. To keep the organisation of this conference manageable, we do not provide visa invitation letters or handle visa-related matters.",
       "event_id": "agenteng-london-2026",
@@ -2461,7 +2397,7 @@
     {
       "id": "guide-arriving",
       "url": "https://agentengineering.world/guide#arriving",
-      "text": "Arriving\nDoors and registration open at 08:00. Please aim to arrive between 8:30 and 8:45 AM so you have enough time to find the venue, check in, grab some tea or coffee, meet a few people and get seated.\nThe programme starts at 9:00 AM sharp. Our agenda is very tight, so we cannot delay the start. Please don't plan to arrive at 9:00 itself.\nThere will be tea, coffee and freshly baked pastries before the programme starts.",
+      "text": "Arriving\nDoors and registration opened at 08:00. Please aim to arrive between 8:30 and 8:45 AM so you have enough time to find the venue, check in, grab some tea or coffee, meet a few people and get seated.\nThe programme starts at 9:00 AM sharp. Our agenda is very tight, so we cannot delay the start. Please don't plan to arrive at 9:00 itself.\nThere will be tea, coffee and freshly baked pastries before the programme starts.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
@@ -2545,7 +2481,7 @@
     {
       "id": "london-venue-directions",
       "url": "https://agentengineering.world/#venue",
-      "text": "Best way in: Canary Wharf Elizabeth line station. Coming another way, by Jubilee, DLR or car, head to the Elizabeth line station first and follow the video from there.\nCrossrail Place sits right above Canary Wharf Elizabeth line station.\nRegistration is on the left as you walk in.\nWalk video: https://www.youtube.com/watch?v=GPmvi7qjiwA",
+      "text": "Crossrail Place sits right above Canary Wharf Elizabeth line station.\nRegistration is on the left-hand side when you arrive at Everyman.\nWalk video: https://www.youtube.com/watch?v=GPmvi7qjiwA",
       "event_id": "agenteng-london-2026",
       "kind": "venue"
     },

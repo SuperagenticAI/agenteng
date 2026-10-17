@@ -92,19 +92,38 @@ def _show(ctx, payload: dict) -> None:
     dispatch(ctx, payload)
 
 
+def _guide_archived(ctx) -> bool:
+    """True once the day guide's event is over (the guide phase is "after")."""
+    from .cli import dispatch
+
+    try:
+        result = dispatch(ctx, dict(operation="guide"), quiet=True)
+    except Exception:  # noqa: BLE001 - the menu still works without the hint
+        return False
+    data = getattr(result, "data", None)
+    return isinstance(data, dict) and data.get("phase") == "after"
+
+
 def _event_submenu(ctx, event: dict) -> None:
     event_id = event.get("id") or ""
     header = event_label(event)
     booked = event.get("registration_status") == "fully_booked"
-    has_guide = event.get("city") == "London" and event.get("state") in {"upcoming", "ongoing"}
+    past = event.get("state") == "past"
+    has_guide = event.get("id") == "agenteng-london-2026" or (
+        event.get("city") == "London" and event.get("state") in {"upcoming", "ongoing"}
+    )
     while True:
         choices = [
             Choice("Overview", "overview"),
-            *([Choice("Day guide", "guide")] if has_guide else []),
+            *(
+                [Choice("Day guide (archive)" if past else "Day guide", "guide")]
+                if has_guide
+                else []
+            ),
             Choice("Speakers", "speakers"),
             Choice("Talks and abstracts", "talks"),
             Choice("Agenda", "agenda"),
-            Choice("What's on now / next", "live"),
+            *([] if past else [Choice("What's on now / next", "live")]),
             Choice("Venue and directions", "venue"),
             Choice("FAQ", "faq"),
             Choice("Registration status" if booked else "Tickets", "tickets"),
@@ -278,18 +297,22 @@ def _bingo(ctx) -> None:
 def run_menu(ctx) -> None:
     """Top-level interactive loop. Ctrl-C or Quit exits cleanly."""
     click.echo("AgentEng interactive mode. Pick an option or press ctrl-c to quit.\n")
+    archived = _guide_archived(ctx)
     while True:
         try:
             action = _select(
                 "What would you like to do?",
                 [
                     Choice("Browse events", "events"),
-                    Choice("Day guide: London, Fri 16 Oct 2026", "guide"),
+                    Choice(
+                        "Day guide (archive)" if archived else "Day guide: London, Fri 16 Oct 2026",
+                        "guide",
+                    ),
                     Choice("Search the catalogue", "search"),
                     Choice("FAQ / code of conduct", "faq"),
                     Choice("Sponsors and support", "sponsors"),
                     Choice("Program themes", "themes"),
-                    Choice("Live now/next board (venue screen)", "live"),
+                    *([] if archived else [Choice("Live now/next board (venue screen)", "live")]),
                     Choice("Talk bingo card", "bingo"),
                     Choice("About Agent Engineering", "about"),
                     Choice("Agent Engineering HQ: manifesto and mindset", "hq"),
