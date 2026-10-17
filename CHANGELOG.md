@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.24 - 2026-10-17
 
 - Catalogue re-exported from site commit a3cd566, the post-event pass for AgentEng London (16 October 2026). The FAQ is regenerated from the site, so the team seats, approval, refund and dietary answers are gone, and the remaining answers read in the past tense. The export no longer requires the homepage "Best way in" and registration lines, which the site removed; registration wording now comes from the day guide.
 - Past-event behaviour is date-driven from the event's published end time:
