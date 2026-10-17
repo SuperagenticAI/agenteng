@@ -562,8 +562,10 @@ def test_menu_lists_live_bingo_about_hq(monkeypatch):
 
     monkeypatch.setattr(interactive, "_select", fake_select)
     interactive.run_menu(_menu_ctx())
+    # London 2026 is over (real clock): the guide is an archive and the live board is gone.
+    assert "Day guide (archive)" in seen[0]
+    assert "Live now/next board (venue screen)" not in seen[0]
     for title in [
-        "Live now/next board (venue screen)",
         "Talk bingo card",
         "About Agent Engineering",
         "Agent Engineering HQ: manifesto and mindset",

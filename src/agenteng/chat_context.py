@@ -216,6 +216,10 @@ def published_talk_answer(service, request):
         if service.state(e) != "cancelled"
         and (request.event_id or request.past or service.state(e) in {"upcoming", "ongoing"})
     }
+    recent = service.past_conference()
+    if recent and recent in scoped and not request.event_id:
+        # After the conference, its published talks remain part of the answer.
+        events.setdefault(recent.id, recent)
     speakers = service.speaker_map()
     matches = []
     for session in service.catalogue.sessions:
@@ -238,12 +242,14 @@ def published_talk_answer(service, request):
     answers, data, source_ids = [], [], []
     for _, session, speaker in matches:
         event = events[session.event_id]
-        answer = f"{speaker.name}{' from ' + speaker.company if speaker.company else ''} is presenting “{session.title}” at {event.title}."
+        past = service.state(event) == "past"
+        verb = "presented" if past else "is presenting"
+        answer = f"{speaker.name}{' from ' + speaker.company if speaker.company else ''} {verb} “{session.title}” at {event.title}."
         if session.start:
             start = session.start.astimezone(ZoneInfo(event.timezone))
             end = session.end.astimezone(ZoneInfo(event.timezone)) if session.end else None
             hours = f"{start:%H:%M}" + (f"–{end:%H:%M}" if end else "")
-            answer += f" Scheduled for {start:%d %B %Y}, {hours} ({event.timezone})."
+            answer += f" {'Held on' if past else 'Scheduled for'} {start:%d %B %Y}, {hours} ({event.timezone})."
         else:
             answer += " The session time has not been published yet."
         answers.append(answer)

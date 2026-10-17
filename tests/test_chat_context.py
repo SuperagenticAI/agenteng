@@ -310,7 +310,7 @@ def test_practical_attendance_question_still_gets_published_invoice_answer():
         Service(Settings()), Request(operation="chat", query="How do I get an invoice?")
     )
     assert "Download Invoice" in result.answer
-    assert result.sources and any(source.id == "faq-6" for source in result.sources)
+    assert result.sources and any(source.id == "faq-4" for source in result.sources)
     assert result.data == {}
 
 
@@ -319,17 +319,17 @@ def test_practical_attendance_question_still_gets_published_invoice_answer():
     [
         (
             "Do you cover travel and accommodation costs?",
-            "faq-20",
+            "faq-16",
             "We cannot cover travel or accommodation costs for speakers or attendees.",
         ),
         (
             "Do you cover travel costs for speakers?",
-            "faq-20",
+            "faq-16",
             "We cannot cover travel or accommodation costs for speakers or attendees.",
         ),
         (
             "Can I get a visa invitation letter?",
-            "faq-21",
+            "faq-17",
             "we do not provide visa invitation letters or handle visa-related matters.",
         ),
     ],

@@ -138,10 +138,13 @@ def test_help_contacts_are_only_what_the_guide_publishes(service):
 def test_venue_has_published_directions_and_times(service):
     data = service.lookup(Request(operation="venue", event_id=LONDON)).data
     assert data["venue"] == "Everyman Canary Wharf, Crossrail Place, London E14 5AR"
-    assert data["best_way_in"].startswith("Canary Wharf Elizabeth line station.")
-    assert "Jubilee, DLR or car" in data["best_way_in"]
+    # The post-event site dropped the homepage "Best way in" line.
+    assert data["best_way_in"] is None
+    assert data["getting_there"].startswith("Crossrail Place sits right above")
     assert data["walk_video_url"] == WALK
-    assert data["registration"] == "Registration is on the left as you walk in."
+    assert data["registration"] == (
+        "Registration is on the left-hand side when you arrive at Everyman."
+    )
     assert (data["doors"], data["arrive"], data["seated_by"], data["programme_starts"]) == (
         "08:00",
         "8:30 to 8:45",
@@ -171,7 +174,7 @@ def test_rich_cards(service):
     assert "Day guide: quick facts" in guide and "Need help on the day" in guide
     assert "Be seated by" in guide and WALK in guide
     venue = text(service, operation="venue", event_id=LONDON)
-    assert "Best way in:" in venue and "Times" in venue and "Programme starts" in venue
+    assert "Crossrail Place" in venue and "Times" in venue and "Programme starts" in venue
     tickets = text(service, operation="tickets", event_id=LONDON)
     assert "fully booked" in tickets and "agenteng guide" in tickets
     assert "£" not in tickets and "Register:" not in tickets and "luma.com" not in tickets

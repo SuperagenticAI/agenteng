@@ -66,7 +66,7 @@ def test_faq_venue_sponsors_conduct_themes(service):
 
 @pytest.mark.parametrize(
     ("query", "faq_id"),
-    [("travel", "faq-20"), ("accommodation", "faq-20"), ("visa", "faq-21")],
+    [("travel", "faq-16"), ("accommodation", "faq-16"), ("visa", "faq-17")],
 )
 def test_travel_and_visa_faqs_are_searchable_with_source_attribution(service, query, faq_id):
     result = service.lookup(Request(operation="faq", event_id=LONDON, query=query))

@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Catalogue re-exported from site commit a3cd566, the post-event pass for AgentEng London (16 October 2026). The FAQ is regenerated from the site, so the team seats, approval, refund and dietary answers are gone, and the remaining answers read in the past tense. The export no longer requires the homepage "Best way in" and registration lines, which the site removed; registration wording now comes from the day guide.
+- Past-event behaviour is date-driven from the event's published end time:
+  - `agenteng tickets london` and the event's `registration_note` say "The event was fully booked." with no day guide pointer.
+  - The agenda answer reads "This is the published agenda from 16 October 2026."
+  - `agenteng venue london` hides the times and the help block.
+  - Event and ticket cards label a past event's link "Event page:" instead of "Register:".
+  - The interactive menu labels the guide "Day guide (archive)" and removes the live now/next board; the guide card is titled "Day guide (archive)".
+  - The discovery prompt becomes "Show the AgentEng London 2026 programme".
+- Plain-English questions fall back to the London event once it is over: doors and arrival questions answer in the past tense ("Doors opened at 08:00 ..."), agenda, programme and ticket questions use London, talk answers say "presented" and "Held on", and guide topics point to the archived day guide. San Francisco questions are unchanged.
+
 ## 0.0.23 - 2026-10-15
 
 - First PyPI release of the 0.0.22 changes below. 0.0.22 was tagged but never published to PyPI, because its release check hit an intermittent Python 3.12 crash after the tests passed.
