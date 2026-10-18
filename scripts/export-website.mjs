@@ -125,7 +125,9 @@ const sfText = read('src/pages/SanFrancisco.tsx');
 if (!read('src/AppRoutes.tsx').includes('<Route path="/san-francisco/events" element={<SanFrancisco />} />')) throw new Error('SF events route drift: SanFrancisco.tsx no longer serves /san-francisco/events');
 const sponsorText = read('src/components/SponsorStrip.tsx');
 const tracksText = read('src/components/ProgramTracksSection.tsx');
-const sponsorsPage = read('src/pages/Sponsors.tsx');
+// London 2026 support options, organiser and supporters moved from /support (Sponsors.tsx)
+// to /london-2026/team (LondonTeam.tsx) in site PR #10; /support is now a short general page.
+const londonTeamPage = read('src/pages/LondonTeam.tsx');
 const roster = constant('roster');
 values.set('speakers', [...roster].sort((a,b) => (b.listedOn ?? b.announcedOn).localeCompare(a.listedOn ?? a.announcedOn)));
 values.set('whoIsSpeakingAnswer', 'The lineup: ' + roster.map(
@@ -134,6 +136,7 @@ read('src/components/FAQSection.tsx');
 const site = 'https://agentengineering.world';
 // SF meetups and events moved to /san-francisco/events (site 935f076); /san-francisco is the 2027 conference page.
 const sfEvents = site + '/san-francisco/events';
+const londonTeam = site + '/london-2026/team';
 const sources = [];
 function source(id, url, text, event_id, kind = 'document') {
   sources.push({id, url, text, event_id, kind}); return id;
@@ -265,13 +268,15 @@ const support_options = [
     blurb:'A professional videographer already records the talks. Help fund editing and publishing them, with credit on the released recordings and related posts.'},
 ];
 for (const option of support_options) {
-  if (!sponsorsPage.includes(option.title) || !sponsorsPage.includes(option.blurb)) {
+  if (!londonTeamPage.includes(option.title) || !londonTeamPage.includes(option.blurb)) {
     throw new Error('Support option drift: '+option.id);
   }
-  source('support-'+option.id,site+'/support',option.title+'\n'+option.blurb,london,'sponsorship');
+  source('support-'+option.id,londonTeam,option.title+'\n'+option.blurb,london,'sponsorship');
 }
 source('hq',site+'/agent-engineering-hq','Agent Engineering HQ organises practitioner events on building, evaluating and operating production AI agents, with communities in San Francisco and London.',null);
 source('contact',site+'/',`Public organiser contact: ${constant('ORGANISER_EMAIL')}`,null);
+// The general /support page (Sponsors.tsx) keeps the support enquiry email.
+if (!read('src/pages/Sponsors.tsx').includes('href={`mailto:${EMAIL}')) throw new Error('/support enquiry drift');
 source('sponsor-contact',site+'/support',`Sponsorship enquiry: ${constant('ORGANISER_EMAIL')}`,null,'sponsorship');
 // Agent Engineering HQ page content and the published organiser card.
 read('src/pages/AgentEngineeringHQ.tsx');
@@ -308,7 +313,8 @@ const organiserName = only(jsxTexts(founder, 'p'), t => t === 'Superagentic AI',
 const organiserBlurb = only(jsxTexts(founder, 'p'), t => t.startsWith('Advancing the Agent Engineering'), 'organiser blurb');
 const chairLinks = nestedConstant(founder, 'links');
 const organiserUrl = only(chairLinks, l => l.label === organiserName, 'organiser link').url;
-// Associates are published on the homepage chair card (and the /support Team section).
+// Associates are published on the chair card (FounderCLISection), which the site now
+// renders on /agent-engineering-hq; the London organiser and supporters are on /london-2026/team.
 const associatesText = fs.readFileSync(path.join(root, founder), 'utf8');
 const associateMatches = [];
 walk(trees.get(founder), n => {
@@ -320,7 +326,8 @@ walk(trees.get(founder), n => {
   }
 });
 if (!associatesText.includes('associates') || associateMatches.length < 1) throw new Error('Associates drift');
-const aboutSource = source('about', site+'/', [definition, `Organised by ${organiserName}: ${organiserBlurb}`,
+if (!read('src/pages/AgentEngineeringHQ.tsx').includes('<FounderCLISection />')) throw new Error('Chair card moved off /agent-engineering-hq');
+const aboutSource = source('about', hqUrl, [definition, `Organised by ${organiserName}: ${organiserBlurb}`,
   `${chairName}, ${chairTitle}. ${chairBio}`,
   `Associates: ${associateMatches.map(a => a.name).join(', ')}`].join('\n'), null, 'about');
 const about = {definition, organiser:{name:organiserName, url:organiserUrl, blurb:organiserBlurb},

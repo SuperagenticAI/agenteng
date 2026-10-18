@@ -159,4 +159,8 @@ Site main 935f076 moved the San Francisco meetups and events to `/san-francisco/
 
 The command scanner reads each line of multi-line code blocks (such as the /agenteng examples) as its own command, drops an environment prefix (`AGENTENG_OUTPUT=json`) and anything after a pipe (`| jq`), and skips accessible labels (`aria-label`, `alt`, `title`) and prose. The check runs in a temporary directory, so commands that write files (`agenteng bingo --format html --output bingo.html`) leave the checkout untouched.
 
+## London 2026 team and the general /support page
+
+Site PR #10 (main d39c1c6) moved the London 2026 support content (support options, organiser and supporters) from `src/pages/Sponsors.tsx` (`/support`) to `src/pages/LondonTeam.tsx` (`/london-2026/team`). `/support` is now a short general page. The exporter checks the support option titles and blurbs against `LondonTeam.tsx`, and their sources (`support-refreshments`, `support-after-party`, `support-recording`) use `/london-2026/team`, as does the sponsorship FAQ. Only the general enquiry source (`sponsor-contact`) stays on `/support`, guarded by its mailto link in `Sponsors.tsx`. The chair card with the organiser and associates (`FounderCLISection.tsx`) is rendered on `/agent-engineering-hq`, so the `about` source points there; the exporter fails if it moves. The hero tagline is still read from `HeroSection.tsx`.
+
 Run `python scripts/check-website-commands.py WEBSITE_REPO` after each sync.

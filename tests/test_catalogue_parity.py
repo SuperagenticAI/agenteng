@@ -123,7 +123,24 @@ def test_about_lists_published_associates(tmp_path, monkeypatch):
     assert "Venpin" not in result.output and "Intelligensi" not in result.output
 
 
-def test_support_links_use_support_page(service):
+def test_support_links_use_london_team_page(service):
     urls = {str(s.url) for s in service.catalogue.sources}
     assert not any("/sponsorships" in u for u in urls)
-    assert "https://agentengineering.world/support" in urls
+    team = "https://agentengineering.world/london-2026/team"
+    for option in ("refreshments", "after-party", "recording"):
+        assert str(service.sources["support-" + option].url) == team
+    # The general /support page keeps only the enquiry email.
+    assert str(service.sources["sponsor-contact"].url) == "https://agentengineering.world/support"
+    assert [i for i, s in service.sources.items() if str(s.url).endswith("/support")] == [
+        "sponsor-contact"
+    ]
+    assert (
+        str(service.sources["about"].url) == "https://agentengineering.world/agent-engineering-hq"
+    )
+    faq = next(
+        f for f in service.catalogue.faqs if f.question == "Are there sponsorship opportunities?"
+    )
+    assert faq.answer.endswith("Details: https://agentengineering.world/london-2026/team")
+    assert service.catalogue.about.truly_yours.tagline == (
+        "There are many Agent conferences. This one is truly yours."
+    )
