@@ -477,6 +477,37 @@ class Service:
             status="ok" if rows else "not_found",
         )
 
+    def site_disciplines(self, result: Result) -> None:
+        """All site disciplines (disciplines.ts), with directory tool counts where listed."""
+        if not self.catalogue.disciplines:
+            return
+        listed = {row["id"]: row for row in result.data.get("items", [])}
+        rows = []
+        for d in self.catalogue.disciplines:
+            row = {"id": d.id, "name": d.title, "short": d.short, "description": d.description}
+            if d.id in listed:
+                row.update(
+                    tool_count=listed[d.id]["tool_count"],
+                    total_tool_count=listed[d.id]["total_tool_count"],
+                    in_directory=True,
+                )
+            else:
+                row.update(
+                    tool_count=None,
+                    total_tool_count=None,
+                    in_directory=False,
+                    note="no tool listings yet",
+                )
+            rows.append(row)
+        result.data["items"] = rows
+        missing = [r["name"] for r in rows if not r["in_directory"]]
+        result.answer = (
+            f"{len(rows)} agent-engineering disciplines from the conference site; "
+            f"{len(rows) - len(missing)} have tool listings. Tools can appear in several disciplines."
+        )
+        if missing:
+            result.answer += f" {' and '.join(missing)}: no tool listings yet."
+
     def default_live_event_id(self, request: Request) -> str | None:
         if request.event_id:
             return request.event_id
@@ -779,29 +810,32 @@ class Service:
         if request.operation in TOOL_OPERATIONS:
             result = self.tool_directory.lookup(request, self.clock(), self.settings.max_age_hours)
             if request.operation == "disciplines" and isinstance(result.data, dict):
-                listed = {row["id"] for row in result.data.get("items", [])}
-                site = [
-                    {**d.model_dump(mode="json"), "in_directory": d.id in listed}
-                    for d in self.catalogue.disciplines
-                ]
-                if site:
-                    result.data["site_disciplines"] = site
-                    extra = [d["title"] for d in site if not d["in_directory"]]
-                    if extra:
-                        result.answer += (
-                            f" The conference site lists {len(site)} disciplines;"
-                            f" {', '.join(extra)} have no tool listings yet."
-                        )
+                self.site_disciplines(result)
             return result
         if request.event_id and request.event_id not in self.events:
             return self.result(
                 "Unknown event_id. Use events to list published event IDs.", status="not_found"
             )
         if request.operation == "discover":
-            from .discovery import discovery, featured_events
+            from .discovery import coming_label, discovery, featured_events
 
+            answer = "Agent Engineering HQ runs AgentEng conferences and technical events in London and San Francisco."
+            if request.city:
+                ahead = [
+                    e
+                    for e in featured_events(self)
+                    if e.city.casefold() == request.city.casefold()
+                    and self.state(e) in {"upcoming", "ongoing"}
+                ]
+                if ahead:
+                    answer += (
+                        f" Next in {ahead[0].city}: {ahead[0].title}, {long_date(ahead[0].date)}."
+                    )
+                nxt = self.catalogue.site_links.next_event if self.catalogue.site_links else None
+                if nxt and nxt.name.casefold().endswith(request.city.casefold()):
+                    answer += f" {nxt.name} is {coming_label(nxt)}: {nxt.url}"
             return self.result(
-                "Agent Engineering HQ runs AgentEng conferences and technical events in London and San Francisco.",
+                answer,
                 discovery(self, request.city),
                 (["hq"] if "hq" in self.sources else [])
                 + [

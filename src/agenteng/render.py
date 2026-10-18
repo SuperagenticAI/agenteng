@@ -684,22 +684,14 @@ def render_disciplines(console: Console, result: Result) -> None:
     table.add_column("Listed", justify="right", no_wrap=True)
     table.add_column("Total", justify="right", no_wrap=True)
     for row in items:
+        listed = row.get("tool_count")
         table.add_row(
             row.get("id") or "",
             row.get("name") or "",
-            str(row.get("tool_count", "")),
-            str(row.get("total_tool_count", "")),
+            "no tool listings yet" if listed is None else str(listed),
+            "" if row.get("total_tool_count") is None else str(row["total_tool_count"]),
         )
     console.print(table)
-    extra = [d for d in data.get("site_disciplines") or [] if not d.get("in_directory")]
-    if extra:
-        console.print(
-            Text(
-                "Also on the conference site, no tool listings yet: "
-                + ", ".join(f"{d['title']} ({d['id']})" for d in extra),
-                style="ae.meta",
-            )
-        )
     directory = data.get("directory") or {}
     kinds = data.get("kinds") or []
     summary = Text()

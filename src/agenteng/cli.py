@@ -35,7 +35,7 @@ from .tool_directory import DISCIPLINES, ToolKind
     help="Print the shared structured Result JSON (also used when stdout is not a TTY).",
 )
 @click.option("--list-disciplines", "site_shortcut", flag_value="disciplines", hidden=True)
-@click.option("--themes", "site_shortcut", flag_value="themes", hidden=True)
+@click.option("--themes", "site_shortcut", flag_value="disciplines", hidden=True)
 @click.option("--list-cities", "site_shortcut", flag_value="discover", hidden=True)
 @click.option("--info", "site_shortcut", flag_value="about", hidden=True)
 @click.option("--agent-to-agent", "site_shortcut", flag_value="a2a-talks", hidden=True)
@@ -51,6 +51,7 @@ def main(ctx, catalogue, remote, as_json, site_shortcut):
     ctx.obj.update(catalogue=catalogue, remote=remote, as_json=as_json)
     if ctx.invoked_subcommand is None and site_shortcut:
         # Website wording (`agenteng --list-disciplines`) runs the real command.
+        # The site prints its disciplines under both --themes and --list-disciplines.
         ctx.invoke(main.commands[site_shortcut])
         return
     if ctx.invoked_subcommand is None:
@@ -118,7 +119,7 @@ def dispatch(ctx, payload, output=None, *, quiet=False):
 @main.command()
 @click.pass_context
 def disciplines(ctx):
-    """List the twelve disciplines, tool counts and available filters."""
+    """List the site's disciplines, tool counts and available filters."""
     dispatch(ctx, dict(operation="disciplines"))
 
 
@@ -462,9 +463,18 @@ def conduct(ctx):
 
 
 @main.command()
+@click.option(
+    "--disciplines",
+    "show_disciplines",
+    is_flag=True,
+    help="List the engineering disciplines instead (same as agenteng disciplines).",
+)
 @click.pass_context
-def themes(ctx):
-    """List published program themes from the website."""
+def themes(ctx, show_disciplines):
+    """List the London programme tracks from the website."""
+    if show_disciplines:
+        ctx.invoke(disciplines)
+        return
     dispatch(ctx, dict(operation="themes"))
 
 

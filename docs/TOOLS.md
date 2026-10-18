@@ -24,7 +24,7 @@ Global options such as `--json` and `--remote` go before the command. Text outpu
 
 ## Disciplines and filters
 
-The twelve IDs match the conference website: `prompt`, `context`, `harness`, `eval`, `memory`, `inference`, `loop`, `agentic`, `code`, `protocol`, `graph`, `search`. One canonical product can appear in multiple disciplines, so counts overlap. Source categories offer finer filters such as Agentic CLI, Sandbox, Memory Systems and Vector Stores. Kinds distinguish protocols, frameworks, CLIs, IDEs, models, databases, runtimes, hosting, registries, connectors and other families. `agenteng --json disciplines` lists available categories and kinds.
+The twelve IDs match the conference website: `prompt`, `context`, `harness`, `eval`, `memory`, `inference`, `loop`, `agentic`, `code`, `protocol`, `graph`, `search`. One canonical product can appear in multiple disciplines, so counts overlap. Source categories offer finer filters such as Agentic CLI, Sandbox, Memory Systems and Vector Stores. Kinds distinguish protocols, frameworks, CLIs, IDEs, models, databases, runtimes, hosting, registries, connectors and other families. `agenteng --json disciplines` lists available categories and kinds, and all 14 site disciplines: Factory (`factory`) and Decision (`decision`) Engineering are marked "no tool listings yet".
 
 Tags describe discovery categories, not delivered AgentEng adapters or vendor integrations.
 

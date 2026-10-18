@@ -19,6 +19,21 @@ def london_past(service) -> bool:
     return bool(event) and service.state(event) == "past"
 
 
+def next_event_prompt(service) -> str:
+    """Point to the next edition from the site's events.ts, or stay neutral."""
+    links = service.catalogue.site_links
+    nxt = links.next_event if links else None
+    city = nxt.name.removeprefix("Agent Engineering").strip() if nxt else ""
+    if city in CITIES:
+        return f"What is the next Agent Engineering event in {city}?"
+    return "What is the next Agent Engineering event?"
+
+
+def coming_label(link) -> str:
+    """'coming April 2027' for an announced edition with only a month."""
+    return f"coming {link.when}"
+
+
 def featured_events(service):
     rows = []
     for city in CITIES:
@@ -51,7 +66,10 @@ def discovery(service, city=None):
         **(
             {
                 "talks_url": str(service.catalogue.site_links.talks),
-                "next_event": service.catalogue.site_links.next_event.model_dump(mode="json")
+                "next_event": {
+                    **service.catalogue.site_links.next_event.model_dump(mode="json"),
+                    "label": coming_label(service.catalogue.site_links.next_event),
+                }
                 if service.catalogue.site_links.next_event
                 else None,
                 "previous_event": service.catalogue.site_links.previous_event.model_dump(
@@ -79,7 +97,7 @@ def discovery(service, city=None):
             "tool_feed": origin + "/tools.json",
         },
         "suggested_questions": [
-            "Find the next Agent Engineering Conference in London",
+            next_event_prompt(service),
             "Show Agent Engineering HQ events in San Francisco",
             "Which London sessions cover evaluation or agent harnesses?",
             "Show the AgentEng London 2026 programme"

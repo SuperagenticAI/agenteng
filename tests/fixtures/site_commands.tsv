@@ -11,7 +11,7 @@ alias	agenteng agenda --london	pages/Agenda.tsx	agenteng agenda --london	city re
 alias	agenteng tickets --london	components/TicketsSection.tsx	agenteng tickets --london	Public lookup
 alias	agenteng sponsors --sf	components/SponsorStrip.tsx	agenteng sponsors --sf	Public lookup
 alias	agenteng inspect --speaker samuel-colvin	components/SpeakerAgentActions.tsx	agenteng inspect --speaker samuel-colvin	hidden alias of agenteng speaker SLUG
-alias	agenteng --themes	components/CoreThemesSection.tsx	agenteng --themes	runs agenteng themes
+alias	agenteng --themes	components/CoreThemesSection.tsx	agenteng --themes	runs agenteng disciplines (the site lists its disciplines under --themes)
 alias	agenteng --list-disciplines	components/WhatIsAgentEngSection.tsx	agenteng --list-disciplines	runs agenteng disciplines
 alias	agenteng --list-cities	pages/AgentEngineeringHQ.tsx	agenteng --list-cities	runs agenteng discover (cities and featured events)
 alias	agenteng --info	components/Footer.tsx	agenteng --info	runs agenteng about

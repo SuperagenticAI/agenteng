@@ -8,7 +8,8 @@
 - `agenteng recordings` adds gallery recordings with a published video (the Harness Engineering San Francisco full event) and says London 2026 recordings are coming soon.
 - Code Engineering San Francisco (27 October 2026): speaker roles, companies and X links come from the site's `sf-code-engineering.ts`, and the event card lists the four speakers. Event cards and JSON add `page_url` and the speaker `lineup`.
 - Discovery and `agenteng about` add the talks page, the CLI page, AgentEng London 2026 and the next and previous editions from the site's `events.ts` (Agent Engineering San Francisco, April 2027, and London 2026).
-- `agenteng disciplines` notes the site's two new disciplines, Factory Engineering and Decision Engineering, which have no tool listings yet.
+- `agenteng disciplines` lists all 14 site disciplines from `disciplines.ts`, with tool counts where the directory has listings; Factory Engineering and Decision Engineering are marked "no tool listings yet". `agenteng themes --disciplines` is an alias, and the website forms `agenteng --themes` and `agenteng --list-disciplines` both run it. `agenteng themes` stays the four London programme tracks.
+- The next edition, Agent Engineering San Francisco, is labelled "coming April 2027" with no date or venue. The discovery prompt "Find the next Agent Engineering Conference in London" becomes "What is the next Agent Engineering event in San Francisco?", taken from the site's next event, and the answer names the next San Francisco event and the April 2027 conference.
 - The `talks` operation (REST, MCP and A2A) takes `city`, `topic` and `include_a2a`, and `talk` takes a talk slug as `session_id`. New `agenteng-talks` agent card skill.
 - Website command check: commands on `/london-2026`, `/talks` and `/agenteng` are in the fixture, and prose literals that end like a sentence are no longer read as commands.
 

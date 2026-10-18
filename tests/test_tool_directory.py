@@ -48,8 +48,10 @@ def test_complete_directory_and_pagination(service):
 
 def test_discipline_filters_aliases_and_source_status(service):
     disciplines = service.lookup(Request(operation="disciplines")).data
-    assert len(disciplines["items"]) == 12
-    assert all(row["tool_count"] > 0 for row in disciplines["items"])
+    assert len(disciplines["items"]) == 14
+    listed = [row for row in disciplines["items"] if row["in_directory"]]
+    assert len(listed) == 12
+    assert all(row["tool_count"] > 0 for row in listed)
     assert len(disciplines["categories"]) == 27
     rows = service.lookup(
         Request(operation="tools", discipline="inference", kind="runtime", limit=100)
