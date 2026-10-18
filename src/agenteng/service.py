@@ -486,6 +486,8 @@ class Service:
             if not rows:
                 return self.result("No published talk matched.", status="not_found")
             row = rows[0]
+            if row.get("gallery_kind") == "event-recap":
+                return self.result(f"Event recap: {row['title']}.", row, row["source_ids"])
             status = f" {row['status_label']}." if row.get("status_label") else ""
             return self.result(f"Talk: {row['title']}.{status}", row, row["source_ids"])
         rows = rows[: request.limit]

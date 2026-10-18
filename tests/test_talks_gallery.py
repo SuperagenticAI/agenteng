@@ -218,6 +218,7 @@ def test_sf_harness_video_is_an_event_recap():
     assert recap["talk_url"] == f"{SITE}/gallery/{RECAP}"
     old = lookup(operation="talk", session_id="sf-harness-engineering-2026-full-event")
     assert old.status == "ok" and old.data["slug"] == RECAP
+    assert old.answer == "Event recap: Harness Engineering San Francisco: event recap."
     assert run("gallery", "sf-harness-engineering-2026-full-event")["data"]["slug"] == RECAP
     harness = [
         r
