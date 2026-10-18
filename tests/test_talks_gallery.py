@@ -23,51 +23,56 @@ def run(*args):
     return json.loads(result.output)
 
 
-def test_gallery_order_and_no_a2a_by_default():
-    rows = lookup(operation="talks", limit=100).data
-    kinds = [r.get("gallery_kind") for r in rows]
-    assert "a2a" not in kinds
-    assert rows[0]["event_id"] == SF_CODE
-    assert not any(r.get("ai_generated") for r in rows)
+def test_gallery_mirrors_site_order_without_a2a():
+    rows = lookup(operation="gallery", limit=100).data
+    assert [r["gallery"] for r in rows] == ["london"] * 11 + ["san-francisco"]
+    assert rows[0]["slug"] == "london-2026-welcome"
+    assert rows[0]["youtube_id"] == "iTV8VSrVJEk" and rows[0]["status"] == "recorded"
+    assert {r["status_label"] for r in rows[1:11]} == {"Recording coming soon"}
+    assert rows[-1]["youtube_id"] == "AP1RRbXZhsE"
+    assert all(r["talk_url"] == f"{SITE}/gallery/{r['slug']}" for r in rows)
+    assert not any(r.get("ai_generated") or r["event_id"] == SF_CODE for r in rows)
+    assert all(r["youtube_id"] is None and "transcript" not in r for r in rows[1:11])
 
 
-def test_london_talks_are_recording_coming_soon():
-    rows = lookup(operation="talks", city="London", limit=100).data
-    gallery = [r for r in rows if r.get("slug")]
-    assert len(gallery) == 10
-    assert {r["status_label"] for r in gallery} == {"Recording coming soon"}
-    assert all(r["youtube_id"] is None and "transcript" not in r for r in gallery)
-    assert all(r["talk_url"] == f"{SITE}/talks/{r['slug']}" for r in gallery)
-
-
-def test_a2a_opt_in_last_and_labelled():
-    result = lookup(operation="talks", include_a2a=True, limit=100)
+def test_gallery_a2a_opt_in_last_and_labelled():
+    result = lookup(operation="gallery", include_a2a=True, limit=100)
     rows = result.data
     a2a = [i for i, r in enumerate(rows) if r.get("gallery_kind") == "a2a"]
-    assert len(a2a) == 10
     assert a2a == list(range(len(rows) - 10, len(rows)))
     assert all(rows[i]["ai_generated"] and rows[i]["label"] for i in a2a)
     assert "not created, reviewed or endorsed by our speakers" in result.answer
-    online = lookup(operation="talks", city="Online").data
+    online = lookup(operation="gallery", city="Online").data
     assert len(online) == 10 and all(r["ai_generated"] for r in online)
 
 
-def test_talk_by_slug_and_recording():
-    talk = lookup(operation="talk", session_id="sf-harness-engineering-2026-full-event")
-    assert talk.status == "ok"
-    assert talk.data["youtube_id"] == "AP1RRbXZhsE"
-    assert talk.data["video_url"] == "https://www.youtube.com/watch?v=AP1RRbXZhsE"
-    out = run("talks", "london-2026-say-less-grade-harder")
-    assert out["data"]["status"] == "recording-coming-soon"
-    assert out["data"]["session_id"]
-    assert out["data"]["abstract"]
+def test_talks_is_the_programme_listing():
+    rows = lookup(operation="talks", limit=100).data
+    assert not any(
+        r.get("ai_generated") or r.get("gallery_kind") == "event-recording" for r in rows
+    )
+    assert sum(r["event_id"] == LONDON for r in rows) == 10
+    code = [r for r in rows if r["event_id"] == SF_CODE]
+    assert len(code) == 4
+    assert all(r["talk_url"] == f"{SITE}/san-francisco" and r["gallery"] is None for r in code)
+    assert lookup(operation="talks", city="Online").status == "not_found"
+    assert lookup(operation="talks", include_a2a=True, limit=100).data == rows
 
 
-def test_topic_filter_and_cli_options():
+def test_one_item_by_slug_from_either_command():
+    welcome = run("gallery", "london-2026-welcome")["data"]
+    assert welcome["video_url"] == "https://www.youtube.com/watch?v=iTV8VSrVJEk"
+    out = run("talks", "london-2026-say-less-grade-harder")["data"]
+    assert out["status"] == "recording-coming-soon" and out["abstract"]
+    assert run("gallery", "london-2026-say-less-grade-harder")["data"]["slug"] == out["slug"]
+    assert run("talks", "sydney-runkle")["data"]["talk_url"] == f"{SITE}/san-francisco"
+
+
+def test_filters():
     out = run("talks", "--city", "San Francisco", "--topic", "Code")
-    assert out["data"] and all(r["event_id"] == SF_CODE for r in out["data"])
-    out = run("talks", "--event", LONDON, "--topic", "Memory")
-    assert out["data"]
+    assert out["data"] and {r["event_id"] for r in out["data"]} >= {SF_CODE}
+    assert run("gallery", "--city", "London")["data"][0]["slug"] == "london-2026-welcome"
+    assert run("talks", "--event", LONDON, "--topic", "Memory")["data"]
 
 
 def test_sf_code_engineering_speakers_and_event_card():
@@ -78,31 +83,49 @@ def test_sf_code_engineering_speakers_and_event_card():
     event = run("event", SF_CODE)["data"][0]
     assert event["state"] == "upcoming"
     assert event["page_url"] == f"{SITE}/san-francisco"
+    assert "gallery_url" not in event
     assert [p["name"] for p in event["lineup"]] == [
         "Seth Karten",
         "Ben Holmes",
         "Sydney Runkle",
         "Andrey Risukhin",
     ]
+    london = run("event", LONDON)["data"][0]
+    assert london["gallery_url"] == f"{SITE}/london-2026/videos"
 
 
-def test_restructured_urls():
+def test_restructured_urls_and_no_talks_urls():
     service = Service()
     urls = {str(s.url) for s in service.catalogue.sources}
-    for old in ("/speakers", "/agenda", "/guide"):
+    urls |= {str(t.url) for t in service.catalogue.talks}
+    for old in ("/speakers", "/agenda", "/guide", "/talks"):
         assert not any(u.startswith(SITE + old) for u in urls), old
     assert not any("/#venue" in u or "/#agenda" in u or "/#tickets" in u for u in urls)
     assert f"{SITE}/london-2026/agenda" in urls
+    assert f"{SITE}/london-2026/videos" in urls
+    text = service.catalogue.model_dump_json()
+    assert "agentengineering.world/talks" not in text
     assert str(service.events[LONDON].page_url) == f"{SITE}/london-2026"
     links = service.catalogue.site_links
+    assert str(links.gallery) == f"{SITE}/gallery"
     assert str(links.next_event.url) == f"{SITE}/san-francisco"
     assert str(links.previous_event.url) == f"{SITE}/london-2026"
 
 
-def test_recordings_include_gallery_and_pending_note():
+def test_recordings_include_london_videos_and_welcome():
     result = lookup(operation="recordings")
+    assert result.data[0]["url"] == f"{SITE}/london-2026/videos"
+    urls = [r["url"] for r in result.data]
+    assert "https://www.youtube.com/watch?v=iTV8VSrVJEk" in urls
     assert any(r.get("slug") == "sf-harness-engineering-2026-full-event" for r in result.data)
-    assert "London 2026 recordings are coming soon" in result.answer
+    assert len(urls) == len(set(urls))
+    assert "talk recordings are coming soon" in result.answer
+    assert "agenteng gallery --city London" in result.answer
+
+
+def test_a2a_rows_stay_out_of_general_search():
+    result = lookup(operation="search", query="coding agent engineering")
+    assert not any(s.kind == "a2a-talks" for s in result.sources)
 
 
 def test_site_disciplines_factory_and_decision():

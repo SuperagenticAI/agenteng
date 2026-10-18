@@ -70,7 +70,13 @@ def test_search_scope_and_recordings(service):
     assert result.sources and all(s.event_id == LONDON for s in result.sources)
     recordings = service.lookup(Request(operation="recordings", city="London"))
     assert recordings.status == "ok"
-    assert all(row["url"].startswith("https://www.youtube.com/") for row in recordings.data)
+    pages = [row for row in recordings.data if row.get("kind") == "page"]
+    assert [row["url"] for row in pages] == ["https://agentengineering.world/london-2026/videos"]
+    assert all(
+        row["url"].startswith("https://www.youtube.com/")
+        for row in recordings.data
+        if row.get("kind") != "page"
+    )
 
 
 def test_ics_utc_and_no_invented_sf_times(service):

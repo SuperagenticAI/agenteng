@@ -84,7 +84,7 @@ works	agenteng speaker jocelyn-darcy	data/speaker-stack.ts	agenteng speaker joce
 alias	agenteng guide --london	pages/Guide.tsx	agenteng guide --london	--london shortcut; the guide is published for London only
 alias	agenteng --agent-to-agent	pages/AgentToAgent.tsx	agenteng --agent-to-agent	page badge; runs agenteng a2a-talks
 works	agenteng event --london	pages/London2026.tsx	agenteng event --london	London 2026 conference page (/london-2026)
-works	agenteng talks	pages/Talks.tsx	agenteng talks	Talks gallery (/talks, /talks/:slug); A2A only with --a2a
+works	agenteng gallery	pages/Gallery.tsx	agenteng gallery	Video gallery (/gallery, /gallery/:slug); A2A only with --a2a
 works	agenteng event --london	pages/AgentEngPage.tsx	agenteng event --london	CLI page (/agenteng)
 alias	agenteng events --next san-francisco	pages/AgentEngPage.tsx	agenteng events --next san-francisco	--next = --upcoming; optional CITY argument
 works	agenteng speakers	pages/AgentEngPage.tsx	agenteng speakers	CLI page (/agenteng)
