@@ -29,14 +29,14 @@ def run(*args):
 
 def test_gallery_mirrors_site_order_without_a2a():
     rows = lookup(operation="gallery", limit=100).data
-    assert [r["gallery"] for r in rows] == ["london"] * 11 + ["san-francisco"]
+    assert [r["gallery"] for r in rows] == ["london"] * 10 + ["san-francisco"]
     assert rows[0]["slug"] == "london-2026-welcome"
     assert rows[0]["youtube_id"] == "iTV8VSrVJEk" and rows[0]["status"] == "recorded"
-    assert {r["status_label"] for r in rows[1:11]} == {"Recording coming soon"}
+    assert {r["status_label"] for r in rows[1:10]} == {"Recording coming soon"}
     assert rows[-1]["youtube_id"] == "AP1RRbXZhsE"
     assert all(r["talk_url"] == f"{SITE}/gallery/{r['slug']}" for r in rows)
     assert not any(r.get("ai_generated") or r["event_id"] == SF_CODE for r in rows)
-    assert all(r["youtube_id"] is None and "transcript" not in r for r in rows[1:11])
+    assert all(r["youtube_id"] is None and "transcript" not in r for r in rows[1:10])
 
 
 def test_gallery_a2a_opt_in_last_and_labelled():
@@ -55,7 +55,7 @@ def test_talks_is_the_programme_listing():
     assert not any(
         r.get("ai_generated") or r.get("gallery_kind") == "event-recording" for r in rows
     )
-    assert sum(r["event_id"] == LONDON for r in rows) == 10
+    assert sum(r["event_id"] == LONDON for r in rows) == 9
     code = [r for r in rows if r["event_id"] == SF_CODE]
     assert len(code) == 4
     assert all(r["talk_url"] == f"{SITE}/san-francisco" and r["gallery"] is None for r in code)
@@ -232,3 +232,32 @@ def test_sf_harness_video_is_an_event_recap():
     )
     text = Service().catalogue.model_dump_json().casefold()
     assert "full-event" not in text and "full event" not in text
+
+
+# The cancelled talk's words, reversed so the guard itself does not reintroduce them.
+CANCELLED = [w[::-1] for w in ("sats", "oknehcib", "tnega eciov", "gnizimitpo-dna-gniggubed")]
+CANCELLED_SLUG = "-".join(
+    ["london-2026", *[w[::-1] for w in ("gniggubed", "dna", "gnizimitpo", "eciov", "stnega")]]
+)
+CANCELLED_SPEAKER = "-".join(w[::-1] for w in ("sats", "oknehcib"))
+
+
+def test_cancelled_london_talk_is_gone():
+    service = Service()
+    text = service.catalogue.model_dump_json().casefold()
+    for word in CANCELLED:
+        assert word not in text, word
+    london_talks = [s for s in service.catalogue.sessions if s.event_id == LONDON and s.speaker_id]
+    assert len(london_talks) == 9
+    assert (
+        len([t for t in service.catalogue.talks if t.event_id == LONDON and t.kind == "talk"]) == 9
+    )
+    assert lookup(operation="talk", session_id=CANCELLED_SLUG).status == "not_found"
+    assert lookup(operation="speaker", speaker_id=CANCELLED_SPEAKER).status == "not_found"
+
+
+def test_bingo_has_no_cancelled_talk_terms():
+    from agenteng import screens
+
+    labels = {label.casefold() for label, _ in screens.BINGO_TERMS}
+    assert not labels & {CANCELLED[2] + "s", "debugging"}

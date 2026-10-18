@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-d3c49871fc80",
-  "published_at": "2026-10-18T11:09:19.364Z",
-  "source_commit": "4e34c4b4257525dc18d6ab724cc37e2597251af5",
-  "source_hash": "d3c49871fc80cc4b0cb61392e3bcec13f262466d3d7d2c7e0b49cde81429d859",
+  "version": "website-3575025765be",
+  "published_at": "2026-10-18T11:49:06.675Z",
+  "source_commit": "b7c271d50775a39e6dff4df6431224831d3acc51",
+  "source_hash": "3575025765be8b66473677c626c3385c1c9ebb98f4fbf808e3774af0c1fe105d",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -591,57 +591,6 @@
       ]
     },
     {
-      "id": "stas-bichenko",
-      "name": "Stas Bichenko",
-      "role": "CEO",
-      "company": "Recombine",
-      "company_url": "https://recombine.ai",
-      "note": null,
-      "location": {
-        "city": "London",
-        "country": "GB"
-      },
-      "links": {
-        "x": "https://x.com/sbichenko",
-        "linkedin": "https://www.linkedin.com/in/stas-bichenko/"
-      },
-      "projects": [
-        {
-          "name": "Recombine platform",
-          "url": "https://recombine.ai/",
-          "blurb": "Self-hosted voice and text agents, in your own cloud"
-        },
-        {
-          "name": "Banking & financial services",
-          "url": "https://recombine.ai/cases/banking.html",
-          "blurb": "Pre-collection, KYC and support agents for banks"
-        },
-        {
-          "name": "Mobility & marketplaces",
-          "url": "https://recombine.ai/cases/mobility.html",
-          "blurb": "Driver onboarding and partner operations agents"
-        },
-        {
-          "name": "Telecom",
-          "url": "https://recombine.ai/cases/telecom.html",
-          "blurb": "Upsell, churn-prevention and outage-support agents"
-        }
-      ],
-      "announced_on": "2026-09-22",
-      "disciplines": [
-        "eval",
-        "agentic"
-      ],
-      "event_ids": [
-        "agenteng-london-2026"
-      ],
-      "talk_title": "Debugging and Optimizing Voice Agents",
-      "abstract": "Stas looks at how to identify problems in voice agents and improve their performance.",
-      "source_ids": [
-        "speaker-stas-bichenko"
-      ]
-    },
-    {
       "id": "jocelyn-darcy",
       "name": "Jocelyn D'Arcy",
       "role": "CEO",
@@ -907,21 +856,6 @@
       ]
     },
     {
-      "id": "agenteng-london-2026-8",
-      "event_id": "agenteng-london-2026",
-      "title": "Debugging and Optimizing Voice Agents",
-      "kind": "talk",
-      "start": "2026-10-16T12:25:00+01:00",
-      "end": "2026-10-16T12:55:00+01:00",
-      "speaker_id": "stas-bichenko",
-      "topics": [
-        "voice"
-      ],
-      "source_ids": [
-        "london-session-8"
-      ]
-    },
-    {
       "id": "agenteng-london-2026-9",
       "event_id": "agenteng-london-2026",
       "title": "Lunch",
@@ -1161,7 +1095,7 @@
     {
       "id": "faq-2",
       "question": "When and where was the conference?",
-      "answer": "The first Agent Engineering Conference took place in London on 16 October 2026 at Everyman, Canary Wharf, London. It was a one-day, single-track conference of ten 30-minute technical talks.",
+      "answer": "The first Agent Engineering Conference took place in London on 16 October 2026 at Everyman, Canary Wharf, London. It was a one-day, single-track conference of nine 30-minute technical talks.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-2"
@@ -1224,7 +1158,7 @@
     {
       "id": "faq-9",
       "question": "Who is speaking?",
-      "answer": "The lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
+      "answer": "The lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-9"
@@ -1260,7 +1194,7 @@
     {
       "id": "faq-13",
       "question": "How is this different from other AI conferences?",
-      "answer": "The conference covers the engineering discipline behind AI agents. It is one track of ten technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
+      "answer": "The conference covers the engineering discipline behind AI agents. It is one track of nine technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-13"
@@ -2002,36 +1936,6 @@
       ]
     },
     {
-      "slug": "london-2026-debugging-and-optimizing-voice-agents",
-      "title": "Debugging and Optimizing Voice Agents",
-      "kind": "talk",
-      "city": "London",
-      "event_id": "agenteng-london-2026",
-      "event_name": "Agent Engineering London 2026",
-      "event_url": "https://agentengineering.world/london-2026",
-      "date": "2026-10-16",
-      "speaker": {
-        "name": "Stas Bichenko",
-        "role": "CEO",
-        "company": "Recombine",
-        "slug": "stas-bichenko"
-      },
-      "topics": [
-        "Eval",
-        "Agentic"
-      ],
-      "youtube_id": null,
-      "transcript": null,
-      "ai_generated": false,
-      "status": "recording-coming-soon",
-      "session_id": "agenteng-london-2026-8",
-      "gallery": "london",
-      "url": "https://agentengineering.world/gallery/london-2026-debugging-and-optimizing-voice-agents",
-      "source_ids": [
-        "talk-london-2026-debugging-and-optimizing-voice-agents"
-      ]
-    },
-    {
       "slug": "london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
       "title": "Browser Use Is the Default. Your UI Is Not Your Agent API.",
       "kind": "talk",
@@ -2726,13 +2630,6 @@
       "kind": "speaker"
     },
     {
-      "id": "speaker-stas-bichenko",
-      "url": "https://agentengineering.world/london-2026/speakers#stas-bichenko",
-      "text": "Stas Bichenko, CEO at Recombine. Debugging and Optimizing Voice Agents. Stas looks at how to identify problems in voice agents and improve their performance.",
-      "event_id": "agenteng-london-2026",
-      "kind": "speaker"
-    },
-    {
       "id": "speaker-jocelyn-darcy",
       "url": "https://agentengineering.world/london-2026/speakers#jocelyn-darcy",
       "text": "Jocelyn D'Arcy, CEO at Poindexter Labs. Say Less, Grade Harder. Jocelyn examines why most agent benchmarks feel artificial, and what changes when tasks are as underspecified as real work.",
@@ -2792,13 +2689,6 @@
       "id": "london-session-7",
       "url": "https://agentengineering.world/london-2026/agenda",
       "text": "11:50 If coding is solved, what's left?. Andrey Breslav. A lot of code is generated by agents, and with time, manual coding will go away (almost) completely. What are human engineers going to do then? Will we even have human engineers?\n\nCan agents just do all the planning, coding, reviewing, and testing for us? Do humans have something that LLMs don't?\n\nI think there are some hard limits on what can be delegated, and how. While machines can do a lot of very intelligent work, there are things they won't be doing unless Skynet takes over the world.",
-      "event_id": "agenteng-london-2026",
-      "kind": "session"
-    },
-    {
-      "id": "london-session-8",
-      "url": "https://agentengineering.world/london-2026/agenda",
-      "text": "12:25 Debugging and Optimizing Voice Agents. Stas Bichenko. Stas looks at how to identify problems in voice agents and improve their performance.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
@@ -3001,7 +2891,7 @@
     {
       "id": "faq-2",
       "url": "https://agentengineering.world/london-2026#faq",
-      "text": "When and where was the conference?\nThe first Agent Engineering Conference took place in London on 16 October 2026 at Everyman, Canary Wharf, London. It was a one-day, single-track conference of ten 30-minute technical talks.",
+      "text": "When and where was the conference?\nThe first Agent Engineering Conference took place in London on 16 October 2026 at Everyman, Canary Wharf, London. It was a one-day, single-track conference of nine 30-minute technical talks.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
@@ -3050,7 +2940,7 @@
     {
       "id": "faq-9",
       "url": "https://agentengineering.world/london-2026#faq",
-      "text": "Who is speaking?\nThe lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
+      "text": "Who is speaking?\nThe lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
@@ -3078,7 +2968,7 @@
     {
       "id": "faq-13",
       "url": "https://agentengineering.world/london-2026#faq",
-      "text": "How is this different from other AI conferences?\nThe conference covers the engineering discipline behind AI agents. It is one track of ten technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
+      "text": "How is this different from other AI conferences?\nThe conference covers the engineering discipline behind AI agents. It is one track of nine technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
@@ -3380,13 +3270,6 @@
       "id": "talk-london-2026-if-coding-is-solved-what-s-left",
       "url": "https://agentengineering.world/gallery/london-2026-if-coding-is-solved-what-s-left",
       "text": "If coding is solved, what's left?\nAndrey Breslav, Founder at CodeSpeak\nAgent Engineering London 2026\nrecording-coming-soon",
-      "event_id": "agenteng-london-2026",
-      "kind": "talk"
-    },
-    {
-      "id": "talk-london-2026-debugging-and-optimizing-voice-agents",
-      "url": "https://agentengineering.world/gallery/london-2026-debugging-and-optimizing-voice-agents",
-      "text": "Debugging and Optimizing Voice Agents\nStas Bichenko, CEO at Recombine\nAgent Engineering London 2026\nrecording-coming-soon",
       "event_id": "agenteng-london-2026",
       "kind": "talk"
     },

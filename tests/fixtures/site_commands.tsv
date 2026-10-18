@@ -79,7 +79,6 @@ works	agenteng speaker alexander-korchagin	data/speaker-stack.ts	agenteng speake
 works	agenteng speaker jon-bratseth	data/speaker-stack.ts	agenteng speaker jon-bratseth	Verified against the CLI
 works	agenteng speaker meryem-arik	data/speaker-stack.ts	agenteng speaker meryem-arik	Verified against the CLI
 works	agenteng speaker frederic-barthelet	data/speaker-stack.ts	agenteng speaker frederic-barthelet	Verified against the CLI
-works	agenteng speaker stas-bichenko	data/speaker-stack.ts	agenteng speaker stas-bichenko	Verified against the CLI
 works	agenteng speaker jocelyn-darcy	data/speaker-stack.ts	agenteng speaker jocelyn-darcy	Verified against the CLI
 alias	agenteng guide --london	pages/Guide.tsx	agenteng guide --london	--london shortcut; the guide is published for London only
 alias	agenteng --agent-to-agent	pages/AgentToAgent.tsx	agenteng --agent-to-agent	page badge; runs agenteng a2a-talks
