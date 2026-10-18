@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.25 - 2026-10-18
 
 - Catalogue re-exported from site commit e968fc9, which moves the London 2026 conference under `/london-2026`. Sources and answers now link to `/london-2026/speakers`, `/london-2026/agenda`, `/london-2026/guide`, `/london-2026#faq` and `/london-2026` (formerly `/#venue`, `/#agenda` and `/#tickets`). London's post-event behaviour is unchanged, and San Francisco stays upcoming.
 - Catalogue re-exported from site commit 8cd5a6a, which renames the talks page to the gallery: links use `/gallery` and `/gallery/<slug>`, and `/london-2026/videos` is the new London recordings page.
