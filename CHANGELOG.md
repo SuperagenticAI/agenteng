@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Catalogue re-exported from site commit b7c271d: the London 2026 talk "Debugging and Optimizing Voice Agents" did not take place, so it and its speaker card are removed. London now lists 9 talks and 17 speakers across 11 events. The "Who is speaking?", "When and where was the conference?" and "How is this different?" FAQ answers follow the site (nine technical talks). The talk is gone from the agenda, gallery, talks, search and bingo terms, and the website command fixture drops its speaker command. Its old gallery slug returns not_found; the site redirects that page to /london-2026/videos.
+
 ## 0.0.26 - 2026-10-18
 
 - Catalogue re-exported from site commit 1072362: the London 2026 recordings are public. "Will talks be recorded?" now answers "Yes. Recordings are public and published on https://agentengineering.world/london-2026/videos as they become available, starting with the welcome video.", and the day guide's photography and content section says the same. The previous wording limited recordings to ticket holders.

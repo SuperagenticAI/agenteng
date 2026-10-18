@@ -50,8 +50,6 @@ BINGO_TERMS: tuple[tuple[str, str], ...] = (
     ("Testing", r"\btesting\b"),
     ("Is coding solved?", r"\bcoding is solved\b"),
     ("Skynet", r"\bSkynet\b"),
-    ("Voice agents", r"\bvoice agents?\b"),
-    ("Debugging", r"\bdebugging\b"),
     ("Browser use", r"\bbrowser use\b"),
     ("Scraping", r"\bscraping\b"),
     ("Tool selection", r"\bselection\b"),

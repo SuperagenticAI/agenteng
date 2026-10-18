@@ -14,7 +14,7 @@ LONDON = "agenteng-london-2026"
 
 def test_export_has_evidence_and_honest_dates(service):
     c = service.catalogue
-    assert (len(c.events), len(c.speakers), len(c.sessions)) == (11, 18, 25)
+    assert (len(c.events), len(c.speakers), len(c.sessions)) == (11, 17, 24)
     past = [e for e in c.events if e.date_precision == "month"]
     assert len(past) == 8
     assert all(e.start is None and e.end is None for e in past)
@@ -156,7 +156,7 @@ def test_model_free_question_routing(service):
     price = open_service.lookup(Request(operation="ask", query="What are London ticket prices?"))
     assert price.data["current_offers"][0]["amount"] == 149
     agenda = service.lookup(Request(operation="ask", query="London agenda"))
-    assert len(agenda.data) == 17
+    assert len(agenda.data) == 16
     when = service.lookup(Request(operation="ask", query="When is the next London conference?"))
     assert len(when.data) == 1 and when.data[0]["date"] == "2026-10-16"
     ambiguous = service.lookup(Request(operation="ask", query="ticket prices"))

@@ -4,7 +4,7 @@ Every displayed AgentEng command must be accepted by the CLI. The hero Orchestra
 
 Run `python scripts/check-website-commands.py WEBSITE_REPO` against a website checkout with Node dependencies installed. It reads public TypeScript literals using the AST, validates them against the actual CLI, and executes public lookup/setup commands. Server loops and coding sessions are parsed without launching them. Dynamic speaker-profile command rendering is covered by the speaker fixture and website tests.
 
-The fixture contains 97 command locations. Tool CI executes each row and requires success. Update it when website commands change.
+The fixture contains 96 command locations. Tool CI executes each row and requires success. Update it when website commands change.
 
 | Command | Website source (`src/`) |
 | --- | --- |
@@ -89,7 +89,6 @@ The fixture contains 97 command locations. Tool CI executes each row and require
 | `agenteng speaker jon-bratseth` | `data/speaker-stack.ts` |
 | `agenteng speaker meryem-arik` | `data/speaker-stack.ts` |
 | `agenteng speaker frederic-barthelet` | `data/speaker-stack.ts` |
-| `agenteng speaker stas-bichenko` | `data/speaker-stack.ts` |
 | `agenteng speaker jocelyn-darcy` | `data/speaker-stack.ts` |
 | `agenteng guide --london` | `pages/Guide.tsx` |
 | `agenteng event --london` | `pages/London2026.tsx` |
@@ -136,14 +135,14 @@ Pages mirrored:
 | Page | Mirrored by |
 | --- | --- |
 | `/london-2026` and `/london-2026/speakers`, `/agenda`, `/guide` | events, speakers, agenda, guide |
-| `/london-2026/videos` (welcome video `iTV8VSrVJEk`, then 10 talks marked coming soon) | `agenteng gallery --city London`, `agenteng recordings` |
+| `/london-2026/videos` (welcome video `iTV8VSrVJEk`, then 9 talks marked coming soon) | `agenteng gallery --city London`, `agenteng recordings` |
 | `/gallery` (London and San Francisco tabs) | `agenteng gallery` |
 | `/gallery/:slug` | `agenteng gallery <slug>` |
 | `/agenteng` (CLI page) | the commands in the table above |
 
 Data files read by `scripts/export-website.mjs`:
 
-- `src/data/talks.ts`: exports `londonVideos` (the London welcome recording, then the 10 London talks), `sfGallery` (the Harness Engineering San Francisco event recap, kind `event-recap`, slug `sf-harness-engineering-2026-recap`, with the site's `summary`; the site redirects the old `/gallery/sf-harness-engineering-2026-full-event` and `agenteng gallery` still accepts the old slug) and `talks` (both, then the A2A talks). `/gallery` shows `londonVideos` and `sfGallery`. Event recaps are their own kind: they are never labelled as talk recordings, and the Harness Engineering San Francisco sessions do not point to the recap as their recording. Each exported row has a `gallery` tab (`london`, `san-francisco` or `a2a`), slug, title, kind, city, event, speaker, topics, `youtube_id`, `transcript`, status, AI-generated flag and its `/gallery/<slug>` URL, with one source each. `talks.ts` builds its rows from other data, so the exporter rebuilds them from the same literals (the `londonWelcome` and `sfRecordings` literals, agenda, speakers, `sf-code-engineering.ts` and `agentToAgent.ts`) and fails if the exports, the Gallery page or the mapping change, or if London or Code Engineering talks start publishing a YouTube ID or transcript, so a newly published recording is mirrored deliberately. No transcripts are published today, so none are exported. A2A rows use the `a2a-talks` source kind, so general search leaves them out.
+- `src/data/talks.ts`: exports `londonVideos` (the London welcome recording, then the 9 London talks), `sfGallery` (the Harness Engineering San Francisco event recap, kind `event-recap`, slug `sf-harness-engineering-2026-recap`, with the site's `summary`; the site redirects the old `/gallery/sf-harness-engineering-2026-full-event` and `agenteng gallery` still accepts the old slug) and `talks` (both, then the A2A talks). `/gallery` shows `londonVideos` and `sfGallery`. Event recaps are their own kind: they are never labelled as talk recordings, and the Harness Engineering San Francisco sessions do not point to the recap as their recording. Each exported row has a `gallery` tab (`london`, `san-francisco` or `a2a`), slug, title, kind, city, event, speaker, topics, `youtube_id`, `transcript`, status, AI-generated flag and its `/gallery/<slug>` URL, with one source each. `talks.ts` builds its rows from other data, so the exporter rebuilds them from the same literals (the `londonWelcome` and `sfRecordings` literals, agenda, speakers, `sf-code-engineering.ts` and `agentToAgent.ts`) and fails if the exports, the Gallery page or the mapping change, or if London or Code Engineering talks start publishing a YouTube ID or transcript, so a newly published recording is mirrored deliberately. No transcripts are published today, so none are exported. A2A rows use the `a2a-talks` source kind, so general search leaves them out.
 - `codeEngineeringTalks` in `talks.ts` is kept for /san-francisco only: the four Code Engineering San Francisco talks have no gallery page, so they are exported with `gallery: null` and link to `/san-francisco`.
 - `src/data/sf-code-engineering.ts`: roles, companies and links for the Code Engineering San Francisco (27 October 2026) speakers, checked against the SanFrancisco page roster.
 - `src/data/events.ts`: next and previous editions (`site_links.next_event` is Agent Engineering San Francisco, April 2027, `/san-francisco`; `site_links.previous_event` is London 2026, `/london-2026`), plus each event's `page_url`. `site_links` also holds `/gallery` and `/london-2026/videos`. The April 2027 conference is announced without a date or venue, so it is a link labelled "coming April 2027", not a catalogue event. The discovery prompt that used to read "Find the next Agent Engineering Conference in London" now follows `site_links.next_event`: "What is the next Agent Engineering event in San Francisco?", answered with the next published San Francisco event and "Agent Engineering San Francisco is coming April 2027".
