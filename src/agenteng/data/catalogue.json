@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-9f8e0b08b2f0",
-  "published_at": "2026-10-18T11:00:54.757Z",
-  "source_commit": "1072362170c99d13a9e3fb06109d10fa22025570",
-  "source_hash": "9f8e0b08b2f0b6b52abc7d30ff1e2d1eb89e994f8fbe8299ab1a3ebe631f09b4",
+  "version": "website-d3c49871fc80",
+  "published_at": "2026-10-18T11:09:19.364Z",
+  "source_commit": "4e34c4b4257525dc18d6ab724cc37e2597251af5",
+  "source_hash": "d3c49871fc80cc4b0cb61392e3bcec13f262466d3d7d2c7e0b49cde81429d859",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -1841,6 +1841,7 @@
       ],
       "youtube_id": "iTV8VSrVJEk",
       "transcript": null,
+      "summary": null,
       "ai_generated": false,
       "status": "recorded",
       "session_id": null,
@@ -2151,9 +2152,9 @@
       ]
     },
     {
-      "slug": "sf-harness-engineering-2026-full-event",
-      "title": "Harness Engineering: State of the Art in Agent Harnesses",
-      "kind": "event-recording",
+      "slug": "sf-harness-engineering-2026-recap",
+      "title": "Harness Engineering San Francisco: event recap",
+      "kind": "event-recap",
       "city": "San Francisco",
       "event_id": "sf-harness-engineering-2026",
       "event_name": "Harness Engineering San Francisco",
@@ -2166,13 +2167,14 @@
       ],
       "youtube_id": "AP1RRbXZhsE",
       "transcript": null,
+      "summary": "Recap of our Harness Engineering evening in San Francisco, attended by 300+ members.",
       "ai_generated": false,
       "status": "recorded",
       "session_id": null,
       "gallery": "san-francisco",
-      "url": "https://agentengineering.world/gallery/sf-harness-engineering-2026-full-event",
+      "url": "https://agentengineering.world/gallery/sf-harness-engineering-2026-recap",
       "source_ids": [
-        "talk-sf-harness-engineering-2026-full-event"
+        "talk-sf-harness-engineering-2026-recap"
       ]
     },
     {
@@ -3417,9 +3419,9 @@
       "kind": "talk"
     },
     {
-      "id": "talk-sf-harness-engineering-2026-full-event",
-      "url": "https://agentengineering.world/gallery/sf-harness-engineering-2026-full-event",
-      "text": "Harness Engineering: State of the Art in Agent Harnesses\nHarness Engineering San Francisco\nrecorded",
+      "id": "talk-sf-harness-engineering-2026-recap",
+      "url": "https://agentengineering.world/gallery/sf-harness-engineering-2026-recap",
+      "text": "Harness Engineering San Francisco: event recap\nRecap of our Harness Engineering evening in San Francisco, attended by 300+ members.\nHarness Engineering San Francisco\nrecorded",
       "event_id": "sf-harness-engineering-2026",
       "kind": "talk"
     },

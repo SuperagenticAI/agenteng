@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-- Catalogue re-exported from site commit 1072362: the London 2026 recordings are public. "Will talks be recorded?" now answers "Yes. Recordings are public and published on https://agentengineering.world/london-2026/videos as they become available, starting with the welcome video.", and the day guide's photography and content section says the same. The previous wording limited recordings to ticket holders. Plain-English questions such as "Will talks be recorded?" and "Are the talks recorded?" now return that published answer instead of a talk-topic miss.
+- Catalogue re-exported from site commit 1072362: the London 2026 recordings are public. "Will talks be recorded?" now answers "Yes. Recordings are public and published on https://agentengineering.world/london-2026/videos as they become available, starting with the welcome video.", and the day guide's photography and content section says the same. The previous wording limited recordings to ticket holders.
+- Plain-English questions such as "Will talks be recorded?" and "Are the talks recorded?" now return that published answer instead of a talk-topic miss.
+- Catalogue re-exported from site commit 4e34c4b: the Harness Engineering San Francisco video is an event recap, not a recording. It is now `sf-harness-engineering-2026-recap` (`/gallery/sf-harness-engineering-2026-recap`), titled "Harness Engineering San Francisco: event recap", with the summary "Recap of our Harness Engineering evening in San Francisco, attended by 300+ members."
+- Event recaps are their own kind, `event-recap`, in `agenteng gallery`, `agenteng recordings` and talk payloads, shown as "Event recap". The four Harness Engineering San Francisco sessions in `agenteng talks` no longer point to it as their recording. `agenteng gallery sf-harness-engineering-2026-full-event` still resolves to the recap.
 
 ## 0.0.25 - 2026-10-18
 

@@ -198,6 +198,10 @@ def resolve_talk(ctx, identifier: str, event_id: str | None = None):
     ``agenteng-london-2026-14`` share most tokens with other talks.
     """
 
+    from .service import OLD_GALLERY_SLUGS
+
+    identifier = OLD_GALLERY_SLUGS.get(identifier, identifier)
+
     def talk_rows(query: str) -> list[dict]:
         rows: list[dict] = []
         for operation in ("talks", "gallery"):

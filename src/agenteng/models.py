@@ -344,7 +344,7 @@ class Talk(Model):
 
     slug: str
     title: str
-    kind: Literal["talk", "event-recording", "a2a"]
+    kind: Literal["talk", "event-recording", "event-recap", "a2a"]
     city: str
     event_id: str | None = None
     event_name: str
@@ -354,6 +354,7 @@ class Talk(Model):
     topics: list[str] = Field(default_factory=list)
     youtube_id: str | None = None
     transcript: str | None = None
+    summary: str | None = None
     ai_generated: bool = False
     status: Literal["upcoming", "recording-coming-soon", "recorded"]
     session_id: str | None = None

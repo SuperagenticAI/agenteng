@@ -11,6 +11,10 @@ from agenteng.service import Service
 SITE = "https://agentengineering.world"
 LONDON = "agenteng-london-2026"
 SF_CODE = "sf-code-engineering-2026"
+RECAP = "sf-harness-engineering-2026-recap"
+RECAP_SUMMARY = (
+    "Recap of our Harness Engineering evening in San Francisco, attended by 300+ members."
+)
 
 
 def lookup(**kw):
@@ -117,7 +121,8 @@ def test_recordings_include_london_videos_and_welcome():
     assert result.data[0]["url"] == f"{SITE}/london-2026/videos"
     urls = [r["url"] for r in result.data]
     assert "https://www.youtube.com/watch?v=iTV8VSrVJEk" in urls
-    assert any(r.get("slug") == "sf-harness-engineering-2026-full-event" for r in result.data)
+    recap = next(r for r in result.data if r.get("slug") == RECAP)
+    assert recap["kind"] == "event-recap" and recap["summary"] == RECAP_SUMMARY
     assert len(urls) == len(set(urls))
     assert "talk recordings are coming soon" in result.answer
     assert "agenteng gallery --city London" in result.answer
@@ -201,3 +206,28 @@ def test_no_ticket_holder_recording_wording():
     assert faq.answer == PUBLIC_RECORDINGS
     photo = next(s for s in service.catalogue.guide.sections if s.id == "photography")
     assert "Recordings are public" in " ".join(photo.model_dump_json() for _ in [0])
+
+
+def test_sf_harness_video_is_an_event_recap():
+    rows = lookup(operation="gallery", city="San Francisco").data
+    assert len(rows) == 1
+    recap = rows[0]
+    assert recap["slug"] == RECAP and recap["gallery_kind"] == "event-recap"
+    assert recap["title"] == "Harness Engineering San Francisco: event recap"
+    assert recap["summary"] == RECAP_SUMMARY and recap["status_label"] == "Event recap"
+    assert recap["talk_url"] == f"{SITE}/gallery/{RECAP}"
+    old = lookup(operation="talk", session_id="sf-harness-engineering-2026-full-event")
+    assert old.status == "ok" and old.data["slug"] == RECAP
+    assert run("gallery", "sf-harness-engineering-2026-full-event")["data"]["slug"] == RECAP
+    harness = [
+        r
+        for r in lookup(operation="talks", limit=100).data
+        if r["event_id"] == "sf-harness-engineering-2026"
+    ]
+    assert len(harness) == 4
+    assert not any(
+        "recording_slug" in r or "recording" in (r.get("status_label") or "").lower()
+        for r in harness
+    )
+    text = Service().catalogue.model_dump_json().casefold()
+    assert "full-event" not in text and "full event" not in text

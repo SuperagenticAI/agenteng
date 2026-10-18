@@ -529,6 +529,7 @@ const eventIdFor = id => id === 'london-2026' ? london : id;
 const literalTalk = r => ({slug: r.slug, title: r.title, kind: r.kind, city: r.city, event_id: eventIdFor(r.eventId),
   event_name: r.eventName, event_url: site + r.eventHref, date: r.date, speaker: null, topics: r.topics,
   youtube_id: r.youtubeId ?? null, transcript: r.transcript ? clean(r.transcript) : null,
+  summary: r.summary ? clean(r.summary) : null,
   ai_generated: false, status: r.status, session_id: null});
 const talks = [];
 const welcome = constant('londonWelcome');
@@ -560,7 +561,7 @@ if (new Set(talks.map(t => t.slug)).size !== talks.length) throw new Error('Dupl
 for (const t of talks) {
   t.url = t.gallery ? site + '/gallery/' + t.slug : site + '/san-francisco';
   t.source_ids = [source('talk-' + t.slug, t.url, [t.title, t.speaker ? `${t.speaker.name}, ${t.speaker.role} at ${t.speaker.company}` : null,
-    t.event_name, t.ai_generated ? 'AI-generated video.' : null, t.status].filter(Boolean).join('\n'), t.event_id, t.kind === 'a2a' ? 'a2a-talks' : 'talk')];
+    t.summary || null, t.event_name, t.ai_generated ? 'AI-generated video.' : null, t.status].filter(Boolean).join('\n'), t.event_id, t.kind === 'a2a' ? 'a2a-talks' : 'talk')];
 }
 source('london-videos', londonVideosPage, 'Agent Engineering London 2026 recordings: ' + welcome.title +
   ' (https://www.youtube.com/watch?v=' + welcome.youtubeId + '). Talk recordings coming soon.', london, 'recordings');

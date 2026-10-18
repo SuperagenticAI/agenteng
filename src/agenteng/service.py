@@ -18,6 +18,8 @@ from .tool_directory import TOOL_OPERATIONS, ToolDirectory, load_tool_directory
 
 
 LONDON_ID = "agenteng-london-2026"
+# Renamed gallery slugs; the site redirects the old /gallery/<slug> pages too.
+OLD_GALLERY_SLUGS = {"sf-harness-engineering-2026-full-event": "sf-harness-engineering-2026-recap"}
 # "Will talks be recorded?", "Are the talks recorded?": the published FAQ answer.
 RECORDED_QUESTION = re.compile(
     r"^\s*(?:will|are|were|is|was|do|does|did|can)\b.*\b(?:recorded|recordings?|videos?)\b",
@@ -373,7 +375,9 @@ class Service:
                 "date": talk.date,
                 "topics": list(talk.topics),
                 "status": talk.status,
-                "status_label": self.TALK_STATUS[talk.status],
+                "status_label": (
+                    "Event recap" if talk.kind == "event-recap" else self.TALK_STATUS[talk.status]
+                ),
                 "youtube_id": talk.youtube_id,
                 "video_url": (
                     f"https://www.youtube.com/watch?v={talk.youtube_id}"
@@ -383,6 +387,7 @@ class Service:
                 "ai_generated": talk.ai_generated,
                 "talk_url": str(talk.url),
                 "gallery": talk.gallery,
+                **({"summary": talk.summary} if talk.summary else {}),
                 "source_ids": list(dict.fromkeys([*talk.source_ids, *payload["source_ids"]])),
             }
         )
@@ -439,12 +444,12 @@ class Service:
                         None,
                     )
                     if recording:
-                        payload["status_label"] = "In the full-event recording"
+                        payload["status_label"] = "In the event recording"
                         payload["recording_slug"] = recording.slug
                     rows.append(payload)
         rows += a2a_rows
         if request.session_id:
-            key = request.session_id
+            key = OLD_GALLERY_SLUGS.get(request.session_id, request.session_id)
             rows = [r for r in rows if key in {r.get("slug"), r.get("id"), r.get("session_id")}]
         if request.speaker_id:
             rows = [r for r in rows if r.get("speaker_id") == request.speaker_id]
@@ -1517,6 +1522,8 @@ class Service:
                         "title": talk.title,
                         "url": url,
                         "slug": talk.slug,
+                        "kind": talk.kind,
+                        **({"summary": talk.summary} if talk.summary else {}),
                         "talk_url": str(talk.url),
                         "source_ids": list(talk.source_ids),
                     }
