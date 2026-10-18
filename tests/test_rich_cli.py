@@ -267,13 +267,13 @@ def test_footer_deduplicates_source_urls():
     console = make_console(record=True, width=88)
     service = Service(Settings.from_env())
     result = asyncio.run(
-        service.execute(Request(operation="talks", event_id="agenteng-london-2026"))
+        service.execute(Request(operation="agenda", event_id="agenteng-london-2026"))
     )
     assert len(result.sources) > 1
     assert len({str(s.url) for s in result.sources}) == 1
     # JSON/result still carries every source row.
     assert len(result.sources) == len(result.data)
-    render_result(result, "talks", console)
+    render_result(result, "agenda", console)
     text = console.export_text()
     assert text.count("Source:") == 1
-    assert "https://agentengineering.world/agenda" in text
+    assert "https://agentengineering.world/london-2026/agenda" in text

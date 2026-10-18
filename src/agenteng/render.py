@@ -132,6 +132,23 @@ def _event_card(event: dict) -> Panel:
     elif event.get("registration_url") and event.get("registration_status") != "fully_booked":
         body.append("Register: ", style="ae.meta")
         body.append(str(event["registration_url"]) + "\n", style=BLUE)
+    lineup = event.get("lineup") or []
+    if lineup and len(lineup) <= 6:
+        body.append("Speakers: ", style="ae.meta")
+        body.append(
+            ", ".join(
+                display_text(p["name"])
+                + (f" ({display_text(p['company'])})" if p.get("company") else "")
+                for p in lineup
+            )
+            + "\n"
+        )
+    elif lineup:
+        body.append(f"Speakers: {len(lineup)}  ·  ", style="ae.meta")
+        body.append(f"agenteng speakers --event {event.get('id')}\n", style="ae.accent")
+    if event.get("page_url"):
+        body.append("Website: ", style="ae.meta")
+        body.append(str(event["page_url"]) + "\n", style=BLUE)
     if event.get("recording_url"):
         body.append("Recording: ", style="ae.meta")
         body.append(str(event["recording_url"]) + "\n", style=BLUE)
@@ -270,7 +287,19 @@ def _talk_body(talk: dict, *, include_title: bool = True) -> Text:
         when = start.strftime("%H:%M")
     if when:
         body.append(when + "  ·  ", style="ae.accent")
-    body.append((talk.get("kind") or "talk") + "\n", style="ae.meta")
+    kind = talk.get("gallery_kind") or talk.get("kind") or "talk"
+    line = " · ".join(
+        p
+        for p in (
+            "A2A talk" if kind == "a2a" else kind.replace("-", " "),
+            talk.get("event_name") if talk.get("slug") else None,
+            talk.get("status_label"),
+        )
+        if p
+    )
+    body.append(line + "\n", style="ae.meta")
+    if talk.get("label"):
+        body.append(display_text(talk["label"]) + "\n", style="ae.warn")
     if include_title:
         title = talk.get("title") or talk.get("talk_title")
         if title:
@@ -292,7 +321,15 @@ def _talk_body(talk: dict, *, include_title: bool = True) -> Text:
     disciplines = talk.get("disciplines") or talk.get("topics") or []
     if disciplines:
         body.append(", ".join(disciplines) + "\n", style="ae.meta")
-    if talk.get("id"):
+    if talk.get("video_url"):
+        body.append(f"Watch: {talk['video_url']}\n", style="ae.accent")
+    if talk.get("transcript"):
+        body.append(display_text(talk["transcript"]) + "\n")
+    if talk.get("talk_url"):
+        body.append(f"{talk['talk_url']}\n", style="ae.meta")
+    if talk.get("slug"):
+        body.append(f"slug: {talk['slug']}", style="ae.meta")
+    elif talk.get("id"):
         body.append(f"id: {talk['id']}", style="ae.meta")
     return body
 
@@ -304,7 +341,8 @@ def render_talks(console: Console, result: Result) -> None:
         return
     for talk in talks:
         # Short panel header; full title wraps in the body.
-        console.print(_panel("Talk", _talk_body(talk, include_title=True), border=VIOLET))
+        header = "A2A talk (AI-generated)" if talk.get("ai_generated") else "Talk"
+        console.print(_panel(header, _talk_body(talk, include_title=True), border=VIOLET))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
@@ -653,6 +691,15 @@ def render_disciplines(console: Console, result: Result) -> None:
             str(row.get("total_tool_count", "")),
         )
     console.print(table)
+    extra = [d for d in data.get("site_disciplines") or [] if not d.get("in_directory")]
+    if extra:
+        console.print(
+            Text(
+                "Also on the conference site, no tool listings yet: "
+                + ", ".join(f"{d['title']} ({d['id']})" for d in extra),
+                style="ae.meta",
+            )
+        )
     directory = data.get("directory") or {}
     kinds = data.get("kinds") or []
     summary = Text()
@@ -1102,6 +1149,11 @@ def render_about(console: Console, result: Result) -> None:
             "london": "London",
             "san_francisco": "San Francisco",
             "code_of_conduct": "Code of conduct",
+            "london_2026": "AgentEng London 2026",
+            "talks": "Talks",
+            "agenteng": "agenteng CLI",
+            "next_event": "Next event",
+            "previous_event": "Previous event",
             "day_guide": "Day guide",
         }
         for key, url in links.items():

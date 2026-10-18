@@ -83,3 +83,16 @@ works	agenteng speaker stas-bichenko	data/speaker-stack.ts	agenteng speaker stas
 works	agenteng speaker jocelyn-darcy	data/speaker-stack.ts	agenteng speaker jocelyn-darcy	Verified against the CLI
 alias	agenteng guide --london	pages/Guide.tsx	agenteng guide --london	--london shortcut; the guide is published for London only
 alias	agenteng --agent-to-agent	pages/AgentToAgent.tsx	agenteng --agent-to-agent	page badge; runs agenteng a2a-talks
+works	agenteng event --london	pages/London2026.tsx	agenteng event --london	London 2026 conference page (/london-2026)
+works	agenteng talks	pages/Talks.tsx	agenteng talks	Talks gallery (/talks, /talks/:slug); A2A only with --a2a
+works	agenteng event --london	pages/AgentEngPage.tsx	agenteng event --london	CLI page (/agenteng)
+alias	agenteng events --next san-francisco	pages/AgentEngPage.tsx	agenteng events --next san-francisco	--next = --upcoming; optional CITY argument
+works	agenteng speakers	pages/AgentEngPage.tsx	agenteng speakers	CLI page (/agenteng)
+works	agenteng agenda --london	pages/AgentEngPage.tsx	agenteng agenda --london	CLI page (/agenteng)
+works	agenteng guide --london	pages/AgentEngPage.tsx	agenteng guide --london	CLI page (/agenteng)
+works	agenteng a2a-talks	pages/AgentEngPage.tsx	agenteng a2a-talks	CLI page (/agenteng)
+works	agenteng tools --discipline memory	pages/AgentEngPage.tsx	agenteng tools --discipline memory	CLI page (/agenteng)
+works	agenteng connect a2a	pages/AgentEngPage.tsx	agenteng connect a2a	Verified against the CLI
+works	agenteng connect mcp --transport http	pages/AgentEngPage.tsx	agenteng connect mcp --transport http	Verified against the CLI
+works	agenteng connect acp	pages/AgentEngPage.tsx	agenteng connect acp	Verified against the CLI
+alias	agenteng --info	pages/AgentEngPage.tsx	agenteng --info	runs agenteng about

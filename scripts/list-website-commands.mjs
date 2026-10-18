@@ -14,7 +14,8 @@ function scan(directory) {
     if (!/\.(?:tsx?|jsx?)$/.test(entry.name)) continue;
     const source = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
     function visit(node) {
-      if ((ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) && /^agenteng\s+(?:--[\w-]+|[a-z][\w-]*)(?:\s|$)/.test(node.text)) {
+      if ((ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) && /^agenteng\s+(?:--[\w-]+|[a-z][\w-]*)(?:\s|$)/.test(node.text) && !/[.!?]\s*$/.test(node.text.trim())) {
+        // Prose such as a meta description ("agenteng is the ...") ends like a sentence; commands never do.
         const command = node.text.trim();
         const locations = commands.get(command) ?? [];
         locations.push(path.relative(root, file));

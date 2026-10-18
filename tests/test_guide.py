@@ -63,7 +63,7 @@ def test_guide_has_every_site_section_in_order(service):
     result = service.lookup(Request(operation="guide"))
     assert result.status == "ok"
     assert [s["id"] for s in result.data["sections"]] == SECTIONS
-    assert result.data["url"] == "https://agentengineering.world/guide"
+    assert result.data["url"] == "https://agentengineering.world/london-2026/guide"
     facts = {f["label"]: f["value"] for f in result.data["facts"]}
     assert facts == {
         "Venue": "Everyman Canary Wharf, Crossrail Place, London E14 5AR",
@@ -163,7 +163,7 @@ def test_about_and_event_carry_the_tagline(service):
     )
     assert about["truly_yours"]["title"] == "Why this one is truly yours"
     assert about["truly_yours"]["text"].startswith("Most agent conferences answer to sponsors.")
-    assert about["links"]["day_guide"] == "https://agentengineering.world/guide"
+    assert about["links"]["day_guide"] == "https://agentengineering.world/london-2026/guide"
     event = service.lookup(Request(operation="event", event_id=LONDON)).data[0]
     assert event["tagline"].endswith("This one is truly yours.")
     assert event["registration_status"] == "fully_booked"

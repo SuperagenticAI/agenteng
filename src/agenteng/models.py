@@ -86,6 +86,7 @@ class Event(Model):
     date_precision: Literal["day", "month"] = "day"
     venue: str
     venue_tour_url: HttpUrl | None = None
+    page_url: HttpUrl | None = None
     track: str | None = None
     start: datetime | None = None
     end: datetime | None = None
@@ -331,6 +332,56 @@ class A2ATalks(Model):
     source_ids: list[str] = Field(default_factory=list)
 
 
+class TalkSpeaker(Model):
+    name: str
+    role: str = ""
+    company: str = ""
+    slug: str
+
+
+class Talk(Model):
+    """One row of the site's talks gallery (/talks/<slug>)."""
+
+    slug: str
+    title: str
+    kind: Literal["talk", "event-recording", "a2a"]
+    city: str
+    event_id: str | None = None
+    event_name: str
+    event_url: HttpUrl
+    date: str | None = None
+    speaker: TalkSpeaker | None = None
+    topics: list[str] = Field(default_factory=list)
+    youtube_id: str | None = None
+    transcript: str | None = None
+    ai_generated: bool = False
+    status: Literal["upcoming", "recording-coming-soon", "recorded"]
+    session_id: str | None = None
+    url: HttpUrl
+    source_ids: list[str]
+
+
+class SiteDiscipline(Model):
+    id: str
+    title: str
+    short: str
+    description: str
+
+
+class SiteEventLink(Model):
+    name: str
+    when: str
+    url: HttpUrl
+
+
+class SiteLinks(Model):
+    next_event: SiteEventLink | None = None
+    previous_event: SiteEventLink | None = None
+    london_2026: HttpUrl
+    talks: HttpUrl
+    agenteng: HttpUrl
+
+
 class Catalogue(Model):
     schema_version: Literal[1] = 1
     version: str
@@ -348,6 +399,9 @@ class Catalogue(Model):
     about: About | None = None
     guide: Guide | None = None
     a2a_talks: A2ATalks | None = None
+    talks: list[Talk] = Field(default_factory=list)
+    disciplines: list[SiteDiscipline] = Field(default_factory=list)
+    site_links: SiteLinks | None = None
     sources: list[Source]
 
     @model_validator(mode="after")
@@ -379,6 +433,12 @@ class Catalogue(Model):
             extra.append(self.a2a_talks)
             if len({v.id for v in self.a2a_talks.videos}) != len(self.a2a_talks.videos):
                 raise ValueError("Duplicate A2A talk IDs")
+        if len({t.slug for t in self.talks}) != len(self.talks):
+            raise ValueError("Duplicate talk slugs")
+        for talk in self.talks:
+            if talk.event_id is not None and talk.event_id not in events:
+                raise ValueError("Talk references an unknown event")
+        extra.extend(self.talks)
         if self.guide and self.guide.event_id not in events:
             raise ValueError("Guide references an unknown event")
         if self.guide and len({s.id for s in self.guide.sections}) != len(self.guide.sections):
@@ -461,6 +521,7 @@ class Request(Model):
     topic: str | None = Field(default=None, max_length=200)
     upcoming: bool = False
     past: bool = False
+    include_a2a: bool = False
     format: Literal["json", "ics", "text", "svg", "html"] = "json"
     section: str | None = Field(default=None, max_length=64)
     at: datetime | None = None

@@ -174,7 +174,7 @@ def test_time_answers_are_past_tense(after, before):
     for query in ["What is the next talk?", "What's on now?"]:
         answer = ask(after, query).answer
         assert answer.startswith("AgentEng London 2026 ended on 16 October 2026.")
-        assert "https://agentengineering.world/agenda" in answer
+        assert "https://agentengineering.world/london-2026/agenda" in answer
         assert "agenteng agenda agenteng-london-2026" in answer
     for op in ("now", "next"):
         answer = after.lookup(Request(operation=op, event_id=LONDON)).answer

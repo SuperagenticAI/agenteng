@@ -210,6 +210,30 @@ class Service:
         data = {**event.model_dump(mode="json"), "state": self.state(event)}
         if data["state"] == "past" and event.registration_status == "fully_booked":
             data["registration_note"] = PAST_FULLY_BOOKED
+        titles = {
+            s.speaker_id: s.title
+            for s in self.catalogue.sessions
+            if s.event_id == event.id and s.speaker_id
+        }
+        lineup = [
+            {
+                "speaker_id": sp.id,
+                "name": sp.name,
+                "role": sp.role,
+                "company": sp.company,
+                "talk_title": titles.get(sp.id) or sp.talk_title,
+            }
+            for sp in self.catalogue.speakers
+            if event.id in sp.event_ids
+        ]
+        if lineup:
+            data["lineup"] = lineup
+        talk_count = sum(1 for t in self.catalogue.talks if t.event_id == event.id)
+        if talk_count:
+            data["talks_url"] = (
+                str(self.catalogue.site_links.talks) if self.catalogue.site_links else None
+            )
+            data["talk_count"] = talk_count
         return data
 
     def matching_events(self, request):
@@ -290,6 +314,168 @@ class Service:
             payload.setdefault("talk_title", session.title)
             payload.setdefault("disciplines", [])
         return payload
+
+    TALK_STATUS = {
+        "upcoming": "Upcoming",
+        "recording-coming-soon": "Recording coming soon",
+        "recorded": "Recorded",
+    }
+
+    def gallery_payload(self, talk) -> dict:
+        """A talks-gallery row (/talks/<slug>), joined with its session when one exists."""
+        session = None
+        if talk.session_id:
+            session = self.session_map().get(talk.session_id)
+        elif talk.speaker and talk.event_id:
+            session = next(
+                (
+                    s
+                    for s in self.catalogue.sessions
+                    if s.event_id == talk.event_id and s.speaker_id == talk.speaker.slug
+                ),
+                None,
+            )
+        payload = (
+            self.talk_payload(session)
+            if session
+            else {
+                "id": None,
+                "event_id": talk.event_id,
+                "title": talk.title,
+                "talk_title": talk.title,
+                "kind": talk.kind,
+                "abstract": None,
+                "disciplines": [],
+                "speaker_name": talk.speaker.name if talk.speaker else None,
+                "speaker_role": talk.speaker.role if talk.speaker else None,
+                "speaker_company": talk.speaker.company if talk.speaker else None,
+                "source_ids": [],
+            }
+        )
+        payload["session_id"] = session.id if session else None
+        payload.update(
+            {
+                "slug": talk.slug,
+                "title": talk.title,
+                "gallery_kind": talk.kind,
+                "city": talk.city,
+                "event_name": talk.event_name,
+                "event_url": str(talk.event_url),
+                "date": talk.date,
+                "topics": list(talk.topics),
+                "status": talk.status,
+                "status_label": self.TALK_STATUS[talk.status],
+                "youtube_id": talk.youtube_id,
+                "video_url": (
+                    f"https://www.youtube.com/watch?v={talk.youtube_id}"
+                    if talk.youtube_id
+                    else None
+                ),
+                "ai_generated": talk.ai_generated,
+                "talk_url": str(talk.url),
+                "source_ids": list(dict.fromkeys([*talk.source_ids, *payload["source_ids"]])),
+            }
+        )
+        if talk.ai_generated:
+            payload["label"] = "AI-generated video, not a conference talk"
+        if talk.transcript:
+            payload["transcript"] = talk.transcript
+        return payload
+
+    def talks_result(self, request: Request, ids: set[str]) -> Result:
+        """Talks gallery first (site order), then other published sessions; A2A last, opt-in."""
+        city = (request.city or "").casefold()
+        online = city == "online"
+        include_a2a = request.include_a2a or online
+        gallery_sessions = set()
+        rows: list[dict] = []
+        a2a_rows: list[dict] = []
+        for talk in self.catalogue.talks:
+            payload = self.gallery_payload(talk)
+            if payload["session_id"]:
+                gallery_sessions.add(payload["session_id"])
+            if talk.kind == "a2a":
+                if include_a2a and not request.event_id and not request.speaker_id:
+                    a2a_rows.append(payload)
+                continue
+            if online or (talk.event_id not in ids and talk.city.casefold() != city):
+                continue
+            if request.event_id and talk.event_id != request.event_id:
+                continue
+            rows.append(payload)
+        if not online:
+            for session in self.catalogue.sessions:
+                if (
+                    session.id not in gallery_sessions
+                    and session.event_id in ids
+                    and (session.kind == "talk" or session.speaker_id)
+                ):
+                    payload = self.talk_payload(session)
+                    recording = next(
+                        (
+                            t
+                            for t in self.catalogue.talks
+                            if t.event_id == session.event_id and t.kind == "event-recording"
+                        ),
+                        None,
+                    )
+                    if recording:
+                        payload["status_label"] = "In the full-event recording"
+                        payload["recording_slug"] = recording.slug
+                    rows.append(payload)
+        rows += a2a_rows
+        if request.session_id:
+            key = request.session_id
+            rows = [r for r in rows if key in {r.get("slug"), r.get("id"), r.get("session_id")}]
+        if request.speaker_id:
+            rows = [r for r in rows if r.get("speaker_id") == request.speaker_id]
+        if request.topic:
+            wanted = terms(request.topic)
+            rows = [
+                r
+                for r in rows
+                if wanted
+                & terms(" ".join([*r.get("topics", []), *r.get("disciplines", []), r["title"]]))
+            ]
+        wanted = terms(request.query)
+        if wanted:
+            speakers = self.speaker_map()
+
+            def score(r: dict) -> int:
+                text = " ".join(
+                    [
+                        r.get("title") or "",
+                        " ".join(r.get("topics") or []),
+                        r.get("abstract") or "",
+                        r.get("speaker_name") or "",
+                        " ".join(
+                            self.sources[i].text for i in r["source_ids"] if i in self.sources
+                        ),
+                        speakers[r["speaker_id"]].name if r.get("speaker_id") in speakers else "",
+                    ]
+                )
+                return len(wanted & terms(text))
+
+            scored = [(score(r), n, r) for n, r in enumerate(rows)]
+            rows = [r for sc, n, r in sorted(scored, key=lambda x: (-x[0], x[1])) if sc]
+        if request.operation == "talk":
+            if not rows:
+                return self.result("No published talk matched.", status="not_found")
+            row = rows[0]
+            status = f" {row['status_label']}." if row.get("status_label") else ""
+            return self.result(f"Talk: {row['title']}.{status}", row, row["source_ids"])
+        rows = rows[: request.limit]
+        answer = f"{len(rows)} published talk(s)."
+        if any(r.get("ai_generated") for r in rows):
+            answer += " A2A talks are listed last and are separate from the speaker programme."
+            if self.catalogue.a2a_talks:
+                answer += " " + self.catalogue.a2a_talks.disclaimer
+        return self.result(
+            answer,
+            rows,
+            [i for r in rows for i in r["source_ids"]],
+            status="ok" if rows else "not_found",
+        )
 
     def default_live_event_id(self, request: Request) -> str | None:
         if request.event_id:
@@ -591,7 +777,22 @@ class Service:
         if request.operation == "chat":
             return self.lookup(Request(operation="ask", query=request.query, limit=request.limit))
         if request.operation in TOOL_OPERATIONS:
-            return self.tool_directory.lookup(request, self.clock(), self.settings.max_age_hours)
+            result = self.tool_directory.lookup(request, self.clock(), self.settings.max_age_hours)
+            if request.operation == "disciplines" and isinstance(result.data, dict):
+                listed = {row["id"] for row in result.data.get("items", [])}
+                site = [
+                    {**d.model_dump(mode="json"), "in_directory": d.id in listed}
+                    for d in self.catalogue.disciplines
+                ]
+                if site:
+                    result.data["site_disciplines"] = site
+                    extra = [d["title"] for d in site if not d["in_directory"]]
+                    if extra:
+                        result.answer += (
+                            f" The conference site lists {len(site)} disciplines;"
+                            f" {', '.join(extra)} have no tool listings yet."
+                        )
+            return result
         if request.event_id and request.event_id not in self.events:
             return self.result(
                 "Unknown event_id. Use events to list published event IDs.", status="not_found"
@@ -922,58 +1123,7 @@ class Service:
                 speaker.source_ids,
             )
         if request.operation in {"talks", "talk"}:
-            rows = [
-                s
-                for s in self.catalogue.sessions
-                if s.event_id in ids and (s.kind == "talk" or s.speaker_id)
-            ]
-            if request.session_id:
-                rows = [s for s in rows if s.id == request.session_id]
-            if request.speaker_id:
-                rows = [s for s in rows if s.speaker_id == request.speaker_id]
-            wanted = terms(request.query or request.topic or "")
-            if wanted:
-                rows = [
-                    s
-                    for s in rows
-                    if wanted
-                    & terms(
-                        " ".join(
-                            [
-                                s.title,
-                                " ".join(s.topics),
-                                " ".join(self.sources[i].text for i in s.source_ids),
-                                (
-                                    self.speaker_map()[s.speaker_id].abstract
-                                    if s.speaker_id and s.speaker_id in self.speaker_map()
-                                    else ""
-                                )
-                                or "",
-                                (
-                                    self.speaker_map()[s.speaker_id].name
-                                    if s.speaker_id and s.speaker_id in self.speaker_map()
-                                    else ""
-                                ),
-                            ]
-                        )
-                    )
-                ]
-            if request.operation == "talk":
-                if not rows:
-                    return self.result("No published talk matched.", status="not_found")
-                session = rows[0]
-                return self.result(
-                    f"Talk: {session.title}.",
-                    self.talk_payload(session),
-                    session.source_ids,
-                )
-            rows = rows[: request.limit]
-            return self.result(
-                f"{len(rows)} published talk(s).",
-                [self.talk_payload(s) for s in rows],
-                [i for s in rows for i in s.source_ids],
-                status="ok" if rows else "not_found",
-            )
+            return self.talks_result(request, ids)
         if request.operation == "faq":
             rows = list(self.catalogue.faqs)
             if request.event_id:
@@ -1264,11 +1414,55 @@ class Service:
                 event.source_ids,
             )
         if request.operation == "recordings":
-            rows = [e for e in events if e.recording_url][: request.limit]
+            rows = [
+                {
+                    "event_id": e.id,
+                    "title": e.title,
+                    "url": str(e.recording_url),
+                    "source_ids": list(e.source_ids),
+                }
+                for e in events
+                if e.recording_url
+            ]
+            seen = {r["url"] for r in rows}
+            for talk in self.catalogue.talks:
+                url = (
+                    f"https://www.youtube.com/watch?v={talk.youtube_id}"
+                    if talk.youtube_id
+                    else None
+                )
+                video = {
+                    str(u) for e in events if e.id == talk.event_id for u in [e.recording_url] if u
+                }
+                if talk.kind == "a2a" or not url or talk.event_id not in ids or video & {url}:
+                    continue
+                if any(talk.youtube_id in u for u in seen | video):
+                    continue
+                seen.add(url)
+                rows.append(
+                    {
+                        "event_id": talk.event_id,
+                        "title": talk.title,
+                        "url": url,
+                        "slug": talk.slug,
+                        "talk_url": str(talk.url),
+                        "source_ids": list(talk.source_ids),
+                    }
+                )
+            rows = rows[: request.limit]
+            answer = f"{len(rows)} published recording link(s)."
+            if any(
+                t.status == "recording-coming-soon" and t.event_id in ids
+                for t in self.catalogue.talks
+            ):
+                answer += (
+                    " AgentEng London 2026 recordings are coming soon:"
+                    " run agenteng talks --city London."
+                )
             return self.result(
-                f"{len(rows)} published recording link(s).",
-                [{"event_id": e.id, "title": e.title, "url": str(e.recording_url)} for e in rows],
-                [s for e in rows for s in e.source_ids],
+                answer,
+                rows,
+                [s for r in rows for s in r["source_ids"]],
                 status="ok" if rows else "not_found",
             )
         # Search/ask returns literal, attributed excerpts. It never paraphrases with a model.

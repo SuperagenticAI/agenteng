@@ -185,27 +185,36 @@ agenteng speaker samuel-colvin
 
 ### agenteng talks
 
-List published talks with full abstracts.
+List the talks gallery, or read one talk by SLUG.
+
+Mirrors [agentengineering.world/talks](https://agentengineering.world/talks): Code Engineering San Francisco, London 2026 (recordings coming soon) and published recordings, with full abstracts. A2A talks are AI-generated and only appear with --a2a or --city Online, after the programme. SLUG is a talk slug, session ID or speaker ID.
 
 ```text
-agenteng talks [OPTIONS]
+agenteng talks [OPTIONS] [SLUG]
 ```
 
 | Option | Meaning | Default |
 | --- | --- | --- |
+| `--city` TEXT | Only talks in this city, for example London or San Francisco. |  |
 | `--event` TEXT | Only talks at this event ID. |  |
+| `--topic` TEXT | Only talks on this topic or discipline, for example Code. |  |
 | `--search` TEXT | Match talk title, abstract or speaker. |  |
 | `--speaker` TEXT | Only talks by this speaker ID. |  |
+| `--a2a` | Also list the AI-generated A2A talks, after the programme. |  |
+| `--limit` INTEGER RANGE | Maximum talks to list. | `20` |
 
 ```sh
-agenteng talks --search memory
+agenteng talks --city "San Francisco" --topic Code
+agenteng talks london-2026-say-less-grade-harder
 ```
+
+Each row carries its `slug`, `status` (`upcoming`, `recording-coming-soon` or `recorded`), `status_label`, `youtube_id` and `video_url` when a recording is published, and the `talk_url` on the website. London 2026 recordings show as "Recording coming soon". Transcripts are included only when the website publishes one; none are published today. Talks published as sessions but not in the gallery (the Harness Engineering San Francisco sessions) follow the gallery and point to the full-event recording. A2A talks keep their AI-generated label and the A2A disclaimer; `agenteng a2a-talks` remains the dedicated view. Over MCP, A2A and REST use `{"operation":"talks"}` with optional `city`, `event_id`, `topic`, `query`, `speaker_id` and `include_a2a`, or `{"operation":"talk","session_id":"<slug>"}` for one talk.
 
 ### agenteng talk
 
-Read one talk by session ID, speaker ID, or --search text.
+Read one talk by talk slug, session ID, speaker ID, or --search text.
 
-IDENTIFIER is a session ID or speaker ID from agenteng talks.
+IDENTIFIER is a talk slug, session ID or speaker ID from agenteng talks.
 
 ```text
 agenteng talk [OPTIONS] [IDENTIFIER]
@@ -326,6 +335,8 @@ agenteng recordings [OPTIONS]
 agenteng recordings --city London
 ```
 
+Lists event recordings and gallery talk recordings with a published YouTube video, without duplicates. While London 2026 recordings are pending the answer says so and points to `agenteng talks --city London`. A2A videos are listed by `agenteng a2a-talks`, not here.
+
 ### agenteng a2a-talks
 
 List the Agent-to-Agent (A2A) Talks: AI-generated videos, not conference talks.
@@ -342,7 +353,7 @@ agenteng a2a-talks [OPTIONS]
 agenteng a2a-talks --topic memory
 ```
 
-These videos are produced by the Agent Engineering team using AI. They are separate from the conference programme and are not created, reviewed or endorsed by our speakers. Every answer carries this disclaimer, and the videos never appear in `speakers`, `talks` or `agenda`. Over MCP, A2A and REST use `{"operation":"a2a-talks"}` with an optional `topic`. The website badge `agenteng --agent-to-agent` runs the same command.
+These videos are produced by the Agent Engineering team using AI. They are separate from the conference programme and are not created, reviewed or endorsed by our speakers. Every answer carries this disclaimer, and the videos never appear in `speakers` or `agenda`; `talks` lists them only with `--a2a` or `--city Online`, after the programme. Over MCP, A2A and REST use `{"operation":"a2a-talks"}` with an optional `topic`. The website badge `agenteng --agent-to-agent` runs the same command.
 
 ## At the event
 
