@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Catalogue re-exported from site commit e968fc9, which moves the London 2026 conference under `/london-2026`. Sources and answers now link to `/london-2026/speakers`, `/london-2026/agenda`, `/london-2026/guide`, `/london-2026#faq` and `/london-2026` (formerly `/#venue`, `/#agenda` and `/#tickets`). London's post-event behaviour is unchanged, and San Francisco stays upcoming.
+- `agenteng talks` now mirrors the website talks gallery (`/talks`): Code Engineering San Francisco first, then AgentEng London 2026 ("Recording coming soon") and the Harness Engineering San Francisco full-event recording, with full abstracts. New `--city`, `--topic`, `--a2a` and `--limit` options, and `agenteng talks <slug>` reads one talk. Rows carry `slug`, `status`, `youtube_id`, `video_url` and `talk_url`; transcripts appear only when the site publishes one (none today).
+- A2A talks stay out of the programme: `agenteng talks` lists them only with `--a2a` or `--city Online`, after every other talk, labelled AI-generated and with the A2A disclaimer. `agenteng a2a-talks` is unchanged.
+- `agenteng recordings` adds gallery recordings with a published video (the Harness Engineering San Francisco full event) and says London 2026 recordings are coming soon.
+- Code Engineering San Francisco (27 October 2026): speaker roles, companies and X links come from the site's `sf-code-engineering.ts`, and the event card lists the four speakers. Event cards and JSON add `page_url` and the speaker `lineup`.
+- Discovery and `agenteng about` add the talks page, the CLI page, AgentEng London 2026 and the next and previous editions from the site's `events.ts` (Agent Engineering San Francisco, April 2027, and London 2026).
+- `agenteng disciplines` notes the site's two new disciplines, Factory Engineering and Decision Engineering, which have no tool listings yet.
+- The `talks` operation (REST, MCP and A2A) takes `city`, `topic` and `include_a2a`, and `talk` takes a talk slug as `session_id`. New `agenteng-talks` agent card skill.
+- Website command check: commands on `/london-2026`, `/talks` and `/agenteng` are in the fixture, and prose literals that end like a sentence are no longer read as commands.
+
 ## 0.0.24 - 2026-10-17
 
 - Catalogue re-exported from site commit a3cd566, the post-event pass for AgentEng London (16 October 2026). The FAQ is regenerated from the site, so the team seats, approval, refund and dietary answers are gone, and the remaining answers read in the past tense. The export no longer requires the homepage "Best way in" and registration lines, which the site removed; registration wording now comes from the day guide.

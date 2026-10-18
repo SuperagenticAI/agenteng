@@ -208,7 +208,7 @@ def resolve_talk(ctx, identifier: str, event_id: str | None = None):
     exact = [
         row
         for row in talk_rows("")
-        if row.get("id") == identifier or row.get("speaker_id") == identifier
+        if identifier in {row.get("slug"), row.get("id"), row.get("speaker_id")}
     ]
     if exact:
         return exact[0]
@@ -352,15 +352,51 @@ def inspect_speaker(ctx, speaker_id, event_id):
 
 
 @main.command()
+@click.argument("slug", required=False)
+@click.option("--city", help="Only talks in this city, for example London or San Francisco.")
 @click.option("--event", "event_id", help="Only talks at this event ID.")
+@click.option("--topic", help="Only talks on this topic or discipline, for example Code.")
 @click.option("--search", "query", default="", help="Match talk title, abstract or speaker.")
 @click.option("--speaker", "speaker_id", help="Only talks by this speaker ID.")
+@click.option(
+    "--a2a",
+    "include_a2a",
+    is_flag=True,
+    help="Also list the AI-generated A2A talks, after the programme.",
+)
+@click.option(
+    "--limit",
+    default=20,
+    show_default=True,
+    type=click.IntRange(1, 100),
+    help="Maximum talks to list.",
+)
+@city_shortcuts
 @click.pass_context
-def talks(ctx, event_id, query, speaker_id):
-    """List published talks with full abstracts."""
+def talks(ctx, slug, city, event_id, topic, query, speaker_id, include_a2a, limit):
+    """List the talks gallery, or read one talk by SLUG.
+
+    Mirrors agentengineering.world/talks: Code Engineering San Francisco,
+    London 2026 (recordings coming soon) and published recordings, with full
+    abstracts. A2A talks are AI-generated and only appear with --a2a or
+    --city Online, after the programme. SLUG is a talk slug, session ID or
+    speaker ID.
+    """
+    if slug:
+        ctx.invoke(talk_detail, identifier=slug, event_id=event_id, query="")
+        return
     dispatch(
         ctx,
-        dict(operation="talks", event_id=event_id, query=query, speaker_id=speaker_id),
+        dict(
+            operation="talks",
+            city=city,
+            event_id=event_id,
+            topic=topic,
+            query=query,
+            speaker_id=speaker_id,
+            include_a2a=include_a2a,
+            limit=limit,
+        ),
     )
 
 
@@ -370,15 +406,15 @@ def talks(ctx, event_id, query, speaker_id):
 @click.option("--search", "query", default="", help="Find the talk by title or abstract text.")
 @click.pass_context
 def talk_detail(ctx, identifier, event_id, query):
-    """Read one talk by session ID, speaker ID, or --search text.
+    """Read one talk by talk slug, session ID, speaker ID, or --search text.
 
-    IDENTIFIER is a session ID or speaker ID from agenteng talks.
+    IDENTIFIER is a talk slug, session ID or speaker ID from agenteng talks.
     """
     payload = dict(operation="talk", event_id=event_id, query=query)
     if identifier:
         row = resolve_talk(ctx, identifier, event_id)
         if row:
-            payload["session_id"] = row["id"]
+            payload["session_id"] = row.get("slug") or row["id"]
             payload["query"] = ""
         elif not query:
             payload["query"] = identifier

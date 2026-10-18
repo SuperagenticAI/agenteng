@@ -113,6 +113,22 @@ def agent_card(service):
                 ],
             ),
             AgentSkill(
+                id="agenteng-talks",
+                name="Talks gallery",
+                description="The website talks gallery (talks; optional city, event_id, topic, "
+                "query and speaker_id) and one talk by slug (talk with session_id set to the "
+                "slug): Code Engineering San Francisco, AgentEng London 2026 and published "
+                "recordings, with status (upcoming, recording-coming-soon or recorded), YouTube "
+                "IDs when published and full abstracts. A2A talks are added only with "
+                "include_a2a, listed last and labelled AI-generated. Model-free.",
+                tags=["talks", "recordings", "london-2026", "code-engineering", "san-francisco"],
+                examples=[
+                    '{"operation":"talks","city":"San Francisco"}',
+                    '{"operation":"talks","event_id":"agenteng-london-2026","topic":"Memory"}',
+                    '{"operation":"talk","session_id":"sf-harness-engineering-2026-full-event"}',
+                ],
+            ),
+            AgentSkill(
                 id="agenteng-a2a-talks",
                 name="Agent-to-Agent (A2A) Talks",
                 description="The published Agent-to-Agent (A2A) Talks page (a2a-talks; optional "
@@ -121,7 +137,7 @@ def agent_card(service):
                 "YouTube links, durations and tags. These videos are produced by the Agent "
                 "Engineering team using AI. They are separate from the conference programme and "
                 "are not created, reviewed or endorsed by our speakers. They are never returned as "
-                "speakers, talks or sessions. Model-free.",
+                "speakers or sessions, and talks lists them only with include_a2a, last. Model-free.",
                 tags=["a2a-talks", "agent-to-agent", "videos", "ai-generated"],
                 examples=[
                     '{"operation":"a2a-talks"}',

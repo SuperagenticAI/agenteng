@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-fedcc0e88444",
-  "published_at": "2026-10-17T11:42:24.741Z",
-  "source_commit": "a3cd566e55c27d1be61fc0ced558db1303e55d01",
-  "source_hash": "fedcc0e884442f9842895390f1d400d2089a38e024524e7e2b400a675d744835",
+  "version": "website-fa622a955007",
+  "published_at": "2026-10-18T09:12:02.042Z",
+  "source_commit": "e968fc9c0e56c78533976032b7a5908537c67fd1",
+  "source_hash": "fa622a95500702e58f6a5f75772f2ff80e1d6910847999b3cac841ee39d74291",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -54,7 +54,8 @@
       ],
       "tagline": "There are many Agent conferences. This one is truly yours.",
       "registration_status": "fully_booked",
-      "registration_note": "We are fully booked and it will be busy, but there will be seats for everyone."
+      "registration_note": "We are fully booked and it will be busy, but there will be seats for everyone.",
+      "page_url": "https://agentengineering.world/london-2026"
     },
     {
       "id": "london-harness-engineering-with-amazon",
@@ -68,7 +69,8 @@
       "recording_url": "https://www.youtube.com/watch?v=BDAI-ZygvC4",
       "source_ids": [
         "london-harness-engineering-with-amazon"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/london"
     },
     {
       "id": "london-agentic-engineering-with-alibaba-cloud",
@@ -82,7 +84,8 @@
       "recording_url": "https://www.youtube.com/watch?v=GAoSHdZL4gQ",
       "source_ids": [
         "london-agentic-engineering-with-alibaba-cloud"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/london"
     },
     {
       "id": "london-the-london-ai-agents-showcase-at-databricks",
@@ -96,7 +99,8 @@
       "recording_url": "https://www.youtube.com/watch?v=VXCT8Yc2zE8",
       "source_ids": [
         "london-the-london-ai-agents-showcase-at-databricks"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/london"
     },
     {
       "id": "london-coding-agents-and-acp-with-jetbrains",
@@ -110,7 +114,8 @@
       "recording_url": "https://www.youtube.com/watch?v=Tr6hMit_e1A",
       "source_ids": [
         "london-coding-agents-and-acp-with-jetbrains"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/london"
     },
     {
       "id": "london-agentic-coding-at-google-deepmind",
@@ -124,7 +129,8 @@
       "recording_url": "https://www.youtube.com/watch?v=-fEq34tkPCI",
       "source_ids": [
         "london-agentic-coding-at-google-deepmind"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/london"
     },
     {
       "id": "london-agentic-ai-evals-at-databricks",
@@ -138,7 +144,8 @@
       "recording_url": "https://www.youtube.com/watch?v=BLINPRC3AS8",
       "source_ids": [
         "london-agentic-ai-evals-at-databricks"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/london"
     },
     {
       "id": "london-agentic-ai-and-model-context-protocol",
@@ -152,7 +159,8 @@
       "recording_url": null,
       "source_ids": [
         "london-agentic-ai-and-model-context-protocol"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/london"
     },
     {
       "id": "london-building-reliable-ai-agents-from-context-to-evals",
@@ -166,7 +174,8 @@
       "recording_url": null,
       "source_ids": [
         "london-building-reliable-ai-agents-from-context-to-evals"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/london"
     },
     {
       "id": "sf-code-engineering-2026",
@@ -179,7 +188,8 @@
       "registration_url": "https://luma.com/cico2dxy",
       "source_ids": [
         "sf-code-engineering-2026"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/san-francisco"
     },
     {
       "id": "sf-harness-engineering-2026",
@@ -192,7 +202,8 @@
       "registration_url": "https://luma.com/rtd0f6ka",
       "source_ids": [
         "sf-harness-engineering-2026"
-      ]
+      ],
+      "page_url": "https://agentengineering.world/san-francisco"
     }
   ],
   "speakers": [
@@ -681,7 +692,12 @@
       "talk_title": "Prime Agent: A Self-Improving RLM Harness with Swarm Communication",
       "source_ids": [
         "sf-code-engineering-2026-seth-karten"
-      ]
+      ],
+      "role": "Research, Lead on Prime Agent & Continual Harness",
+      "company_url": "https://www.primeintellect.ai",
+      "links": {
+        "x": "https://x.com/sethkarten"
+      }
     },
     {
       "id": "ben-holmes",
@@ -693,7 +709,12 @@
       "talk_title": "Building a self-improving software factory",
       "source_ids": [
         "sf-code-engineering-2026-ben-holmes"
-      ]
+      ],
+      "role": "Agent Infrastructure",
+      "company_url": "https://www.warp.dev",
+      "links": {
+        "x": "https://x.com/BHolmesDev"
+      }
     },
     {
       "id": "sydney-runkle",
@@ -705,7 +726,10 @@
       "talk_title": "Building agents that work like coding agents",
       "source_ids": [
         "sf-code-engineering-2026-sydney-runkle"
-      ]
+      ],
+      "role": "Product Manager for Open Source",
+      "company_url": "https://www.langchain.com",
+      "links": null
     },
     {
       "id": "andrey-risukhin",
@@ -717,7 +741,10 @@
       "talk_title": "Reducing Coding Harness Latency with the Software Factory",
       "source_ids": [
         "sf-code-engineering-2026-andrey-risukhin"
-      ]
+      ],
+      "role": "Recursive Self Improvement",
+      "company_url": "https://factory.ai",
+      "links": null
     },
     {
       "id": "dat-ngo",
@@ -1452,7 +1479,7 @@
   },
   "guide": {
     "event_id": "agenteng-london-2026",
-    "url": "https://agentengineering.world/guide",
+    "url": "https://agentengineering.world/london-2026/guide",
     "title": "Day guide | Agent Engineering London 2026",
     "description": "The attendee guide for Agent Engineering London, held on Friday 16 October 2026 at Everyman Canary Wharf. Kept here for reference.",
     "intro": "There are many Agent conferences. This one is truly yours. No sponsor shaped the programme, every talk was curated for the people in the room.",
@@ -1798,17 +1825,780 @@
       "a2a-talks"
     ]
   },
+  "talks": [
+    {
+      "slug": "sf-code-engineering-prime-agent-a-self-improving-rlm-harness-with-swarm-communication",
+      "title": "Prime Agent: A Self-Improving RLM Harness with Swarm Communication",
+      "kind": "talk",
+      "city": "San Francisco",
+      "event_id": "sf-code-engineering-2026",
+      "event_name": "Code Engineering San Francisco",
+      "event_url": "https://agentengineering.world/san-francisco",
+      "date": "2026-10-27",
+      "speaker": {
+        "name": "Seth Karten",
+        "role": "Research, Lead on Prime Agent & Continual Harness",
+        "company": "Prime Intellect",
+        "slug": "seth-karten"
+      },
+      "topics": [
+        "Code",
+        "Harness"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "upcoming",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/sf-code-engineering-prime-agent-a-self-improving-rlm-harness-with-swarm-communication",
+      "source_ids": [
+        "talk-sf-code-engineering-prime-agent-a-self-improving-rlm-harness-with-swarm-communication"
+      ]
+    },
+    {
+      "slug": "sf-code-engineering-building-a-self-improving-software-factory",
+      "title": "Building a self-improving software factory",
+      "kind": "talk",
+      "city": "San Francisco",
+      "event_id": "sf-code-engineering-2026",
+      "event_name": "Code Engineering San Francisco",
+      "event_url": "https://agentengineering.world/san-francisco",
+      "date": "2026-10-27",
+      "speaker": {
+        "name": "Ben Holmes",
+        "role": "Agent Infrastructure",
+        "company": "Warp",
+        "slug": "ben-holmes"
+      },
+      "topics": [
+        "Code",
+        "Harness"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "upcoming",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/sf-code-engineering-building-a-self-improving-software-factory",
+      "source_ids": [
+        "talk-sf-code-engineering-building-a-self-improving-software-factory"
+      ]
+    },
+    {
+      "slug": "sf-code-engineering-building-agents-that-work-like-coding-agents",
+      "title": "Building agents that work like coding agents",
+      "kind": "talk",
+      "city": "San Francisco",
+      "event_id": "sf-code-engineering-2026",
+      "event_name": "Code Engineering San Francisco",
+      "event_url": "https://agentengineering.world/san-francisco",
+      "date": "2026-10-27",
+      "speaker": {
+        "name": "Sydney Runkle",
+        "role": "Product Manager for Open Source",
+        "company": "LangChain",
+        "slug": "sydney-runkle"
+      },
+      "topics": [
+        "Code",
+        "Harness"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "upcoming",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/sf-code-engineering-building-agents-that-work-like-coding-agents",
+      "source_ids": [
+        "talk-sf-code-engineering-building-agents-that-work-like-coding-agents"
+      ]
+    },
+    {
+      "slug": "sf-code-engineering-reducing-coding-harness-latency-with-the-software-factory",
+      "title": "Reducing Coding Harness Latency with the Software Factory",
+      "kind": "talk",
+      "city": "San Francisco",
+      "event_id": "sf-code-engineering-2026",
+      "event_name": "Code Engineering San Francisco",
+      "event_url": "https://agentengineering.world/san-francisco",
+      "date": "2026-10-27",
+      "speaker": {
+        "name": "Andrey Risukhin",
+        "role": "Recursive Self Improvement",
+        "company": "Factory",
+        "slug": "andrey-risukhin"
+      },
+      "topics": [
+        "Code",
+        "Harness"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "upcoming",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/sf-code-engineering-reducing-coding-harness-latency-with-the-software-factory",
+      "source_ids": [
+        "talk-sf-code-engineering-reducing-coding-harness-latency-with-the-software-factory"
+      ]
+    },
+    {
+      "slug": "london-2026-agentic-coding-in-2026-watching-300-engineering-orgs-adopting-agents",
+      "title": "Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Alexander Korchagin",
+        "role": "Head of Technology Adoption",
+        "company": "JetBrains",
+        "slug": "alexander-korchagin"
+      },
+      "topics": [
+        "Agentic",
+        "Code"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-2",
+      "url": "https://agentengineering.world/talks/london-2026-agentic-coding-in-2026-watching-300-engineering-orgs-adopting-agents",
+      "source_ids": [
+        "talk-london-2026-agentic-coding-in-2026-watching-300-engineering-orgs-adopting-agents"
+      ]
+    },
+    {
+      "slug": "london-2026-inference-engineering-for-long-running-agents",
+      "title": "Inference Engineering for Long-Running Agents",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Meryem Arik",
+        "role": "CEO",
+        "company": "Doubleword",
+        "slug": "meryem-arik"
+      },
+      "topics": [
+        "Inference"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-3",
+      "url": "https://agentengineering.world/talks/london-2026-inference-engineering-for-long-running-agents",
+      "source_ids": [
+        "talk-london-2026-inference-engineering-for-long-running-agents"
+      ]
+    },
+    {
+      "slug": "london-2026-software-development-as-constrained-optimization",
+      "title": "Software Development as Constrained Optimization",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Samuel Colvin",
+        "role": "Founder & CEO",
+        "company": "Pydantic",
+        "slug": "samuel-colvin"
+      },
+      "topics": [
+        "Harness",
+        "Eval",
+        "Loop"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-4",
+      "url": "https://agentengineering.world/talks/london-2026-software-development-as-constrained-optimization",
+      "source_ids": [
+        "talk-london-2026-software-development-as-constrained-optimization"
+      ]
+    },
+    {
+      "slug": "london-2026-the-right-information-at-the-right-time",
+      "title": "The right information at the right time",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Jon Bratseth",
+        "role": "CEO",
+        "company": "Vespa.ai",
+        "slug": "jon-bratseth"
+      },
+      "topics": [
+        "Context",
+        "Search"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-6",
+      "url": "https://agentengineering.world/talks/london-2026-the-right-information-at-the-right-time",
+      "source_ids": [
+        "talk-london-2026-the-right-information-at-the-right-time"
+      ]
+    },
+    {
+      "slug": "london-2026-if-coding-is-solved-what-s-left",
+      "title": "If coding is solved, what's left?",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Andrey Breslav",
+        "role": "Founder",
+        "company": "CodeSpeak",
+        "slug": "andrey-breslav"
+      },
+      "topics": [
+        "Agentic",
+        "Code"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-7",
+      "url": "https://agentengineering.world/talks/london-2026-if-coding-is-solved-what-s-left",
+      "source_ids": [
+        "talk-london-2026-if-coding-is-solved-what-s-left"
+      ]
+    },
+    {
+      "slug": "london-2026-debugging-and-optimizing-voice-agents",
+      "title": "Debugging and Optimizing Voice Agents",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Stas Bichenko",
+        "role": "CEO",
+        "company": "Recombine",
+        "slug": "stas-bichenko"
+      },
+      "topics": [
+        "Eval",
+        "Agentic"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-8",
+      "url": "https://agentengineering.world/talks/london-2026-debugging-and-optimizing-voice-agents",
+      "source_ids": [
+        "talk-london-2026-debugging-and-optimizing-voice-agents"
+      ]
+    },
+    {
+      "slug": "london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
+      "title": "Browser Use Is the Default. Your UI Is Not Your Agent API.",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Frédéric Barthelet",
+        "role": "CTO & Co-founder",
+        "company": "Alpic",
+        "slug": "frederic-barthelet"
+      },
+      "topics": [
+        "Protocol"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-10",
+      "url": "https://agentengineering.world/talks/london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
+      "source_ids": [
+        "talk-london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api"
+      ]
+    },
+    {
+      "slug": "london-2026-security-for-ai-native-developers",
+      "title": "Security for AI-Native Developers",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Ismail Homan Pelaseyed",
+        "role": "Co-founder & CTO",
+        "company": "Superagent",
+        "slug": "ismail-pelaseyed"
+      },
+      "topics": [
+        "Harness",
+        "Code"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-11",
+      "url": "https://agentengineering.world/talks/london-2026-security-for-ai-native-developers",
+      "source_ids": [
+        "talk-london-2026-security-for-ai-native-developers"
+      ]
+    },
+    {
+      "slug": "london-2026-say-less-grade-harder",
+      "title": "Say Less, Grade Harder",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Jocelyn D'Arcy",
+        "role": "CEO",
+        "company": "Poindexter Labs",
+        "slug": "jocelyn-darcy"
+      },
+      "topics": [
+        "Prompt",
+        "Eval"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-13",
+      "url": "https://agentengineering.world/talks/london-2026-say-less-grade-harder",
+      "source_ids": [
+        "talk-london-2026-say-less-grade-harder"
+      ]
+    },
+    {
+      "slug": "london-2026-memory-is-not-a-bigger-context-window-memory-engineering-for-production-agents",
+      "title": "Memory Is Not a Bigger Context Window: Memory Engineering for Production Agents",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Tobie Morgan Hitchcock",
+        "role": "Founder & CEO",
+        "company": "SurrealDB",
+        "slug": "tobie-morgan-hitchcock"
+      },
+      "topics": [
+        "Context",
+        "Memory",
+        "Graph"
+      ],
+      "youtube_id": null,
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recording-coming-soon",
+      "session_id": "agenteng-london-2026-14",
+      "url": "https://agentengineering.world/talks/london-2026-memory-is-not-a-bigger-context-window-memory-engineering-for-production-agents",
+      "source_ids": [
+        "talk-london-2026-memory-is-not-a-bigger-context-window-memory-engineering-for-production-agents"
+      ]
+    },
+    {
+      "slug": "sf-harness-engineering-2026-full-event",
+      "title": "Harness Engineering: State of the Art in Agent Harnesses",
+      "kind": "event-recording",
+      "city": "San Francisco",
+      "event_id": "sf-harness-engineering-2026",
+      "event_name": "Harness Engineering San Francisco",
+      "event_url": "https://agentengineering.world/san-francisco",
+      "date": "2026-07-03",
+      "speaker": null,
+      "topics": [
+        "Harness",
+        "Eval"
+      ],
+      "youtube_id": "AP1RRbXZhsE",
+      "transcript": null,
+      "ai_generated": false,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/sf-harness-engineering-2026-full-event",
+      "source_ids": [
+        "talk-sf-harness-engineering-2026-full-event"
+      ]
+    },
+    {
+      "slug": "a2a-001-coding-agent-engineering",
+      "title": "Coding Agent Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "coding-agents"
+      ],
+      "youtube_id": "ZVYEIFYx-ME",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-001-coding-agent-engineering",
+      "source_ids": [
+        "talk-a2a-001-coding-agent-engineering"
+      ]
+    },
+    {
+      "slug": "a2a-002-inference-engineering",
+      "title": "Inference Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "inference"
+      ],
+      "youtube_id": "7EmnKaM9UkQ",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-002-inference-engineering",
+      "source_ids": [
+        "talk-a2a-002-inference-engineering"
+      ]
+    },
+    {
+      "slug": "a2a-003-software-optimisation-engineering",
+      "title": "Software Optimisation Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "optimisation"
+      ],
+      "youtube_id": "VwzeMfJGZ2I",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-003-software-optimisation-engineering",
+      "source_ids": [
+        "talk-a2a-003-software-optimisation-engineering"
+      ]
+    },
+    {
+      "slug": "a2a-004-search-engineering",
+      "title": "Search Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "search"
+      ],
+      "youtube_id": "-iLD6n8ggcg",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-004-search-engineering",
+      "source_ids": [
+        "talk-a2a-004-search-engineering"
+      ]
+    },
+    {
+      "slug": "a2a-005-code-engineering",
+      "title": "Code Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "code"
+      ],
+      "youtube_id": "G_26Mubidms",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-005-code-engineering",
+      "source_ids": [
+        "talk-a2a-005-code-engineering"
+      ]
+    },
+    {
+      "slug": "a2a-006-voice-engineering",
+      "title": "Voice Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "voice"
+      ],
+      "youtube_id": "5Hv8xfb6g1I",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-006-voice-engineering",
+      "source_ids": [
+        "talk-a2a-006-voice-engineering"
+      ]
+    },
+    {
+      "slug": "a2a-007-mcp-app-engineering",
+      "title": "MCP App Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "mcp"
+      ],
+      "youtube_id": "FF6Uo6Lskz4",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-007-mcp-app-engineering",
+      "source_ids": [
+        "talk-a2a-007-mcp-app-engineering"
+      ]
+    },
+    {
+      "slug": "a2a-008-security-engineering",
+      "title": "Security Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "security"
+      ],
+      "youtube_id": "nOAlnJn3I38",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-008-security-engineering",
+      "source_ids": [
+        "talk-a2a-008-security-engineering"
+      ]
+    },
+    {
+      "slug": "a2a-009-benchmark-engineering",
+      "title": "Benchmark Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "benchmarks"
+      ],
+      "youtube_id": "a1v82hpibw4",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-009-benchmark-engineering",
+      "source_ids": [
+        "talk-a2a-009-benchmark-engineering"
+      ]
+    },
+    {
+      "slug": "a2a-010-memory-engineering",
+      "title": "Memory Engineering",
+      "kind": "a2a",
+      "city": "Online",
+      "event_id": null,
+      "event_name": "Agent-to-Agent (A2A) Talks",
+      "event_url": "https://agentengineering.world/agent-to-agent",
+      "date": null,
+      "speaker": null,
+      "topics": [
+        "memory"
+      ],
+      "youtube_id": "tumzJBGV79U",
+      "transcript": null,
+      "ai_generated": true,
+      "status": "recorded",
+      "session_id": null,
+      "url": "https://agentengineering.world/talks/a2a-010-memory-engineering",
+      "source_ids": [
+        "talk-a2a-010-memory-engineering"
+      ]
+    }
+  ],
+  "disciplines": [
+    {
+      "id": "prompt",
+      "title": "Prompt Engineering",
+      "short": "Prompt",
+      "description": "Writing effective prompts, system instructions, and prompt patterns. Covers structured outputs, few-shot design, prompt optimization, and LLM-native communication."
+    },
+    {
+      "id": "context",
+      "title": "Context Engineering",
+      "short": "Context",
+      "description": "Shaping what an agent sees at runtime. Covers context construction, compression, grounding, retrieval, and MCP (Model Context Protocol)."
+    },
+    {
+      "id": "harness",
+      "title": "Harness Engineering",
+      "short": "Harness",
+      "description": "Defines the execution environment around an agent. Wires models to tools, policies, sandboxes, and execution constraints."
+    },
+    {
+      "id": "eval",
+      "title": "Eval Engineering",
+      "short": "Eval",
+      "description": "Measuring agent behavior in non-deterministic systems. Covers evaluation frameworks, behavioral testing, LLM-as-judge, and reliability benchmarks."
+    },
+    {
+      "id": "memory",
+      "title": "Memory Engineering",
+      "short": "Memory",
+      "description": "How agents store, retrieve, and evolve state over time. Covers short-term vs long-term memory, retrieval strategies, and personalization."
+    },
+    {
+      "id": "inference",
+      "title": "Inference Engineering",
+      "short": "Inference",
+      "description": "Serving models efficiently in production. Covers GPU/hardware selection, inference engines (vLLM, SGLang, TensorRT-LLM), latency budgeting, batching, and cost optimization."
+    },
+    {
+      "id": "loop",
+      "title": "Loop Engineering",
+      "short": "Loop",
+      "description": "Designing the agent's run loop: the iterate, observe, and act cycle. Covers control flow, stopping conditions, retries, self-correction, and long-running autonomous loops."
+    },
+    {
+      "id": "agentic",
+      "title": "Agentic Engineering",
+      "short": "Agentic",
+      "description": "Automating the entire software development lifecycle and engineering with AI agents."
+    },
+    {
+      "id": "code",
+      "title": "Code Engineering",
+      "short": "Code",
+      "description": "Improving the coding capabilities of models and agents. Covers agentic coding, coding agents, code generation quality, and AI-assisted software development."
+    },
+    {
+      "id": "protocol",
+      "title": "Protocol Engineering",
+      "short": "Protocol",
+      "description": "Standing up the protocol layer agents talk over. Covers MCP, ACP, A2A, A2UI, transport and auth choices, versioning, and cross-vendor interoperability."
+    },
+    {
+      "id": "graph",
+      "title": "Graph Engineering",
+      "short": "Graph",
+      "description": "Building agents with graphs. Covers graph databases, knowledge graphs, graph retrieval, and modelling agent state and execution as graphs."
+    },
+    {
+      "id": "search",
+      "title": "Search Engineering",
+      "short": "Search",
+      "description": "Agentic search techniques and the retrieval layer underneath them. Covers query planning, ranking, hybrid search, and improving agent behaviour through better search."
+    },
+    {
+      "id": "factory",
+      "title": "Factory Engineering",
+      "short": "Factory",
+      "description": "Designing and building software factories, where agents take work from spec to shipped code. Covers pipelines, review gates, orchestration of many agents, and keeping the output maintainable."
+    },
+    {
+      "id": "decision",
+      "title": "Decision Engineering",
+      "short": "Decision",
+      "description": "Engineering the systems that make decisions. Covers decision models, decision-system design, planning under uncertainty, and how agents choose and justify an action."
+    }
+  ],
+  "site_links": {
+    "next_event": {
+      "name": "Agent Engineering San Francisco",
+      "when": "April 2027",
+      "url": "https://agentengineering.world/san-francisco"
+    },
+    "previous_event": {
+      "name": "Agent Engineering London",
+      "when": "16 October 2026",
+      "url": "https://agentengineering.world/london-2026"
+    },
+    "london_2026": "https://agentengineering.world/london-2026",
+    "talks": "https://agentengineering.world/talks",
+    "agenteng": "https://agentengineering.world/agenteng"
+  },
   "sources": [
     {
       "id": "agenteng-london-2026",
-      "url": "https://agentengineering.world/",
+      "url": "https://agentengineering.world/london-2026",
       "text": "AgentEng London 2026. 16 October 2026. Everyman Canary Wharf, Crossrail Place, London E14 5AR.",
       "event_id": "agenteng-london-2026",
       "kind": "event"
     },
     {
       "id": "london-ticket-terms",
-      "url": "https://agentengineering.world/#tickets",
+      "url": "https://agentengineering.world/london-2026",
       "text": "{\"offers\":{\"earlyBird\":{\"name\":\"Early bird\",\"price\":95,\"until\":\"12 September 2026\",\"untilIso\":\"2026-09-12\",\"validFromIso\":\"2026-08-19\",\"soldOut\":true},\"regular\":{\"name\":\"Regular\",\"price\":149,\"from\":\"13 September 2026\",\"fromIso\":\"2026-09-13\",\"until\":\"8 October 2026\",\"untilIso\":\"2026-10-08\"},\"lateBird\":{\"name\":\"Late bird\",\"price\":199,\"from\":\"9 October 2026\",\"fromIso\":\"2026-10-09\"}},\"registration\":\"https://luma.com/agentenglondon\",\"approval\":[\"This is a single track. Everyone sits in the same room for the whole day, so the people beside you are a large part of what a ticket buys. There is a lightweight approval step to keep the room technical and high signal, and it is aimed at people who build, evaluate and operate agent systems.\",\"That is what keeps the questions in each session worth hearing and the breaks worth staying for. It is quick: most registrations clear well inside 24 hours. Nothing is charged until you are in, so there is no risk in registering.\"]}",
       "event_id": "agenteng-london-2026",
       "kind": "tickets"
@@ -1829,189 +2619,189 @@
     },
     {
       "id": "speaker-samuel-colvin",
-      "url": "https://agentengineering.world/speakers#samuel-colvin",
+      "url": "https://agentengineering.world/london-2026/speakers#samuel-colvin",
       "text": "Samuel Colvin, Founder & CEO at Pydantic. Software Development as Constrained Optimization. For most of my career, my job was writing code.\n\nToday that's a small part of what I do: AI can take care of the implementation. My job now is to formulate the problem for the AI to solve - choose the metrics to optimize and the constraints to respect - then make it fast and easy for the AI to iterate. This sometimes feels like herding the model: cutting off all the bad routes, so its randomness can only push in the direction of the improvement I want. In this talk, I'll review three real-world projects through this lens, and propose practical ways to set up feedback for the model. This is not a software-factory pitch.\n\nI still write code, and my review is often the most important constraint, but I don't think it makes sense to pretend that me writing and reading all the code is the best way to build software anymore. Luckily, in a world where AIs write the code, the human who formulates the problem is more valuable than the human who wrote the code was a year ago.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "speaker-andrey-breslav",
-      "url": "https://agentengineering.world/speakers#andrey-breslav",
+      "url": "https://agentengineering.world/london-2026/speakers#andrey-breslav",
       "text": "Andrey Breslav, Founder at CodeSpeak. If coding is solved, what's left?. A lot of code is generated by agents, and with time, manual coding will go away (almost) completely. What are human engineers going to do then? Will we even have human engineers?\n\nCan agents just do all the planning, coding, reviewing, and testing for us? Do humans have something that LLMs don't?\n\nI think there are some hard limits on what can be delegated, and how. While machines can do a lot of very intelligent work, there are things they won't be doing unless Skynet takes over the world.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "speaker-ismail-pelaseyed",
-      "url": "https://agentengineering.world/speakers#ismail-pelaseyed",
+      "url": "https://agentengineering.world/london-2026/speakers#ismail-pelaseyed",
       "text": "Ismail Homan Pelaseyed, Co-founder & CTO at Superagent. Security for AI-Native Developers. AI agents are changing not only how software is built, but how it needs to be secured. This talk explores the emerging security model for AI-native development, where autonomous agents write code, use tools, interact with untrusted data, and increasingly operate across the entire software lifecycle.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "speaker-tobie-morgan-hitchcock",
-      "url": "https://agentengineering.world/speakers#tobie-morgan-hitchcock",
+      "url": "https://agentengineering.world/london-2026/speakers#tobie-morgan-hitchcock",
       "text": "Tobie Morgan Hitchcock, Founder & CEO at SurrealDB. Memory Is Not a Bigger Context Window: Memory Engineering for Production Agents. Tobie examines why memory engineering, rather than simply expanding the context window, matters for production agents.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "speaker-alexander-korchagin",
-      "url": "https://agentengineering.world/speakers#alexander-korchagin",
+      "url": "https://agentengineering.world/london-2026/speakers#alexander-korchagin",
       "text": "Alexander Korchagin, Head of Technology Adoption at JetBrains. Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents. Most of what gets presented about agentic coding is what worked or what we hope will work. This talk is the other column.\n\n2026 was the year several comfortable assumptions failed under load. Engineering organisations would converge on a single tooling. They didn't, and the ones that mandated it found their engineers routing around it. Productivity gains would be self-evident, but controlled measurement found experienced developers running slower while reporting they were faster. Betting on one vendor seemed the safe option, in a year with three separate model-access shutoffs. That cost would stay acceptable, right up until it became a top-three adoption barrier.\n\nA field report on what the industry collectively got wrong, what the evidence actually shows, and which of these are now solved versus merely renamed.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "speaker-jon-bratseth",
-      "url": "https://agentengineering.world/speakers#jon-bratseth",
+      "url": "https://agentengineering.world/london-2026/speakers#jon-bratseth",
       "text": "Jon Bratseth, CEO at Vespa.ai. The right information at the right time. AI Agents are increasingly bottlenecked on access to the information they need to solve a task. This talk will explain what it takes to enable them to access information that is up to date, complete, accurate, and appropriate for the task at hand.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "speaker-meryem-arik",
-      "url": "https://agentengineering.world/speakers#meryem-arik",
+      "url": "https://agentengineering.world/london-2026/speakers#meryem-arik",
       "text": "Meryem Arik, CEO at Doubleword. Inference Engineering for Long-Running Agents. As models become more capable and agents become more ambitious, long-running agents require abundant, affordable inference. This talk looks at the engineering behind making that possible, from caching and scheduling to throughput and serving efficiency.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "speaker-frederic-barthelet",
-      "url": "https://agentengineering.world/speakers#frederic-barthelet",
+      "url": "https://agentengineering.world/london-2026/speakers#frederic-barthelet",
       "text": "Frédéric Barthelet, CTO & Co-founder at Alpic. Browser Use Is the Default. Your UI Is Not Your Agent API.. Most harnesses prefer browser use to act on the world, even when an MCP tool exists. This talk shows why that default is bad Agent Experience, how MCP, WebMCP, and CLI give agents a real contract on the same features, and what to ship so callable surfaces win selection over scraping your own product.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "speaker-stas-bichenko",
-      "url": "https://agentengineering.world/speakers#stas-bichenko",
+      "url": "https://agentengineering.world/london-2026/speakers#stas-bichenko",
       "text": "Stas Bichenko, CEO at Recombine. Debugging and Optimizing Voice Agents. Stas looks at how to identify problems in voice agents and improve their performance.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "speaker-jocelyn-darcy",
-      "url": "https://agentengineering.world/speakers#jocelyn-darcy",
+      "url": "https://agentengineering.world/london-2026/speakers#jocelyn-darcy",
       "text": "Jocelyn D'Arcy, CEO at Poindexter Labs. Say Less, Grade Harder. Jocelyn examines why most agent benchmarks feel artificial, and what changes when tasks are as underspecified as real work.",
       "event_id": "agenteng-london-2026",
       "kind": "speaker"
     },
     {
       "id": "london-session-0",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "08:00 Doors, registration, tea and pastries. . ",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-1",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "09:00 Welcome. . ",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-2",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "09:15 Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents. Alexander Korchagin. Most of what gets presented about agentic coding is what worked or what we hope will work. This talk is the other column.\n\n2026 was the year several comfortable assumptions failed under load. Engineering organisations would converge on a single tooling. They didn't, and the ones that mandated it found their engineers routing around it. Productivity gains would be self-evident, but controlled measurement found experienced developers running slower while reporting they were faster. Betting on one vendor seemed the safe option, in a year with three separate model-access shutoffs. That cost would stay acceptable, right up until it became a top-three adoption barrier.\n\nA field report on what the industry collectively got wrong, what the evidence actually shows, and which of these are now solved versus merely renamed.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-3",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "09:50 Inference Engineering for Long-Running Agents. Meryem Arik. As models become more capable and agents become more ambitious, long-running agents require abundant, affordable inference. This talk looks at the engineering behind making that possible, from caching and scheduling to throughput and serving efficiency.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-4",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "10:25 Software Development as Constrained Optimization. Samuel Colvin. For most of my career, my job was writing code.\n\nToday that's a small part of what I do: AI can take care of the implementation. My job now is to formulate the problem for the AI to solve - choose the metrics to optimize and the constraints to respect - then make it fast and easy for the AI to iterate. This sometimes feels like herding the model: cutting off all the bad routes, so its randomness can only push in the direction of the improvement I want. In this talk, I'll review three real-world projects through this lens, and propose practical ways to set up feedback for the model. This is not a software-factory pitch.\n\nI still write code, and my review is often the most important constraint, but I don't think it makes sense to pretend that me writing and reading all the code is the best way to build software anymore. Luckily, in a world where AIs write the code, the human who formulates the problem is more valuable than the human who wrote the code was a year ago.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-5",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "11:00 Networking break. . ",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-6",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "11:15 The right information at the right time. Jon Bratseth. AI Agents are increasingly bottlenecked on access to the information they need to solve a task. This talk will explain what it takes to enable them to access information that is up to date, complete, accurate, and appropriate for the task at hand.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-7",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "11:50 If coding is solved, what's left?. Andrey Breslav. A lot of code is generated by agents, and with time, manual coding will go away (almost) completely. What are human engineers going to do then? Will we even have human engineers?\n\nCan agents just do all the planning, coding, reviewing, and testing for us? Do humans have something that LLMs don't?\n\nI think there are some hard limits on what can be delegated, and how. While machines can do a lot of very intelligent work, there are things they won't be doing unless Skynet takes over the world.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-8",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "12:25 Debugging and Optimizing Voice Agents. Stas Bichenko. Stas looks at how to identify problems in voice agents and improve their performance.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-9",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "13:00 Lunch. . ",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-10",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "14:00 Browser Use Is the Default. Your UI Is Not Your Agent API.. Frédéric Barthelet. Most harnesses prefer browser use to act on the world, even when an MCP tool exists. This talk shows why that default is bad Agent Experience, how MCP, WebMCP, and CLI give agents a real contract on the same features, and what to ship so callable surfaces win selection over scraping your own product.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-11",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "14:35 Security for AI-Native Developers. Ismail Homan Pelaseyed. AI agents are changing not only how software is built, but how it needs to be secured. This talk explores the emerging security model for AI-native development, where autonomous agents write code, use tools, interact with untrusted data, and increasingly operate across the entire software lifecycle.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-12",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "15:05 Networking break. . ",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-13",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "15:20 Say Less, Grade Harder. Jocelyn D'Arcy. Jocelyn examines why most agent benchmarks feel artificial, and what changes when tasks are as underspecified as real work.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-14",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "15:50 Memory Is Not a Bigger Context Window: Memory Engineering for Production Agents. Tobie Morgan Hitchcock. Tobie examines why memory engineering, rather than simply expanding the context window, matters for production agents.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-15",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "16:20 Closing remarks. . ",
       "event_id": "agenteng-london-2026",
       "kind": "session"
     },
     {
       "id": "london-session-16",
-      "url": "https://agentengineering.world/agenda",
+      "url": "https://agentengineering.world/london-2026/agenda",
       "text": "16:30 Informal networking. . Details shared on the day.",
       "event_id": "agenteng-london-2026",
       "kind": "session"
@@ -2144,126 +2934,126 @@
     },
     {
       "id": "faq-0",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "What is Agent Engineering?\nAgent Engineering is the discipline of designing, building, evaluating, and operating AI agents. It focuses on the systems, abstractions, and engineering decisions that shape agent behaviour.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-1",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Who should attend this conference?\nThis conference is for AI/ML engineers, software engineers, agent framework builders, tooling & infrastructure teams, startup founders, product builders working with LLMs, and researchers translating ideas into systems.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-2",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "When and where was the conference?\nThe first Agent Engineering Conference took place in London on 16 October 2026 at Everyman, Canary Wharf, London. It was a one-day, single-track conference of ten 30-minute technical talks.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-3",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Can I still get a ticket?\nAgent Engineering London took place on 16 October 2026 and was fully booked. Future events are announced on the Luma calendars at https://luma.com/agent-engineering and https://luma.com/londonagenticai.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-4",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "How do I get an invoice?\nAfter payment, open luma.com/settings/payment, choose Download Invoice, and add your company name, billing address, and tax details. Save the PDF for finance. You are only charged once a registration is approved.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-5",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Is the venue accessible?\nAccess follows Everyman Canary Wharf. Please check the cinema's accessibility information at https://www.everymancinema.com/venues-list/x0vpb-everyman-canary-wharf/, or email events@agentengineering.world.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-6",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "How does Q&A work during talks?\nFive minutes of every session belongs to the audience, built into the schedule rather than borrowed from it. One question per person, per talk. Ask again once everyone else has had a turn. Ninety seconds to ask it. The host will step in and move things on at ninety seconds. No follow-up debates. If an answer opens a longer discussion, continue it with the speaker afterwards. Questions are taken in order. Submit through Slido during the talk, or raise a hand if the queue is empty.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-7",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Is there networking after the conference?\nThe programme closes at 16:30. Informal networking. Details shared on the day.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-8",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Is there a code of conduct?\nYes, and it applies to everyone taking part: attendees, speakers, partners, volunteers and organisers. It covers the venue, any social gathering connected to the conference, and our online channels, before and during the event as well as afterwards. Harassment, discrimination and intimidation are not tolerated. If you experience or witness something, you can report it on the day or afterwards to conduct@super-agentic.ai, and reports are handled confidentially with no retaliation against anyone raising a concern in good faith. Read it in full at https://agentengineering.world/code-of-conduct, alongside the event terms at https://agentengineering.world/terms",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-9",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Who is speaking?\nThe lineup: Samuel Colvin, Founder & CEO at Pydantic; Andrey Breslav, Founder at CodeSpeak; Ismail Homan Pelaseyed, Co-founder & CTO at Superagent; Tobie Morgan Hitchcock, Founder & CEO at SurrealDB; Alexander Korchagin, Head of Technology Adoption at JetBrains; Jon Bratseth, CEO at Vespa.ai; Meryem Arik, CEO at Doubleword; Frédéric Barthelet, CTO & Co-founder at Alpic; Stas Bichenko, CEO at Recombine; Jocelyn D'Arcy, CEO at Poindexter Labs. See the published speakers page.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-10",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Can I still apply to speak?\nSpeaker applications were closed for this edition. The talks were invited by the programme team, and the full lineup is at https://agentengineering.world/speakers.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-11",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Is there a call for papers on Sessionize?\nThis edition did not have a call for papers on Sessionize or elsewhere. The lineup was invited by the programme team and is published at https://agentengineering.world/speakers.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-12",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "What topics will be covered?\nThe conference focuses on deep technical sessions across Prompt Engineering, Context Engineering, Harness Engineering, Eval Engineering, Memory Engineering, Inference Engineering, Loop Engineering, Protocol Engineering, Graph Engineering, Search Engineering, Agentic Engineering, and Code Engineering, plus program themes like Agent Optimization, Agent Experience (AX), and the Future of Coding.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-13",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "How is this different from other AI conferences?\nThe conference covers the engineering discipline behind AI agents. It is one track of ten technical talks. Sessions are on systems, architectures, and the trade-offs involved, given by practitioners who build and operate agents themselves.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-14",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Are there sponsorship opportunities?\nWe are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/support",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-15",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Will talks be recorded?\nYes. Talks are recorded and shared with ticket holders after the day.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-16",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Do you cover travel and accommodation costs?\nUnfortunately, no. This conference is a Founders Edition funded by ticket sales and the organiser. We cannot cover travel or accommodation costs for speakers or attendees.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
     {
       "id": "faq-17",
-      "url": "https://agentengineering.world/#faq",
+      "url": "https://agentengineering.world/london-2026#faq",
       "text": "Can I get a visa invitation letter?\nUnfortunately, no. To keep the organisation of this conference manageable, we do not provide visa invitation letters or handle visa-related matters.",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
@@ -2277,28 +3067,28 @@
     },
     {
       "id": "theme-agent-optimization",
-      "url": "https://agentengineering.world/#program",
+      "url": "https://agentengineering.world/london-2026#tracks",
       "text": "Agent Optimization\nAutomatically optimize agents across all layers: prompts, RAG, protocols, memory, and context.",
       "event_id": "agenteng-london-2026",
       "kind": "theme"
     },
     {
       "id": "theme-agent-experience",
-      "url": "https://agentengineering.world/#program",
+      "url": "https://agentengineering.world/london-2026#tracks",
       "text": "Agent Experience (AX)\nDesigning machine-readable interfaces, environments, and feedback loops that shape Agent Experience.",
       "event_id": "agenteng-london-2026",
       "kind": "theme"
     },
     {
       "id": "theme-agentic-coding",
-      "url": "https://agentengineering.world/#program",
+      "url": "https://agentengineering.world/london-2026#tracks",
       "text": "Agentic Coding\nHow software development evolves as agents become first-class contributors to the SDLC.",
       "event_id": "agenteng-london-2026",
       "kind": "theme"
     },
     {
       "id": "theme-agentic-business-models",
-      "url": "https://agentengineering.world/#program",
+      "url": "https://agentengineering.world/london-2026#tracks",
       "text": "Agentic Business Models\nDefining the business models for agentic AI. Does SaaS still work, or is FDE the only way forward? Explore and share business models.",
       "event_id": "agenteng-london-2026",
       "kind": "theme"
@@ -2389,98 +3179,98 @@
     },
     {
       "id": "guide",
-      "url": "https://agentengineering.world/guide",
+      "url": "https://agentengineering.world/london-2026/guide",
       "text": "There are many Agent conferences. This one is truly yours. No sponsor shaped the programme, every talk was curated for the people in the room.\nVenue: Everyman Canary Wharf, Crossrail Place, London E14 5AR\nDate: Fri 16 October 2026\nDoors: 08:00\nArrive: 8:30 to 8:45\nProgramme starts: 9:00 sharp",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-arriving",
-      "url": "https://agentengineering.world/guide#arriving",
+      "url": "https://agentengineering.world/london-2026/guide#arriving",
       "text": "Arriving\nDoors and registration opened at 08:00. Please aim to arrive between 8:30 and 8:45 AM so you have enough time to find the venue, check in, grab some tea or coffee, meet a few people and get seated.\nThe programme starts at 9:00 AM sharp. Our agenda is very tight, so we cannot delay the start. Please don't plan to arrive at 9:00 itself.\nThere will be tea, coffee and freshly baked pastries before the programme starts.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-getting-here",
-      "url": "https://agentengineering.world/guide#getting-here",
+      "url": "https://agentengineering.world/london-2026/guide#getting-here",
       "text": "Getting here\nFinding Everyman can be a little tricky if you haven't been there before. If you can get to Canary Wharf Elizabeth line station, you are 80% there.\nIf you are coming by Jubilee, DLR or car, head to the Elizabeth line station first and follow the video from there. Please watch it before you travel and allow a little extra time for the walk.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-registration",
-      "url": "https://agentengineering.world/guide#registration",
+      "url": "https://agentengineering.world/london-2026/guide#registration",
       "text": "Registration and badges\nRegistration is on the left-hand side when you arrive at Everyman. You will get your badge and lanyard there. Please wear your badge throughout the day.\nArriving later? Don't worry. James, Gloria (our Associates), Shashi, or a member of the Everyman team will guide you to the right screen.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-social-area",
-      "url": "https://agentengineering.world/guide#social-area",
+      "url": "https://agentengineering.world/london-2026/guide#social-area",
       "text": "Social area\nThe bar is the social area throughout the day, for networking.\nBetween sessions, you can watch our Agent-to-Agent (A2A) Talks, short AI-generated conversations between two AI agents: /agent-to-agent",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-speaker-area",
-      "url": "https://agentengineering.world/guide#speaker-area",
+      "url": "https://agentengineering.world/london-2026/guide#speaker-area",
       "text": "Speaker area\nThere is a dedicated speaker area close to registration, for speakers to prepare, meet and take a break. Please respect speakers' privacy when they are busy.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-lunch",
-      "url": "https://agentengineering.world/guide#lunch",
+      "url": "https://agentengineering.world/london-2026/guide#lunch",
       "text": "Lunch and drinks\nLunch is Everyman's special pizzas, with different pizza options and drinks, and plenty to go around. We have kept it simple to keep the organiser's cognitive load (and dietary requirements) under control.\nTea and coffee are available throughout the day.\nIf you have a serious allergy or a specific dietary requirement, let us know and we will do our best to help.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-qna",
-      "url": "https://agentengineering.world/guide#qna",
+      "url": "https://agentengineering.world/london-2026/guide#qna",
       "text": "Questions and Q&A\nThere is dedicated Q&A time in each session. One question per person, per talk, and please keep it focused and concise.\nLong questions, personal work problems, or questions mainly there to promote yourself will be discouraged.\nCome curious, come prepared, and don't be afraid to ask the difficult question.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-photography",
-      "url": "https://agentengineering.world/guide#photography",
+      "url": "https://agentengineering.world/london-2026/guide#photography",
       "text": "Photography and content\nThere will be official photography and some official video recording.\nThe conference is not a content creation spot for marketing. Please don't film or create content involving other attendees or speakers without their consent.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-phones",
-      "url": "https://agentengineering.world/guide#phones",
+      "url": "https://agentengineering.world/london-2026/guide#phones",
       "text": "Phones, laptops and work\nPlease keep your phone on silent during talks.\nLaptops are absolutely fine, just be mindful of people around you. If you need to work for a while, feel free to step aside and do it when appropriate.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-seating",
-      "url": "https://agentengineering.world/guide#seating",
+      "url": "https://agentengineering.world/london-2026/guide#seating",
       "text": "Seating\nWe are fully booked and it will be busy, but there will be seats for everyone. Please take your seat a few minutes before each session so we can keep the programme on time.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-help",
-      "url": "https://agentengineering.world/guide#help",
+      "url": "https://agentengineering.world/london-2026/guide#help",
       "text": "Need help on the day\nFind James, Gloria, Shashi or the Everyman staff. You can also message Shashi on X or LinkedIn, or tag AgentEngHQ on X or LinkedIn.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "guide-after",
-      "url": "https://agentengineering.world/guide#after",
+      "url": "https://agentengineering.world/london-2026/guide#after",
       "text": "After-event social\nDetails will be shared during the day. Drinks are buy your own.",
       "event_id": "agenteng-london-2026",
       "kind": "guide"
     },
     {
       "id": "london-venue-directions",
-      "url": "https://agentengineering.world/#venue",
+      "url": "https://agentengineering.world/london-2026",
       "text": "Crossrail Place sits right above Canary Wharf Elizabeth line station.\nRegistration is on the left-hand side when you arrive at Everyman.\nWalk video: https://www.youtube.com/watch?v=GPmvi7qjiwA",
       "event_id": "agenteng-london-2026",
       "kind": "venue"
@@ -2498,6 +3288,181 @@
       "text": "Agent-to-Agent (A2A) Talks\nA series of short AI-generated conversations between two AI agents, each focused on one engineering discipline from the conference themes. Each video is around 30 seconds.\nThese videos are produced by the Agent Engineering team using AI. They are separate from the conference programme and are not created, reviewed or endorsed by our speakers.\n001 Coding Agent Engineering (coding-agents)\n002 Inference Engineering (inference)\n003 Software Optimisation Engineering (optimisation)\n004 Search Engineering (search)\n005 Code Engineering (code)\n006 Voice Engineering (voice)\n007 MCP App Engineering (mcp)\n008 Security Engineering (security)\n009 Benchmark Engineering (benchmarks)\n010 Memory Engineering (memory)",
       "event_id": null,
       "kind": "a2a-talks"
+    },
+    {
+      "id": "talk-sf-code-engineering-prime-agent-a-self-improving-rlm-harness-with-swarm-communication",
+      "url": "https://agentengineering.world/talks/sf-code-engineering-prime-agent-a-self-improving-rlm-harness-with-swarm-communication",
+      "text": "Prime Agent: A Self-Improving RLM Harness with Swarm Communication\nSeth Karten, Research, Lead on Prime Agent & Continual Harness at Prime Intellect\nCode Engineering San Francisco\nupcoming",
+      "event_id": "sf-code-engineering-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-sf-code-engineering-building-a-self-improving-software-factory",
+      "url": "https://agentengineering.world/talks/sf-code-engineering-building-a-self-improving-software-factory",
+      "text": "Building a self-improving software factory\nBen Holmes, Agent Infrastructure at Warp\nCode Engineering San Francisco\nupcoming",
+      "event_id": "sf-code-engineering-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-sf-code-engineering-building-agents-that-work-like-coding-agents",
+      "url": "https://agentengineering.world/talks/sf-code-engineering-building-agents-that-work-like-coding-agents",
+      "text": "Building agents that work like coding agents\nSydney Runkle, Product Manager for Open Source at LangChain\nCode Engineering San Francisco\nupcoming",
+      "event_id": "sf-code-engineering-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-sf-code-engineering-reducing-coding-harness-latency-with-the-software-factory",
+      "url": "https://agentengineering.world/talks/sf-code-engineering-reducing-coding-harness-latency-with-the-software-factory",
+      "text": "Reducing Coding Harness Latency with the Software Factory\nAndrey Risukhin, Recursive Self Improvement at Factory\nCode Engineering San Francisco\nupcoming",
+      "event_id": "sf-code-engineering-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-agentic-coding-in-2026-watching-300-engineering-orgs-adopting-agents",
+      "url": "https://agentengineering.world/talks/london-2026-agentic-coding-in-2026-watching-300-engineering-orgs-adopting-agents",
+      "text": "Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents\nAlexander Korchagin, Head of Technology Adoption at JetBrains\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-inference-engineering-for-long-running-agents",
+      "url": "https://agentengineering.world/talks/london-2026-inference-engineering-for-long-running-agents",
+      "text": "Inference Engineering for Long-Running Agents\nMeryem Arik, CEO at Doubleword\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-software-development-as-constrained-optimization",
+      "url": "https://agentengineering.world/talks/london-2026-software-development-as-constrained-optimization",
+      "text": "Software Development as Constrained Optimization\nSamuel Colvin, Founder & CEO at Pydantic\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-the-right-information-at-the-right-time",
+      "url": "https://agentengineering.world/talks/london-2026-the-right-information-at-the-right-time",
+      "text": "The right information at the right time\nJon Bratseth, CEO at Vespa.ai\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-if-coding-is-solved-what-s-left",
+      "url": "https://agentengineering.world/talks/london-2026-if-coding-is-solved-what-s-left",
+      "text": "If coding is solved, what's left?\nAndrey Breslav, Founder at CodeSpeak\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-debugging-and-optimizing-voice-agents",
+      "url": "https://agentengineering.world/talks/london-2026-debugging-and-optimizing-voice-agents",
+      "text": "Debugging and Optimizing Voice Agents\nStas Bichenko, CEO at Recombine\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
+      "url": "https://agentengineering.world/talks/london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
+      "text": "Browser Use Is the Default. Your UI Is Not Your Agent API.\nFrédéric Barthelet, CTO & Co-founder at Alpic\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-security-for-ai-native-developers",
+      "url": "https://agentengineering.world/talks/london-2026-security-for-ai-native-developers",
+      "text": "Security for AI-Native Developers\nIsmail Homan Pelaseyed, Co-founder & CTO at Superagent\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-say-less-grade-harder",
+      "url": "https://agentengineering.world/talks/london-2026-say-less-grade-harder",
+      "text": "Say Less, Grade Harder\nJocelyn D'Arcy, CEO at Poindexter Labs\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-memory-is-not-a-bigger-context-window-memory-engineering-for-production-agents",
+      "url": "https://agentengineering.world/talks/london-2026-memory-is-not-a-bigger-context-window-memory-engineering-for-production-agents",
+      "text": "Memory Is Not a Bigger Context Window: Memory Engineering for Production Agents\nTobie Morgan Hitchcock, Founder & CEO at SurrealDB\nAgent Engineering London 2026\nrecording-coming-soon",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-sf-harness-engineering-2026-full-event",
+      "url": "https://agentengineering.world/talks/sf-harness-engineering-2026-full-event",
+      "text": "Harness Engineering: State of the Art in Agent Harnesses\nHarness Engineering San Francisco\nrecorded",
+      "event_id": "sf-harness-engineering-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-001-coding-agent-engineering",
+      "url": "https://agentengineering.world/talks/a2a-001-coding-agent-engineering",
+      "text": "Coding Agent Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-002-inference-engineering",
+      "url": "https://agentengineering.world/talks/a2a-002-inference-engineering",
+      "text": "Inference Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-003-software-optimisation-engineering",
+      "url": "https://agentengineering.world/talks/a2a-003-software-optimisation-engineering",
+      "text": "Software Optimisation Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-004-search-engineering",
+      "url": "https://agentengineering.world/talks/a2a-004-search-engineering",
+      "text": "Search Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-005-code-engineering",
+      "url": "https://agentengineering.world/talks/a2a-005-code-engineering",
+      "text": "Code Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-006-voice-engineering",
+      "url": "https://agentengineering.world/talks/a2a-006-voice-engineering",
+      "text": "Voice Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-007-mcp-app-engineering",
+      "url": "https://agentengineering.world/talks/a2a-007-mcp-app-engineering",
+      "text": "MCP App Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-008-security-engineering",
+      "url": "https://agentengineering.world/talks/a2a-008-security-engineering",
+      "text": "Security Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-009-benchmark-engineering",
+      "url": "https://agentengineering.world/talks/a2a-009-benchmark-engineering",
+      "text": "Benchmark Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
+    },
+    {
+      "id": "talk-a2a-010-memory-engineering",
+      "url": "https://agentengineering.world/talks/a2a-010-memory-engineering",
+      "text": "Memory Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "event_id": null,
+      "kind": "talk"
     }
   ]
 }

@@ -120,6 +120,23 @@ def about(service: Service, request: Request) -> Result:
             "london": SITE + "/london",
             "san_francisco": SITE + "/san-francisco",
             "code_of_conduct": SITE + "/code-of-conduct",
+            **(
+                {
+                    "london_2026": str(service.catalogue.site_links.london_2026),
+                    "talks": str(service.catalogue.site_links.talks),
+                    "agenteng": str(service.catalogue.site_links.agenteng),
+                    **{
+                        key: str(link.url)
+                        for key, link in (
+                            ("next_event", service.catalogue.site_links.next_event),
+                            ("previous_event", service.catalogue.site_links.previous_event),
+                        )
+                        if link
+                    },
+                }
+                if service.catalogue.site_links
+                else {}
+            ),
             **({"day_guide": str(service.catalogue.guide.url)} if service.catalogue.guide else {}),
         },
         "connect": connect,

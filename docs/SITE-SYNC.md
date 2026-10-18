@@ -4,7 +4,7 @@ Every displayed AgentEng command must be accepted by the CLI. The hero Orchestra
 
 Run `python scripts/check-website-commands.py WEBSITE_REPO` against a website checkout with Node dependencies installed. It reads public TypeScript literals using the AST, validates them against the actual CLI, and executes public lookup/setup commands. Server loops and coding sessions are parsed without launching them. Dynamic speaker-profile command rendering is covered by the speaker fixture and website tests.
 
-The fixture contains 84 command locations. Tool CI executes each row and requires success. Update it when website commands change.
+The fixture contains 97 command locations. Tool CI executes each row and requires success. Update it when website commands change.
 
 | Command | Website source (`src/`) |
 | --- | --- |
@@ -92,8 +92,21 @@ The fixture contains 84 command locations. Tool CI executes each row and require
 | `agenteng speaker stas-bichenko` | `data/speaker-stack.ts` |
 | `agenteng speaker jocelyn-darcy` | `data/speaker-stack.ts` |
 | `agenteng guide --london` | `pages/Guide.tsx` |
+| `agenteng event --london` | `pages/London2026.tsx` |
+| `agenteng talks` | `pages/Talks.tsx` |
+| `agenteng event --london` | `pages/AgentEngPage.tsx` |
+| `agenteng events --next san-francisco` | `pages/AgentEngPage.tsx` |
+| `agenteng speakers` | `pages/AgentEngPage.tsx` |
+| `agenteng agenda --london` | `pages/AgentEngPage.tsx` |
+| `agenteng guide --london` | `pages/AgentEngPage.tsx` |
+| `agenteng a2a-talks` | `pages/AgentEngPage.tsx` |
+| `agenteng tools --discipline memory` | `pages/AgentEngPage.tsx` |
+| `agenteng connect a2a` | `pages/AgentEngPage.tsx` |
+| `agenteng connect mcp --transport http` | `pages/AgentEngPage.tsx` |
+| `agenteng connect acp` | `pages/AgentEngPage.tsx` |
+| `agenteng --info` | `pages/AgentEngPage.tsx` |
 
-`agenteng guide --london` is shown as text on the /guide page header, so it is listed by hand: the literal scanner only reads string literals. `components/TicketsSection.tsx` still contains `agenteng tickets --london`, but the homepage no longer renders that section; the command keeps working and now reports the site's fully booked wording. The exporter fails if the homepage renders `TicketsSection` again, so the registration status is reviewed before the next export.
+`agenteng guide --london` is shown as text on the /london-2026/guide page header, and `agenteng talks` and `agenteng event --london` on /talks and /london-2026, so they are listed by hand: the literal scanner only reads string literals, and skips literals that end like a sentence (such as the /agenteng meta description). `components/TicketsSection.tsx` still contains `agenteng tickets --london`, but the homepage no longer renders that section; the command keeps working and now reports the site's fully booked wording. The exporter fails if the homepage renders `TicketsSection` again, so the registration status is reviewed before the next export.
 
 Personal agenda, bookmark, proposal and inbox commands are unsupported. Agenda topic filtering reads published programme text and creates no personal state.
 
@@ -101,4 +114,28 @@ Run `python scripts/check-website-stability.py WEBSITE_REPO` to verify public se
 
 ## Agent-to-Agent (A2A) Talks
 
-`scripts/export-website.mjs` reads `src/data/agentToAgent.ts` (session, title, YouTube ID, tag and duration) and the page copy in `src/pages/AgentToAgent.tsx` (title, intro and the exact disclaimer) into `a2a_talks` in the catalogue, with one `a2a-talks` source. The export fails if the data shape changes. These AI-generated videos are never exported as speakers, talks or sessions, and general search and chat leave them out unless the question names A2A or Agent-to-Agent.
+`scripts/export-website.mjs` reads `src/data/agentToAgent.ts` (session, title, YouTube ID, tag and duration) and the page copy in `src/pages/AgentToAgent.tsx` (title, intro and the exact disclaimer) into `a2a_talks` in the catalogue, with one `a2a-talks` source. The export fails if the data shape changes. These AI-generated videos are never exported as speakers or sessions; the talks gallery keeps them as `kind: a2a` rows marked AI-generated, which `agenteng talks` lists only with `--a2a`, last, and general search and chat leave them out unless the question names A2A or Agent-to-Agent.
+
+## Site structure (London 2026 archive, talks, /agenteng)
+
+The site moved the London 2026 conference under `/london-2026`. Catalogue sources and answers use the new URLs:
+
+| Old URL | New URL |
+| --- | --- |
+| `/speakers` | `/london-2026/speakers` (speaker anchors `#<slug>`) |
+| `/agenda` | `/london-2026/agenda` |
+| `/guide` | `/london-2026/guide` |
+| `/#venue`, `/#agenda`, `/#tickets` | `/london-2026` |
+| `/#faq` (London FAQ) | `/london-2026#faq` |
+| `/#program` (tracks) | `/london-2026#tracks` |
+
+The homepage still has `#faq` and `#truly-yours`; the old paths redirect on the site. New pages: `/london-2026` and its subpages, `/talks`, `/talks/:slug` and `/agenteng` (the CLI page; its commands are in the table above).
+
+Data files read by `scripts/export-website.mjs`:
+
+- `src/data/talks.ts`: the talks gallery, exported as `talks` (slug, title, kind, city, event, speaker, topics, `youtube_id`, `transcript`, status, AI-generated flag and `/talks/<slug>` URL, one `talk` source each). `talks.ts` builds its rows from other data, so the exporter rebuilds them from the same literals (agenda, speakers, `sf-code-engineering.ts`, the SF recordings literal and `agentToAgent.ts`) and fails if the mapping in `talks.ts` changes or if London or Code Engineering talks start publishing a YouTube ID or transcript, so a newly published recording is mirrored deliberately. No transcripts are published today, so none are exported.
+- `src/data/sf-code-engineering.ts`: roles, companies and links for the Code Engineering San Francisco (27 October 2026) speakers, checked against the SanFrancisco page roster.
+- `src/data/events.ts`: next and previous editions (`site_links.next_event` is Agent Engineering San Francisco, April 2027, `/san-francisco`; `site_links.previous_event` is London 2026, `/london-2026`), plus each event's `page_url`. The April 2027 conference is announced without a date or venue, so it is a link, not a catalogue event.
+- `src/data/disciplines.ts`: the site now lists 14 disciplines. Factory Engineering and Decision Engineering are exported as `disciplines` and shown by `agenteng disciplines` as on the conference site with no tool listings yet; the tool directory keeps its twelve listed disciplines until tools are attributed to the new two.
+
+Run `python scripts/check-website-commands.py WEBSITE_REPO` after each sync.

@@ -74,7 +74,7 @@ def test_travel_and_visa_faqs_are_searchable_with_source_attribution(service, qu
     assert [row["id"] for row in result.data] == [faq_id]
     assert result.data[0]["source_ids"] == [faq_id]
     assert [source.id for source in result.sources] == [faq_id]
-    assert str(result.sources[0].url) == "https://agentengineering.world/#faq"
+    assert str(result.sources[0].url) == "https://agentengineering.world/london-2026#faq"
 
 
 def test_now_and_next(service, tmp_path, monkeypatch):

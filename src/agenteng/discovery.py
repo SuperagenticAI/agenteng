@@ -48,6 +48,21 @@ def discovery(service, city=None):
         "cities": list(CITIES),
         "website": WEBSITE,
         "organizer_url": WEBSITE + "/agent-engineering-hq",
+        **(
+            {
+                "talks_url": str(service.catalogue.site_links.talks),
+                "next_event": service.catalogue.site_links.next_event.model_dump(mode="json")
+                if service.catalogue.site_links.next_event
+                else None,
+                "previous_event": service.catalogue.site_links.previous_event.model_dump(
+                    mode="json"
+                )
+                if service.catalogue.site_links.previous_event
+                else None,
+            }
+            if service.catalogue.site_links
+            else {}
+        ),
         "events": [
             service.event_data(e)
             for e in featured_events(service)
