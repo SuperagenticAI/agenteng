@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.26 - 2026-10-18
 
 - Catalogue re-exported from site commit 1072362: the London 2026 recordings are public. "Will talks be recorded?" now answers "Yes. Recordings are public and published on https://agentengineering.world/london-2026/videos as they become available, starting with the welcome video.", and the day guide's photography and content section says the same. The previous wording limited recordings to ticket holders.
 - Plain-English questions such as "Will talks be recorded?" and "Are the talks recorded?" now return that published answer instead of a talk-topic miss.
