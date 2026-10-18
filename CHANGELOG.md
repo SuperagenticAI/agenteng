@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.27 - 2026-10-18
 
 - Catalogue re-exported from site commit b7c271d: the London 2026 talk "Debugging and Optimizing Voice Agents" did not take place, so it and its speaker card are removed. London now lists 9 talks and 17 speakers across 11 events. The "Who is speaking?", "When and where was the conference?" and "How is this different?" FAQ answers follow the site (nine technical talks). The talk is gone from the agenda, gallery, talks, search and bingo terms, and the website command fixture drops its speaker command. Its old gallery slug returns not_found; the site redirects that page to /london-2026/videos.
 

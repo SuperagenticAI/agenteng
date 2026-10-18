@@ -1,7 +1,7 @@
 # Command reference
 
 Every visible `agenteng` command and subcommand, with its main options and one
-real example. It is built from the CLI's own help text for 0.0.26, and a test checks
+real example. It is built from the CLI's own help text for 0.0.27, and a test checks
 that every visible command and option is listed here.
 Run `agenteng COMMAND --help` for the same text in your terminal.
 
@@ -19,7 +19,7 @@ agenteng [GLOBAL OPTIONS] COMMAND [ARGS]...
 | `--json` | Print the shared Result JSON. Put it **before** the command: `agenteng --json talks`. |
 | `--remote URL` | Send the request to a hosted AgentEng server, for example `https://a2a.agentengineering.world`, instead of the bundled offline catalogue. |
 | `--catalogue FILE` | Use a local public catalogue JSON file. |
-| `--version` | Print `agenteng, version 0.0.26` as plain text. |
+| `--version` | Print `agenteng, version 0.0.27` as plain text. |
 | `-h`, `--help` | Show help for `agenteng` or any command. |
 
 With no command in a terminal, `agenteng` opens the interactive menu. Without a
@@ -61,7 +61,7 @@ These print something other than Result JSON:
 
 | Command | Output |
 | --- | --- |
-| `agenteng --version` | Plain text: `agenteng, version 0.0.26`. |
+| `agenteng --version` | Plain text: `agenteng, version 0.0.27`. |
 | `agenteng connect CLIENT` | Plain-text setup instructions, never JSON. |
 | `agenteng code --list` | A table on a terminal; with `--json` or piped, `{"registry": URL, "agents": [...]}`. |
 | `agenteng code --json PROMPT` | Newline-delimited JSON events, one per line. |
