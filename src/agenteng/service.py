@@ -18,6 +18,11 @@ from .tool_directory import TOOL_OPERATIONS, ToolDirectory, load_tool_directory
 
 
 LONDON_ID = "agenteng-london-2026"
+# "Will talks be recorded?", "Are the talks recorded?": the published FAQ answer.
+RECORDED_QUESTION = re.compile(
+    r"^\s*(?:will|are|were|is|was|do|does|did|can)\b.*\b(?:recorded|recordings?|videos?)\b",
+    re.I,
+)
 
 
 def terms(text: str) -> set[str]:
@@ -906,6 +911,18 @@ class Service:
 
             if A2A_TALKS_QUESTION.search(request.query) and A2A_TALKS_WORDS.search(request.query):
                 return self.a2a_talks_result("")
+
+            if RECORDED_QUESTION.search(request.query):
+                faq = next(
+                    (
+                        f
+                        for f in self.catalogue.faqs
+                        if re.search(r"\brecorded\b", f.question, re.I)
+                    ),
+                    None,
+                )
+                if faq:
+                    return self.result(faq.answer, faq.model_dump(mode="json"), faq.source_ids)
 
             if terms(request.query) & {"travel", "accommodation", "visa", "visas"}:
                 return focused_search(self, request.query, request.limit, allow_faq=True)

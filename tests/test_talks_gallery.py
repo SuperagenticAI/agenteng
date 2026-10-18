@@ -173,3 +173,31 @@ def test_no_em_dashes_in_new_output():
         lookup(operation="talks", include_a2a=True, limit=100).model_dump(mode="json")
     )
     assert "\N{EM DASH}" not in text
+
+
+PUBLIC_RECORDINGS = (
+    "Yes. Recordings are public and published on "
+    "https://agentengineering.world/london-2026/videos as they become available, "
+    "starting with the welcome video."
+)
+
+
+def test_recorded_question_uses_public_faq():
+    for question in (
+        "Will talks be recorded?",
+        "Are the talks recorded?",
+        "Were the London talks recorded?",
+    ):
+        result = lookup(operation="ask", query=question)
+        assert result.answer == PUBLIC_RECORDINGS, question
+    assert lookup(operation="ask", query="Show the recordings").answer.startswith("9 published")
+
+
+def test_no_ticket_holder_recording_wording():
+    service = Service()
+    text = service.catalogue.model_dump_json().casefold()
+    assert "ticket holders" not in text
+    faq = next(f for f in service.catalogue.faqs if f.question == "Will talks be recorded?")
+    assert faq.answer == PUBLIC_RECORDINGS
+    photo = next(s for s in service.catalogue.guide.sections if s.id == "photography")
+    assert "Recordings are public" in " ".join(photo.model_dump_json() for _ in [0])

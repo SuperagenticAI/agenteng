@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Catalogue re-exported from site commit 1072362: the London 2026 recordings are public. "Will talks be recorded?" now answers "Yes. Recordings are public and published on https://agentengineering.world/london-2026/videos as they become available, starting with the welcome video.", and the day guide's photography and content section says the same. The previous wording limited recordings to ticket holders. Plain-English questions such as "Will talks be recorded?" and "Are the talks recorded?" now return that published answer instead of a talk-topic miss.
+
 ## 0.0.25 - 2026-10-18
 
 - Catalogue re-exported from site commit e968fc9, which moves the London 2026 conference under `/london-2026`. Sources and answers now link to `/london-2026/speakers`, `/london-2026/agenda`, `/london-2026/guide`, `/london-2026#faq` and `/london-2026` (formerly `/#venue`, `/#agenda` and `/#tickets`). London's post-event behaviour is unchanged, and San Francisco stays upcoming.
