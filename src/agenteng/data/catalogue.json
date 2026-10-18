@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-9e3c4ce110f9",
-  "published_at": "2026-10-18T17:35:45.716Z",
-  "source_commit": "935f0765f8785fdecd6c8ece9c4c7336a0df14f6",
-  "source_hash": "9e3c4ce110f9eb4889d81ba9f5a1f71f7cbe788138f39d50f7357fc8a1956cad",
+  "version": "website-ac21bf7ea812",
+  "published_at": "2026-10-18T20:03:49.408Z",
+  "source_commit": "d39c1c6ada37f6c5c14ee083ec8c655f258521d0",
+  "source_hash": "ac21bf7ea812daefacd7d84c9272047b0f1115f93d175c716cc0d693296625c8",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -1203,7 +1203,7 @@
     {
       "id": "faq-14",
       "question": "Are there sponsorship opportunities?",
-      "answer": "We are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/support",
+      "answer": "We are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/london-2026/team",
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-14"
@@ -2975,7 +2975,7 @@
     {
       "id": "faq-14",
       "url": "https://agentengineering.world/london-2026#faq",
-      "text": "Are there sponsorship opportunities?\nWe are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/support",
+      "text": "Are there sponsorship opportunities?\nWe are not offering a founding, title, or main sponsorship for this edition. The day is a learning conference for practitioners, not a vendor trade show. Companies can still support a focused part of the day such as refreshments, drinks, or recording, with a shoutout at the conference and visibility to the London Agentic AI community (about 5,000 members). Seats are selective and applications are reviewed. Details: https://agentengineering.world/london-2026/team",
       "event_id": "agenteng-london-2026",
       "kind": "faq"
     },
@@ -3051,21 +3051,21 @@
     },
     {
       "id": "support-refreshments",
-      "url": "https://agentengineering.world/support",
+      "url": "https://agentengineering.world/london-2026/team",
       "text": "Refreshments\nHelp with arrival tea and pastries or lunch. A warm, practical way to be present without a trade-show package.",
       "event_id": "agenteng-london-2026",
       "kind": "sponsorship"
     },
     {
       "id": "support-after-party",
-      "url": "https://agentengineering.world/support",
+      "url": "https://agentengineering.world/london-2026/team",
       "text": "After-party / drinks\nSupport an evening gathering after the talks, if we run one. Ideal for hallway conversations and informal recognition.",
       "event_id": "agenteng-london-2026",
       "kind": "sponsorship"
     },
     {
       "id": "support-recording",
-      "url": "https://agentengineering.world/support",
+      "url": "https://agentengineering.world/london-2026/team",
       "text": "Recording support\nA professional videographer already records the talks. Help fund editing and publishing them, with credit on the released recordings and related posts.",
       "event_id": "agenteng-london-2026",
       "kind": "sponsorship"
@@ -3114,7 +3114,7 @@
     },
     {
       "id": "about",
-      "url": "https://agentengineering.world/",
+      "url": "https://agentengineering.world/agent-engineering-hq",
       "text": "Agent Engineering is the discipline of designing, building, evaluating, and operating AI agents. It covers prompt, context, harness, inference, memory, evaluation, and code.\nOrganised by Superagentic AI: Advancing the Agent Engineering discipline and practice\nShashi Jagtap, Conference Chair & Curator · Ex-Apple Engineer (6 years) · Organizer, London Agentic AI & Agent Engineering HQ. Building the bridge from Developer Experience to Agent Experience. Transatlantic connections between London and Silicon Valley, with programming shaped by a broader technical community.\nAssociates: James Hua, Gloria Gong",
       "event_id": null,
       "kind": "about"

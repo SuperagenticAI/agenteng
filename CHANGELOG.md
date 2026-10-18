@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Catalogue re-exported from site main d39c1c6 (site PR #10): the London 2026 support options, organiser and supporters moved from `/support` to `/london-2026/team`. Support option sources and the sponsorship FAQ now link to `/london-2026/team`; only the general support enquiry stays on `/support`. The organiser, chair and associates source points to `/agent-engineering-hq`, where the site renders the chair card.
 - Catalogue re-exported from site commit 935f076: San Francisco meetups and events moved to `/san-francisco/events`, and `/san-francisco` is the San Francisco 2027 conference page. Code Engineering and Harness Engineering San Francisco links (event cards, speakers, sessions, talks, the event recap's event link and sponsor sources) now use `/san-francisco/events`; the "coming April 2027" next-event link stays `/san-francisco`. `agenteng about` lists both pages.
 - Website command check: multi-line code blocks are checked line by line (environment prefixes and pipes into other tools are dropped), accessible labels and prose are skipped, and the check runs in a temporary directory. The /san-francisco conference page commands are in the fixture.
 
