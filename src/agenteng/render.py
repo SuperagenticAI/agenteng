@@ -293,7 +293,9 @@ def _talk_body(talk: dict, *, include_title: bool = True) -> Text:
         for p in (
             "A2A talk" if kind == "a2a" else kind.replace("-", " "),
             talk.get("event_name") if talk.get("slug") else None,
-            talk.get("status_label"),
+            None
+            if (talk.get("status_label") or "").casefold() == kind.replace("-", " ")
+            else talk.get("status_label"),
         )
         if p
     )
@@ -304,6 +306,8 @@ def _talk_body(talk: dict, *, include_title: bool = True) -> Text:
         title = talk.get("title") or talk.get("talk_title")
         if title:
             body.append(display_text(title) + "\n")
+    if talk.get("summary"):
+        body.append(display_text(talk["summary"]) + "\n")
     if talk.get("speaker_name"):
         meta = " · ".join(
             p
@@ -344,6 +348,8 @@ def render_talks(console: Console, result: Result) -> None:
         header = "A2A talk (AI-generated)" if talk.get("ai_generated") else "Talk"
         if not talk.get("ai_generated") and talk.get("gallery_kind") == "event-recording":
             header = "Recording"
+        elif talk.get("gallery_kind") == "event-recap":
+            header = "Event recap"
         console.print(_panel(header, _talk_body(talk, include_title=True), border=VIOLET))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
@@ -353,7 +359,13 @@ def render_talk(console: Console, result: Result) -> None:
     if not talk:
         console.print(f"[ae.meta]{display_text(result.answer)}[/]")
         return
-    console.print(_panel("Talk", _talk_body(talk, include_title=True), border=VIOLET))
+    kind = talk.get("gallery_kind")
+    header = (
+        "A2A talk (AI-generated)"
+        if talk.get("ai_generated")
+        else {"event-recap": "Event recap", "event-recording": "Recording"}.get(kind, "Talk")
+    )
+    console.print(_panel(header, _talk_body(talk, include_title=True), border=VIOLET))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
 
@@ -622,8 +634,12 @@ def render_recordings(console: Console, result: Result) -> None:
     console.print(Text("Recordings", style="ae.title"))
     for row in rows:
         body = Text()
+        if row.get("kind") == "event-recap":
+            body.append("Event recap\n", style="ae.accent")
         if row.get("event_id"):
             body.append(f"Event: {row['event_id']}\n", style="ae.meta")
+        if row.get("summary"):
+            body.append(display_text(row["summary"]) + "\n")
         if row.get("url"):
             body.append(str(row["url"]), style=BLUE)
         console.print(_panel(display_text(row.get("title")) or "Recording", body, border=VIOLET))

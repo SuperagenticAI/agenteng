@@ -208,7 +208,7 @@ agenteng gallery --city London
 agenteng gallery london-2026-welcome
 ```
 
-The primary command for videos. Order follows [/gallery](https://agentengineering.world/gallery): the [London 2026 recordings](https://agentengineering.world/london-2026/videos) (the welcome video `iTV8VSrVJEk`, then the 10 talks marked "Recording coming soon"), then the Harness Engineering San Francisco full-event recording. Each row carries `slug`, `gallery` (`london`, `san-francisco` or `a2a`), `status` (`recorded`, `recording-coming-soon` or `upcoming`), `status_label`, `youtube_id` and `video_url` when published, and `talk_url` (`/gallery/<slug>`). Transcripts are included only when the website publishes one; none are published today. A2A talks keep their AI-generated label and the A2A disclaimer; `agenteng a2a-talks` remains the dedicated view. Over MCP, A2A and REST use `{"operation":"gallery"}` with optional `city`, `event_id`, `topic`, `query`, `speaker_id` and `include_a2a`, or `{"operation":"talk","session_id":"<slug>"}` for one item.
+The primary command for videos. Order follows [/gallery](https://agentengineering.world/gallery): the [London 2026 recordings](https://agentengineering.world/london-2026/videos) (the welcome video `iTV8VSrVJEk`, then the 10 talks marked "Recording coming soon"), then the Harness Engineering San Francisco event recap (kind `event-recap`, a short recap of the evening, not a talk recording; the old slug `sf-harness-engineering-2026-full-event` still resolves). Each row carries `slug`, `gallery_kind` (`talk`, `event-recording`, `event-recap` or `a2a`), `summary` when the site publishes one, `gallery` (`london`, `san-francisco` or `a2a`), `status` (`recorded`, `recording-coming-soon` or `upcoming`), `status_label`, `youtube_id` and `video_url` when published, and `talk_url` (`/gallery/<slug>`). Transcripts are included only when the website publishes one; none are published today. A2A talks keep their AI-generated label and the A2A disclaimer; `agenteng a2a-talks` remains the dedicated view. Over MCP, A2A and REST use `{"operation":"gallery"}` with optional `city`, `event_id`, `topic`, `query`, `speaker_id` and `include_a2a`, or `{"operation":"talk","session_id":"<slug>"}` for one item.
 
 ### agenteng talks
 
@@ -369,7 +369,7 @@ agenteng recordings [OPTIONS]
 agenteng recordings --city London
 ```
 
-Lists the [London 2026 recordings page](https://agentengineering.world/london-2026/videos), event recordings and gallery recordings with a published YouTube video (the London 2026 welcome video and the Harness Engineering San Francisco full event), without duplicates. While London 2026 talk recordings are pending the answer says so and points to `agenteng gallery --city London`. A2A videos are listed by `agenteng a2a-talks`, not here.
+Lists the [London 2026 recordings page](https://agentengineering.world/london-2026/videos), event recordings and gallery recordings with a published YouTube video (the London 2026 welcome video, and the Harness Engineering San Francisco event recap, marked `"kind": "event-recap"`), without duplicates. While London 2026 talk recordings are pending the answer says so and points to `agenteng gallery --city London`. A2A videos are listed by `agenteng a2a-talks`, not here.
 
 ### agenteng a2a-talks
 
