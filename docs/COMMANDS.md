@@ -234,7 +234,7 @@ agenteng talks --city "San Francisco" --topic Code
 agenteng talks london-2026-say-less-grade-harder
 ```
 
-Which to use: `gallery` is the video gallery (what is recorded and what is coming), `talks` is the speaker programme (who talked about what, with abstracts). London talks appear in both, with the same slug and status. Code Engineering San Francisco talks have no gallery page, so they appear only in `talks` and link to `/san-francisco`. `talks` never lists event recordings or A2A talks. Over MCP, A2A and REST use `{"operation":"talks"}` with the same filters.
+Which to use: `gallery` is the video gallery (what is recorded and what is coming), `talks` is the speaker programme (who talked about what, with abstracts). London talks appear in both, with the same slug and status. Code Engineering San Francisco talks have no gallery page, so they appear only in `talks` and link to `/san-francisco/events`. `talks` never lists event recordings or A2A talks. Over MCP, A2A and REST use `{"operation":"talks"}` with the same filters.
 
 ### agenteng talk
 

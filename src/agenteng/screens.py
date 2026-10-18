@@ -117,6 +117,7 @@ def about(service: Service, request: Request) -> Result:
             "hq": SITE + "/agent-engineering-hq",
             "london": SITE + "/london",
             "san_francisco": SITE + "/san-francisco",
+            "san_francisco_events": SITE + "/san-francisco/events",
             "code_of_conduct": SITE + "/code-of-conduct",
             **(
                 {

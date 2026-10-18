@@ -134,7 +134,7 @@ def agent_card(service):
                 name="Programme talks",
                 description="Every programme talk with its full abstract (talks; optional city, "
                 "event_id, topic, query and speaker_id): AgentEng London 2026, Code Engineering "
-                "San Francisco (27 October 2026, linked to /san-francisco) and the Harness "
+                "San Francisco (27 October 2026, linked to /san-francisco/events) and the Harness "
                 "Engineering San Francisco sessions, each with its recording status. One talk: "
                 "talk with session_id set to a slug or session ID. Never lists A2A talks; use "
                 "gallery for videos. Model-free.",

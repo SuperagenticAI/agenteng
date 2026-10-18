@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Catalogue re-exported from site commit 935f076: San Francisco meetups and events moved to `/san-francisco/events`, and `/san-francisco` is the San Francisco 2027 conference page. Code Engineering and Harness Engineering San Francisco links (event cards, speakers, sessions, talks, the event recap's event link and sponsor sources) now use `/san-francisco/events`; the "coming April 2027" next-event link stays `/san-francisco`. `agenteng about` lists both pages.
+- Website command check: multi-line code blocks are checked line by line (environment prefixes and pipes into other tools are dropped), accessible labels and prose are skipped, and the check runs in a temporary directory. The /san-francisco conference page commands are in the fixture.
+
 ## 0.0.27 - 2026-10-18
 
 - Catalogue re-exported from site commit b7c271d: the London 2026 talk "Debugging and Optimizing Voice Agents" did not take place, so it and its speaker card are removed. London now lists 9 talks and 17 speakers across 11 events. The "Who is speaking?", "When and where was the conference?" and "How is this different?" FAQ answers follow the site (nine technical talks). The talk is gone from the agenda, gallery, talks, search and bingo terms, and the website command fixture drops its speaker command. Its old gallery slug returns not_found; the site redirects that page to /london-2026/videos.

@@ -340,7 +340,7 @@ class TalkSpeaker(Model):
 
 
 class Talk(Model):
-    """One talk or video from the site's talks.ts (/gallery/<slug>, or /san-francisco)."""
+    """One talk or video from the site's talks.ts (/gallery/<slug>, or /san-francisco/events)."""
 
     slug: str
     title: str

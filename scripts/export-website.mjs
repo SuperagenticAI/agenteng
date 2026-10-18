@@ -122,6 +122,7 @@ read('src/data/contact.ts');
 read('src/data/venue.ts');
 read('src/data/disciplines.ts');
 const sfText = read('src/pages/SanFrancisco.tsx');
+if (!read('src/AppRoutes.tsx').includes('<Route path="/san-francisco/events" element={<SanFrancisco />} />')) throw new Error('SF events route drift: SanFrancisco.tsx no longer serves /san-francisco/events');
 const sponsorText = read('src/components/SponsorStrip.tsx');
 const tracksText = read('src/components/ProgramTracksSection.tsx');
 const sponsorsPage = read('src/pages/Sponsors.tsx');
@@ -131,6 +132,8 @@ values.set('whoIsSpeakingAnswer', 'The lineup: ' + roster.map(
   s => `${s.name}, ${s.role} at ${s.company}`).join('; ') + '. See the published speakers page.');
 read('src/components/FAQSection.tsx');
 const site = 'https://agentengineering.world';
+// SF meetups and events moved to /san-francisco/events (site 935f076); /san-francisco is the 2027 conference page.
+const sfEvents = site + '/san-francisco/events';
 const sources = [];
 function source(id, url, text, event_id, kind = 'document') {
   sources.push({id, url, text, event_id, kind}); return id;
@@ -209,11 +212,11 @@ for (const e of [
 ]) {
   const venue='AWS Builder Loft, 525 Market St, San Francisco';
   for (const required of [e.title,e.marker,e.registration,venue,...(e.start ? ['6:00 PM'] : [])]) if (!sfText.includes(required)) throw new Error('SF source drift: '+required);
-  const ref=source(e.id,site+'/san-francisco',`${e.title}. ${e.marker}. ${venue}.`,e.id,'event');
+  const ref=source(e.id,sfEvents,`${e.title}. ${e.marker}. ${venue}.`,e.id,'event');
   events.push({id:e.id,title:e.title,city:'San Francisco',timezone:'America/Los_Angeles',date:e.date,
     venue,start:e.start ?? null,registration_url:e.registration,source_ids:[ref]});
   for (const [i,s] of constant(e.roster).entries()) {
-    const sid=slug(s.name); const sr=source(e.id+'-'+sid,site+'/san-francisco',`${s.name}, ${s.org}. ${s.talk}`,e.id,'speaker');
+    const sid=slug(s.name); const sr=source(e.id+'-'+sid,sfEvents,`${s.name}, ${s.org}. ${s.talk}`,e.id,'speaker');
     speakers.push({id:sid,name:s.name,company:s.org,event_ids:[e.id],talk_title:s.talk,source_ids:[sr]});
     sessions.push({id:e.id+'-'+i,event_id:e.id,title:s.talk,kind:'talk',speaker_id:sid,topics:topics(s.talk),source_ids:[sr]});
   }
@@ -251,7 +254,7 @@ for (const sponsor of sponsors) {
   if (!sponsorText.includes(sponsor.name) || !sponsorText.includes(sponsor.url) || !sponsorText.includes(sponsor.blurb)) {
     throw new Error('Sponsor drift: '+sponsor.id);
   }
-  source('sponsor-'+sponsor.id,site+'/san-francisco',sponsor.name+'. '+sponsor.blurb,null,'sponsor');
+  source('sponsor-'+sponsor.id,sfEvents,sponsor.name+'. '+sponsor.blurb,null,'sponsor');
 }
 const support_options = [
   {id:'refreshments',title:'Refreshments',
@@ -527,7 +530,7 @@ const siteDisciplines = constant('disciplines').map(d => ({id: d.id, title: clea
 const shortFor = slug => siteDisciplines.filter(d => (speakerDisciplines[slug] || []).includes(d.id)).map(d => d.short);
 const eventIdFor = id => id === 'london-2026' ? london : id;
 const literalTalk = r => ({slug: r.slug, title: r.title, kind: r.kind, city: r.city, event_id: eventIdFor(r.eventId),
-  event_name: r.eventName, event_url: site + r.eventHref, date: r.date, speaker: null, topics: r.topics,
+  event_name: r.eventName, event_url: r.eventHref === '/san-francisco' ? sfEvents : site + r.eventHref, date: r.date, speaker: null, topics: r.topics,
   youtube_id: r.youtubeId ?? null, transcript: r.transcript ? clean(r.transcript) : null,
   summary: r.summary ? clean(r.summary) : null,
   ai_generated: false, status: r.status, session_id: null});
@@ -548,18 +551,18 @@ for (const v of a2aVideos) {
     event_id: null, event_name: 'Agent-to-Agent (A2A) Talks', event_url: a2aUrl, date: null, speaker: null,
     topics: [v.tag], youtube_id: v.youtube_id, transcript: null, ai_generated: true, status: 'recorded', session_id: null, gallery: 'a2a'});
 }
-// Code Engineering SF talks are listed on /san-francisco only: no gallery page.
+// Code Engineering SF talks are listed on /san-francisco/events only: no gallery page.
 const codeSpeakers = constant('codeEngineeringSpeakers');
 for (const s of codeSpeakers) {
   const slug = `sf-code-engineering-${talkSlug(s.talk.title)}`.slice(0, 90).replace(/-$/, '');
   talks.push({slug, title: s.talk.title, kind: 'talk', city: 'San Francisco', event_id: 'sf-code-engineering-2026',
-    event_name: 'Code Engineering San Francisco', event_url: site + '/san-francisco', date: '2026-10-27',
+    event_name: 'Code Engineering San Francisco', event_url: sfEvents, date: '2026-10-27',
     speaker: {name: s.name, role: s.role, company: s.company, slug: s.slug}, topics: ['Code', 'Harness'],
     youtube_id: null, transcript: null, ai_generated: false, status: 'upcoming', session_id: null, gallery: null});
 }
 if (new Set(talks.map(t => t.slug)).size !== talks.length) throw new Error('Duplicate talk slugs');
 for (const t of talks) {
-  t.url = t.gallery ? site + '/gallery/' + t.slug : site + '/san-francisco';
+  t.url = t.gallery ? site + '/gallery/' + t.slug : sfEvents;
   t.source_ids = [source('talk-' + t.slug, t.url, [t.title, t.speaker ? `${t.speaker.name}, ${t.speaker.role} at ${t.speaker.company}` : null,
     t.summary || null, t.event_name, t.ai_generated ? 'AI-generated video.' : null, t.status].filter(Boolean).join('\n'), t.event_id, t.kind === 'a2a' ? 'a2a-talks' : 'talk')];
 }
@@ -579,7 +582,7 @@ const prevConf = conferencesData.find(c => c.status === 'past');
 const site_links = {next_event: nextConf ? {name: nextConf.name, when: nextConf.when, url: site + nextConf.href} : null,
   previous_event: prevConf ? {name: prevConf.name, when: prevConf.when, url: site + prevConf.href} : null,
   london_2026: site + '/london-2026', gallery: site + '/gallery', london_videos: londonVideosPage, agenteng: site + '/agenteng'};
-for (const e of events) e.page_url = e.id === london ? site + '/london-2026' : e.city === 'San Francisco' ? site + '/san-francisco' : site + '/london';
+for (const e of events) e.page_url = e.id === london ? site + '/london-2026' : e.city === 'San Francisco' ? sfEvents : site + '/london';
 const source_hash=hash.digest('hex');
 const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),published_at:new Date().toISOString(),
   source_commit:execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),source_hash,
