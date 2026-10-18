@@ -292,15 +292,22 @@ agenteng conduct
 
 ### agenteng themes
 
-List published program themes from the website.
+List the London programme tracks from the website.
 
 ```text
 agenteng themes [OPTIONS]
 ```
 
+| Option | Meaning | Default |
+| --- | --- | --- |
+| `--disciplines` | List the engineering disciplines instead (same as agenteng disciplines). |  |
+
 ```sh
 agenteng themes
+agenteng themes --disciplines
 ```
+
+`themes` lists the four London programme tracks (Agent Optimization, Agent Experience, Agentic Coding and Agentic Business Models). The website prints its disciplines under `agenteng --themes` and `agenteng --list-disciplines`, so both forms run `agenteng disciplines`.
 
 ### agenteng tickets
 
@@ -581,7 +588,7 @@ agenteng participate
 
 ### agenteng disciplines
 
-List the twelve disciplines, tool counts and available filters.
+List the site's disciplines, tool counts and available filters.
 
 ```text
 agenteng disciplines [OPTIONS]
@@ -590,6 +597,8 @@ agenteng disciplines [OPTIONS]
 ```sh
 agenteng disciplines
 ```
+
+Lists all 14 disciplines from the site's `disciplines.ts`, in site order, with listed and total tool counts from the tool directory. Factory Engineering (`factory`) and Decision Engineering (`decision`) have no tool listings yet: their `tool_count` is `null` and they carry `"note": "no tool listings yet"`. `tools --discipline` accepts the twelve disciplines that have listings. Also runs as `agenteng themes --disciplines`, `agenteng --themes` and `agenteng --list-disciplines`.
 
 ### agenteng tools
 

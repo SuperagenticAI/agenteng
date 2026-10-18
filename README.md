@@ -125,7 +125,7 @@ agenteng tool langgraph
 agenteng --json tools --discipline code --limit 25
 ```
 
-**The 12 disciplines:** Prompt · Context · Harness · Eval · Memory · Inference · Loop · Agentic · Code · Protocol · Graph · Search.
+**The 12 disciplines:** Prompt · Context · Harness · Eval · Memory · Inference · Loop · Agentic · Code · Protocol · Graph · Search. `agenteng disciplines` also lists the site's Factory and Decision Engineering, which have no tool listings yet.
 
 See the [tool directory guide](docs/TOOLS.md) for filters, pagination and attribution.
 

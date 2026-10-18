@@ -107,9 +107,42 @@ def test_recordings_include_gallery_and_pending_note():
 
 def test_site_disciplines_factory_and_decision():
     result = lookup(operation="disciplines")
-    extra = {d["id"] for d in result.data["site_disciplines"] if not d["in_directory"]}
-    assert extra == {"factory", "decision"}
-    assert "Factory Engineering" in result.answer
+    items = result.data["items"]
+    assert [d["id"] for d in items][-2:] == ["factory", "decision"]
+    assert len(items) == 14
+    extra = [d for d in items if not d["in_directory"]]
+    assert {d["id"] for d in extra} == {"factory", "decision"}
+    assert all(d["tool_count"] is None and d["note"] == "no tool listings yet" for d in extra)
+    assert all(d["tool_count"] > 0 for d in items if d["in_directory"])
+    assert result.answer.startswith("14 agent-engineering disciplines")
+    assert "Factory Engineering and Decision Engineering: no tool listings yet." in result.answer
+
+
+def test_themes_stay_london_tracks_and_alias():
+    themes = run("themes")["data"]
+    assert len(themes) == 4
+    assert run("themes", "--disciplines")["data"] == run("disciplines")["data"]
+    assert (
+        run("--themes")["data"] == run("--list-disciplines")["data"] == run("disciplines")["data"]
+    )
+
+
+def test_next_event_prompt_and_coming_label():
+    from agenteng.discovery import discovery
+
+    service = Service()
+    data = discovery(service)
+    assert "Find the next Agent Engineering Conference in London" not in data["suggested_questions"]
+    assert (
+        "What is the next Agent Engineering event in San Francisco?" in data["suggested_questions"]
+    )
+    assert data["next_event"]["label"] == "coming April 2027"
+    assert set(data["next_event"]) == {"name", "when", "url", "label"}
+    answer = service.lookup(
+        Request(operation="ask", query="What is the next Agent Engineering event in San Francisco?")
+    ).answer
+    assert "Agent Engineering San Francisco is coming April 2027" in answer
+    assert "27 October 2026" in answer
 
 
 def test_no_em_dashes_in_new_output():

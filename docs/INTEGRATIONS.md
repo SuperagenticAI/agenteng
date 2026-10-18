@@ -93,7 +93,7 @@ This bridge requires network access and relays requests to that origin; it does 
 
 ## Useful questions and requests
 
-- “Find the next Agent Engineering Conference in London.”
+- “What is the next Agent Engineering event in San Francisco?”
 - “Show Agent Engineering HQ events in San Francisco.”
 - “Which London sessions cover evaluation or agent harnesses?”
 - “Show the published London agenda.”
