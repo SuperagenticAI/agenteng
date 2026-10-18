@@ -113,19 +113,36 @@ def agent_card(service):
                 ],
             ),
             AgentSkill(
-                id="agenteng-talks",
-                name="Talks gallery",
-                description="The website talks gallery (talks; optional city, event_id, topic, "
-                "query and speaker_id) and one talk by slug (talk with session_id set to the "
-                "slug): Code Engineering San Francisco, AgentEng London 2026 and published "
-                "recordings, with status (upcoming, recording-coming-soon or recorded), YouTube "
-                "IDs when published and full abstracts. A2A talks are added only with "
+                id="agenteng-gallery",
+                name="Video gallery",
+                description="The website video gallery (gallery; optional city, event_id, topic, "
+                "query and speaker_id), mirroring /gallery: the AgentEng London 2026 recordings "
+                "from /london-2026/videos (the welcome video, then talks marked "
+                "recording-coming-soon) and the Harness Engineering San Francisco full-event "
+                "recording, with YouTube IDs when published and /gallery/<slug> links. One item "
+                "by slug: talk with session_id set to the slug. A2A talks are added only with "
                 "include_a2a, listed last and labelled AI-generated. Model-free.",
-                tags=["talks", "recordings", "london-2026", "code-engineering", "san-francisco"],
+                tags=["gallery", "videos", "recordings", "london-2026", "san-francisco"],
+                examples=[
+                    '{"operation":"gallery"}',
+                    '{"operation":"gallery","city":"London"}',
+                    '{"operation":"talk","session_id":"london-2026-welcome"}',
+                ],
+            ),
+            AgentSkill(
+                id="agenteng-talks",
+                name="Programme talks",
+                description="Every programme talk with its full abstract (talks; optional city, "
+                "event_id, topic, query and speaker_id): AgentEng London 2026, Code Engineering "
+                "San Francisco (27 October 2026, linked to /san-francisco) and the Harness "
+                "Engineering San Francisco sessions, each with its recording status. One talk: "
+                "talk with session_id set to a slug or session ID. Never lists A2A talks; use "
+                "gallery for videos. Model-free.",
+                tags=["talks", "abstracts", "london-2026", "code-engineering", "san-francisco"],
                 examples=[
                     '{"operation":"talks","city":"San Francisco"}',
                     '{"operation":"talks","event_id":"agenteng-london-2026","topic":"Memory"}',
-                    '{"operation":"talk","session_id":"sf-harness-engineering-2026-full-event"}',
+                    '{"operation":"talk","session_id":"london-2026-say-less-grade-harder"}',
                 ],
             ),
             AgentSkill(
@@ -137,7 +154,7 @@ def agent_card(service):
                 "YouTube links, durations and tags. These videos are produced by the Agent "
                 "Engineering team using AI. They are separate from the conference programme and "
                 "are not created, reviewed or endorsed by our speakers. They are never returned as "
-                "speakers or sessions, and talks lists them only with include_a2a, last. Model-free.",
+                "speakers, talks or sessions, and gallery lists them only with include_a2a, last. Model-free.",
                 tags=["a2a-talks", "agent-to-agent", "videos", "ai-generated"],
                 examples=[
                     '{"operation":"a2a-talks"}',

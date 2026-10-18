@@ -123,7 +123,8 @@ def about(service: Service, request: Request) -> Result:
             **(
                 {
                     "london_2026": str(service.catalogue.site_links.london_2026),
-                    "talks": str(service.catalogue.site_links.talks),
+                    "gallery": str(service.catalogue.site_links.gallery),
+                    "london_videos": str(service.catalogue.site_links.london_videos),
                     "agenteng": str(service.catalogue.site_links.agenteng),
                     **{
                         key: str(link.url)

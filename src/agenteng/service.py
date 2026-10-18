@@ -17,6 +17,9 @@ from .participation import CITIES
 from .tool_directory import TOOL_OPERATIONS, ToolDirectory, load_tool_directory
 
 
+LONDON_ID = "agenteng-london-2026"
+
+
 def terms(text: str) -> set[str]:
     stop = {
         "the",
@@ -228,12 +231,13 @@ class Service:
         ]
         if lineup:
             data["lineup"] = lineup
-        talk_count = sum(1 for t in self.catalogue.talks if t.event_id == event.id)
-        if talk_count:
-            data["talks_url"] = (
-                str(self.catalogue.site_links.talks) if self.catalogue.site_links else None
+        gallery = [t for t in self.catalogue.talks if t.event_id == event.id and t.gallery]
+        links = self.catalogue.site_links
+        if gallery and links:
+            data["gallery_url"] = str(
+                links.london_videos if gallery[0].gallery == "london" else links.gallery
             )
-            data["talk_count"] = talk_count
+            data["gallery_count"] = len(gallery)
         return data
 
     def matching_events(self, request):
@@ -322,7 +326,7 @@ class Service:
     }
 
     def gallery_payload(self, talk) -> dict:
-        """A talks-gallery row (/talks/<slug>), joined with its session when one exists."""
+        """A talks.ts row (/gallery/<slug>), joined with its session when one exists."""
         session = None
         if talk.session_id:
             session = self.session_map().get(talk.session_id)
@@ -373,6 +377,7 @@ class Service:
                 ),
                 "ai_generated": talk.ai_generated,
                 "talk_url": str(talk.url),
+                "gallery": talk.gallery,
                 "source_ids": list(dict.fromkeys([*talk.source_ids, *payload["source_ids"]])),
             }
         )
@@ -383,10 +388,15 @@ class Service:
         return payload
 
     def talks_result(self, request: Request, ids: set[str]) -> Result:
-        """Talks gallery first (site order), then other published sessions; A2A last, opt-in."""
+        """gallery mirrors /gallery (A2A last, opt-in); talks lists programme talks.
+
+        talk (one item) looks in both, so any gallery slug, session ID or speaker ID works.
+        """
+        mode = request.operation
+        gallery_mode = mode == "gallery"
         city = (request.city or "").casefold()
         online = city == "online"
-        include_a2a = request.include_a2a or online
+        include_a2a = gallery_mode and (request.include_a2a or online) or mode == "talk"
         gallery_sessions = set()
         rows: list[dict] = []
         a2a_rows: list[dict] = []
@@ -394,6 +404,10 @@ class Service:
             payload = self.gallery_payload(talk)
             if payload["session_id"]:
                 gallery_sessions.add(payload["session_id"])
+            if gallery_mode and not talk.gallery:
+                continue
+            if mode == "talks" and talk.kind != "talk":
+                continue
             if talk.kind == "a2a":
                 if include_a2a and not request.event_id and not request.speaker_id:
                     a2a_rows.append(payload)
@@ -403,7 +417,7 @@ class Service:
             if request.event_id and talk.event_id != request.event_id:
                 continue
             rows.append(payload)
-        if not online:
+        if not online and not gallery_mode:
             for session in self.catalogue.sessions:
                 if (
                     session.id not in gallery_sessions
@@ -465,7 +479,14 @@ class Service:
             status = f" {row['status_label']}." if row.get("status_label") else ""
             return self.result(f"Talk: {row['title']}.{status}", row, row["source_ids"])
         rows = rows[: request.limit]
-        answer = f"{len(rows)} published talk(s)."
+        if gallery_mode:
+            answer = f"{len(rows)} gallery item(s)."
+            if any(r.get("gallery") == "london" for r in rows) and self.catalogue.site_links:
+                answer += (
+                    f" AgentEng London 2026 recordings: {self.catalogue.site_links.london_videos}"
+                )
+        else:
+            answer = f"{len(rows)} published talk(s)."
         if any(r.get("ai_generated") for r in rows):
             answer += " A2A talks are listed last and are separate from the speaker programme."
             if self.catalogue.a2a_talks:
@@ -1156,7 +1177,7 @@ class Service:
                 data,
                 speaker.source_ids,
             )
-        if request.operation in {"talks", "talk"}:
+        if request.operation in {"talks", "talk", "gallery"}:
             return self.talks_result(request, ids)
         if request.operation == "faq":
             rows = list(self.catalogue.faqs)
@@ -1483,6 +1504,18 @@ class Service:
                         "source_ids": list(talk.source_ids),
                     }
                 )
+            links = self.catalogue.site_links
+            if links and LONDON_ID in ids and "london-videos" in self.sources:
+                rows.insert(
+                    0,
+                    {
+                        "event_id": LONDON_ID,
+                        "title": "AgentEng London 2026 recordings",
+                        "url": str(links.london_videos),
+                        "kind": "page",
+                        "source_ids": ["london-videos"],
+                    },
+                )
             rows = rows[: request.limit]
             answer = f"{len(rows)} published recording link(s)."
             if any(
@@ -1490,8 +1523,8 @@ class Service:
                 for t in self.catalogue.talks
             ):
                 answer += (
-                    " AgentEng London 2026 recordings are coming soon:"
-                    " run agenteng talks --city London."
+                    " The AgentEng London 2026 welcome video is out and the talk recordings"
+                    " are coming soon: run agenteng gallery --city London."
                 )
             return self.result(
                 answer,

@@ -494,10 +494,10 @@ const a2aSource = source('a2a-talks', a2aUrl, [a2aTitle, a2aIntro, a2aDisclaimer
   ...a2aVideos.map(v => `${v.session} ${v.title} (${v.tag})`)].join('\n'), null, 'a2a-talks');
 const a2a_talks = {url: a2aUrl, title: a2aTitle, intro: a2aIntro, disclaimer: a2aDisclaimer,
   videos: a2aVideos, source_ids: [a2aSource]};
-// Talks gallery (/talks, /talks/<slug>), mirrored from src/data/talks.ts.
-// talks.ts derives its rows from agenda, speakers, sf-code-engineering and the
-// A2A data; we rebuild them from those literals (never executing site code)
-// and fail if the mapping in talks.ts drifts.
+// Gallery (/gallery, /gallery/<slug>) and London recordings (/london-2026/videos),
+// mirrored from src/data/talks.ts. talks.ts derives its rows from agenda,
+// speakers, sf-code-engineering and the A2A data; we rebuild them from those
+// literals (never executing site code) and fail if the mapping drifts.
 const talksFile = 'src/data/talks.ts';
 const talksText = read(talksFile);
 const sfCodeFile = 'src/data/sf-code-engineering.ts';
@@ -511,50 +511,59 @@ for (const needle of [
   'status: "upcoming"',
   'slug: `a2a-${v.session}-${slugify(v.title)}`',
   'aiGenerated: true',
-  'export const talks: Talk[] = [...codeEngineeringTalks, ...londonTalks, ...sfRecordings, ...a2aTalks];',
+  'export const londonVideos: Talk[] = [londonWelcome, ...londonTalks];',
+  'export const sfGallery: Talk[] = sfRecordings;',
+  'export const talks: Talk[] = [...londonVideos, ...sfRecordings, ...a2aTalks];',
 ]) if (!talksText.includes(needle)) throw new Error('talks.ts drift: ' + needle);
-const londonBlock = talksText.slice(talksText.indexOf('const londonTalks'), talksText.indexOf('const codeEngineeringTalks'));
-const sfCodeBlock = talksText.slice(talksText.indexOf('const codeEngineeringTalks'), talksText.indexOf('const sfRecordings'));
+const londonBlock = talksText.slice(talksText.indexOf('const londonTalks'), talksText.indexOf('const londonWelcome'));
+const sfCodeBlock = talksText.slice(talksText.indexOf('export const codeEngineeringTalks'), talksText.indexOf('const sfRecordings'));
 if (/youtubeId|transcript/.test(londonBlock + sfCodeBlock)) throw new Error('talks.ts now publishes recordings or transcripts; mirror them');
+const galleryPagesText = read('src/pages/Gallery.tsx');
+if (!galleryPagesText.includes('const all = [...londonVideos, ...sfGallery];')) throw new Error('Gallery page drift');
+const londonVideosPage = site + '/london-2026/videos';
+read('src/pages/LondonVideos.tsx');
 const talkSlug = text => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const siteDisciplines = constant('disciplines').map(d => ({id: d.id, title: clean(d.title), short: d.short, description: clean(d.description)}));
 const shortFor = slug => siteDisciplines.filter(d => (speakerDisciplines[slug] || []).includes(d.id)).map(d => d.short);
-const talkSource = (t, text) => source('talk-' + t.slug, site + '/talks/' + t.slug, text, t.event_id, 'talk');
+const eventIdFor = id => id === 'london-2026' ? london : id;
+const literalTalk = r => ({slug: r.slug, title: r.title, kind: r.kind, city: r.city, event_id: eventIdFor(r.eventId),
+  event_name: r.eventName, event_url: site + r.eventHref, date: r.date, speaker: null, topics: r.topics,
+  youtube_id: r.youtubeId ?? null, transcript: r.transcript ? clean(r.transcript) : null,
+  ai_generated: false, status: r.status, session_id: null});
 const talks = [];
-const codeSpeakers = constant('codeEngineeringSpeakers');
-for (const s of codeSpeakers) {
-  const slug = `sf-code-engineering-${talkSlug(s.talk.title)}`.slice(0, 90).replace(/-$/, '');
-  const t = {slug, title: s.talk.title, kind: 'talk', city: 'San Francisco', event_id: 'sf-code-engineering-2026',
-    event_name: 'Code Engineering San Francisco', event_url: site + '/san-francisco', date: '2026-10-27',
-    speaker: {name: s.name, role: s.role, company: s.company, slug: s.slug}, topics: ['Code', 'Harness'],
-    youtube_id: null, transcript: null, ai_generated: false, status: 'upcoming', session_id: null};
-  talks.push(t);
-}
+const welcome = constant('londonWelcome');
+talks.push({...literalTalk(welcome), gallery: 'london'});
 for (const slot of constant('agenda').filter(a => a.kind === 'talk' && a.speakerSlug)) {
   const sp = roster.find(r => r.slug === slot.speakerSlug);
   const slug = `london-2026-${talkSlug(slot.title)}`.slice(0, 90).replace(/-$/, '');
   talks.push({slug, title: slot.title, kind: 'talk', city: 'London', event_id: london,
     event_name: 'Agent Engineering London 2026', event_url: site + '/london-2026', date: '2026-10-16',
     speaker: {name: sp.name, role: sp.role, company: sp.company, slug: sp.slug}, topics: shortFor(sp.slug),
-    youtube_id: null, transcript: null, ai_generated: false, status: 'recording-coming-soon', session_id: slot.id});
+    youtube_id: null, transcript: null, ai_generated: false, status: 'recording-coming-soon', session_id: slot.id, gallery: 'london'});
 }
-for (const r of constant('sfRecordings')) {
-  talks.push({slug: r.slug, title: r.title, kind: r.kind, city: r.city, event_id: r.eventId,
-    event_name: r.eventName, event_url: site + r.eventHref, date: r.date, speaker: null, topics: r.topics,
-    youtube_id: r.youtubeId ?? null, transcript: r.transcript ? clean(r.transcript) : null,
-    ai_generated: false, status: r.status, session_id: null});
-}
+for (const r of constant('sfRecordings')) talks.push({...literalTalk(r), gallery: 'san-francisco'});
 for (const v of a2aVideos) {
   talks.push({slug: `a2a-${v.session}-${talkSlug(v.title)}`, title: v.title, kind: 'a2a', city: 'Online',
     event_id: null, event_name: 'Agent-to-Agent (A2A) Talks', event_url: a2aUrl, date: null, speaker: null,
-    topics: [v.tag], youtube_id: v.youtube_id, transcript: null, ai_generated: true, status: 'recorded', session_id: null});
+    topics: [v.tag], youtube_id: v.youtube_id, transcript: null, ai_generated: true, status: 'recorded', session_id: null, gallery: 'a2a'});
+}
+// Code Engineering SF talks are listed on /san-francisco only: no gallery page.
+const codeSpeakers = constant('codeEngineeringSpeakers');
+for (const s of codeSpeakers) {
+  const slug = `sf-code-engineering-${talkSlug(s.talk.title)}`.slice(0, 90).replace(/-$/, '');
+  talks.push({slug, title: s.talk.title, kind: 'talk', city: 'San Francisco', event_id: 'sf-code-engineering-2026',
+    event_name: 'Code Engineering San Francisco', event_url: site + '/san-francisco', date: '2026-10-27',
+    speaker: {name: s.name, role: s.role, company: s.company, slug: s.slug}, topics: ['Code', 'Harness'],
+    youtube_id: null, transcript: null, ai_generated: false, status: 'upcoming', session_id: null, gallery: null});
 }
 if (new Set(talks.map(t => t.slug)).size !== talks.length) throw new Error('Duplicate talk slugs');
 for (const t of talks) {
-  t.url = site + '/talks/' + t.slug;
-  t.source_ids = [talkSource(t, [t.title, t.speaker ? `${t.speaker.name}, ${t.speaker.role} at ${t.speaker.company}` : null,
-    t.event_name, t.ai_generated ? 'AI-generated video.' : null, t.status].filter(Boolean).join('\n'))];
+  t.url = t.gallery ? site + '/gallery/' + t.slug : site + '/san-francisco';
+  t.source_ids = [source('talk-' + t.slug, t.url, [t.title, t.speaker ? `${t.speaker.name}, ${t.speaker.role} at ${t.speaker.company}` : null,
+    t.event_name, t.ai_generated ? 'AI-generated video.' : null, t.status].filter(Boolean).join('\n'), t.event_id, t.kind === 'a2a' ? 'a2a-talks' : 'talk')];
 }
+source('london-videos', londonVideosPage, 'Agent Engineering London 2026 recordings: ' + welcome.title +
+  ' (https://www.youtube.com/watch?v=' + welcome.youtubeId + '). Talk recordings coming soon.', london, 'recordings');
 // SF Code Engineering roster: roles and links from sf-code-engineering.ts.
 for (const s of codeSpeakers) {
   const sp = speakers.find(p => p.id === s.slug && p.event_ids.includes('sf-code-engineering-2026'));
@@ -568,7 +577,7 @@ const nextConf = conferencesData.find(c => c.status === 'announced' || c.status 
 const prevConf = conferencesData.find(c => c.status === 'past');
 const site_links = {next_event: nextConf ? {name: nextConf.name, when: nextConf.when, url: site + nextConf.href} : null,
   previous_event: prevConf ? {name: prevConf.name, when: prevConf.when, url: site + prevConf.href} : null,
-  london_2026: site + '/london-2026', talks: site + '/talks', agenteng: site + '/agenteng'};
+  london_2026: site + '/london-2026', gallery: site + '/gallery', london_videos: londonVideosPage, agenteng: site + '/agenteng'};
 for (const e of events) e.page_url = e.id === london ? site + '/london-2026' : e.city === 'San Francisco' ? site + '/san-francisco' : site + '/london';
 const source_hash=hash.digest('hex');
 const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),published_at:new Date().toISOString(),
@@ -576,4 +585,4 @@ const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),pub
   events,speakers,sessions,faqs,sponsors,support_options,themes,hq:hq_content,about:{...about,truly_yours},guide,a2a_talks,talks,disciplines:siteDisciplines,site_links,sources};
 fs.mkdirSync(path.dirname(output),{recursive:true});
 fs.writeFileSync(output,JSON.stringify(catalogue,null,2)+'\n');
-console.log(`Exported ${events.length} events, ${speakers.length} speakers, ${sessions.length} sessions, ${faqs.length} faqs, ${guide.sections.length} guide sections, ${a2aVideos.length} A2A talks, ${talks.length} gallery talks to ${output}`);
+console.log(`Exported ${events.length} events, ${speakers.length} speakers, ${sessions.length} sessions, ${faqs.length} faqs, ${guide.sections.length} guide sections, ${a2aVideos.length} A2A talks, ${talks.filter(t => t.gallery).length} gallery items, ${talks.length} talks to ${output}`);

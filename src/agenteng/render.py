@@ -342,6 +342,8 @@ def render_talks(console: Console, result: Result) -> None:
     for talk in talks:
         # Short panel header; full title wraps in the body.
         header = "A2A talk (AI-generated)" if talk.get("ai_generated") else "Talk"
+        if not talk.get("ai_generated") and talk.get("gallery_kind") == "event-recording":
+            header = "Recording"
         console.print(_panel(header, _talk_body(talk, include_title=True), border=VIOLET))
     console.print(f"[ae.meta]{display_text(result.answer)}[/]")
 
@@ -1008,6 +1010,7 @@ def render_result(result: Result, operation: str, console: Console | None = None
         "tickets": render_tickets,
         "recordings": render_recordings,
         "a2a-talks": render_a2a_talks,
+        "gallery": render_talks,
         "search": render_search,
         "ask": render_ask,
         "chat": render_ask,
@@ -1142,7 +1145,8 @@ def render_about(console: Console, result: Result) -> None:
             "san_francisco": "San Francisco",
             "code_of_conduct": "Code of conduct",
             "london_2026": "AgentEng London 2026",
-            "talks": "Talks",
+            "gallery": "Gallery",
+            "london_videos": "London 2026 recordings",
             "agenteng": "agenteng CLI",
             "next_event": "Next event",
             "previous_event": "Previous event",

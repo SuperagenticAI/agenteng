@@ -340,7 +340,7 @@ class TalkSpeaker(Model):
 
 
 class Talk(Model):
-    """One row of the site's talks gallery (/talks/<slug>)."""
+    """One talk or video from the site's talks.ts (/gallery/<slug>, or /san-francisco)."""
 
     slug: str
     title: str
@@ -357,6 +357,8 @@ class Talk(Model):
     ai_generated: bool = False
     status: Literal["upcoming", "recording-coming-soon", "recorded"]
     session_id: str | None = None
+    gallery: Literal["london", "san-francisco", "a2a"] | None = None
+    """Gallery tab on /gallery; None when the talk has no gallery page."""
     url: HttpUrl
     source_ids: list[str]
 
@@ -378,7 +380,8 @@ class SiteLinks(Model):
     next_event: SiteEventLink | None = None
     previous_event: SiteEventLink | None = None
     london_2026: HttpUrl
-    talks: HttpUrl
+    gallery: HttpUrl
+    london_videos: HttpUrl
     agenteng: HttpUrl
 
 
@@ -503,6 +506,7 @@ class Request(Model):
         "tickets",
         "recordings",
         "a2a-talks",
+        "gallery",
         "search",
         "ask",
         "chat",

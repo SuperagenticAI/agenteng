@@ -65,7 +65,8 @@ def discovery(service, city=None):
         "organizer_url": WEBSITE + "/agent-engineering-hq",
         **(
             {
-                "talks_url": str(service.catalogue.site_links.talks),
+                "gallery_url": str(service.catalogue.site_links.gallery),
+                "london_videos_url": str(service.catalogue.site_links.london_videos),
                 "next_event": {
                     **service.catalogue.site_links.next_event.model_dump(mode="json"),
                     "label": coming_label(service.catalogue.site_links.next_event),

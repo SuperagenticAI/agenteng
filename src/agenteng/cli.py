@@ -199,12 +199,19 @@ def resolve_talk(ctx, identifier: str, event_id: str | None = None):
     """
 
     def talk_rows(query: str) -> list[dict]:
-        payload = dict(operation="talks", event_id=event_id, query=query, limit=100)
-        if ctx.obj.get("remote"):
-            result = dispatch(ctx, payload, quiet=True)
-        else:
-            result = local_service(ctx).lookup(Request(**payload))
-        return result.data if isinstance(result.data, list) else []
+        rows: list[dict] = []
+        for operation in ("talks", "gallery"):
+            payload = dict(operation=operation, event_id=event_id, query=query, limit=100)
+            if operation == "gallery":
+                payload["include_a2a"] = True
+            if ctx.obj.get("remote"):
+                result = dispatch(ctx, payload, quiet=True)
+            else:
+                result = local_service(ctx).lookup(Request(**payload))
+            if isinstance(result.data, list):
+                seen = {r.get("slug") or r.get("id") for r in rows}
+                rows += [r for r in result.data if (r.get("slug") or r.get("id")) not in seen]
+        return rows
 
     exact = [
         row
@@ -352,36 +359,83 @@ def inspect_speaker(ctx, speaker_id, event_id):
     ctx.invoke(speaker_detail, speaker_id=speaker_id, event_id=event_id)
 
 
-@main.command()
-@click.argument("slug", required=False)
-@click.option("--city", help="Only talks in this city, for example London or San Francisco.")
-@click.option("--event", "event_id", help="Only talks at this event ID.")
-@click.option("--topic", help="Only talks on this topic or discipline, for example Code.")
-@click.option("--search", "query", default="", help="Match talk title, abstract or speaker.")
-@click.option("--speaker", "speaker_id", help="Only talks by this speaker ID.")
-@click.option(
-    "--a2a",
-    "include_a2a",
-    is_flag=True,
-    help="Also list the AI-generated A2A talks, after the programme.",
-)
-@click.option(
+def _listing_options(command):
+    for decorator in reversed(
+        [
+            click.argument("slug", required=False),
+            click.option(
+                "--city", help="Only items in this city, for example London or San Francisco."
+            ),
+            click.option("--event", "event_id", help="Only items from this event ID."),
+            click.option(
+                "--topic", help="Only items on this topic or discipline, for example Code."
+            ),
+            click.option("--search", "query", default="", help="Match title, abstract or speaker."),
+            click.option("--speaker", "speaker_id", help="Only items by this speaker ID."),
+        ]
+    ):
+        command = decorator(command)
+    return command
+
+
+LIMIT_OPTION = click.option(
     "--limit",
     default=20,
     show_default=True,
     type=click.IntRange(1, 100),
-    help="Maximum talks to list.",
+    help="Maximum items to list.",
 )
+
+
+@main.command()
+@_listing_options
+@click.option(
+    "--a2a",
+    "include_a2a",
+    is_flag=True,
+    help="Also list the AI-generated A2A talks, after the event videos.",
+)
+@LIMIT_OPTION
 @city_shortcuts
 @click.pass_context
-def talks(ctx, slug, city, event_id, topic, query, speaker_id, include_a2a, limit):
-    """List the talks gallery, or read one talk by SLUG.
+def gallery(ctx, slug, city, event_id, topic, query, speaker_id, include_a2a, limit):
+    """List the video gallery, or read one item by SLUG.
 
-    Mirrors agentengineering.world/talks: Code Engineering San Francisco,
-    London 2026 (recordings coming soon) and published recordings, with full
-    abstracts. A2A talks are AI-generated and only appear with --a2a or
-    --city Online, after the programme. SLUG is a talk slug, session ID or
-    speaker ID.
+    Mirrors agentengineering.world/gallery: the London 2026 recordings
+    (the welcome video, then talks marked recording coming soon) and the
+    San Francisco recordings. A2A talks are AI-generated and only appear with
+    --a2a or --city Online, after the event videos.
+    """
+    if slug:
+        ctx.invoke(talk_detail, identifier=slug, event_id=event_id, query="")
+        return
+    dispatch(
+        ctx,
+        dict(
+            operation="gallery",
+            city=city,
+            event_id=event_id,
+            topic=topic,
+            query=query,
+            speaker_id=speaker_id,
+            include_a2a=include_a2a,
+            limit=limit,
+        ),
+    )
+
+
+@main.command()
+@_listing_options
+@LIMIT_OPTION
+@city_shortcuts
+@click.pass_context
+def talks(ctx, slug, city, event_id, topic, query, speaker_id, limit):
+    """List programme talks with full abstracts, or read one talk by SLUG.
+
+    Every speaker talk: AgentEng London 2026, Code Engineering San Francisco
+    and the Harness Engineering San Francisco sessions, each with its
+    recording status. For videos use agenteng gallery. SLUG is a gallery
+    slug, session ID or speaker ID.
     """
     if slug:
         ctx.invoke(talk_detail, identifier=slug, event_id=event_id, query="")
@@ -395,7 +449,6 @@ def talks(ctx, slug, city, event_id, topic, query, speaker_id, include_a2a, limi
             topic=topic,
             query=query,
             speaker_id=speaker_id,
-            include_a2a=include_a2a,
             limit=limit,
         ),
     )
@@ -409,7 +462,8 @@ def talks(ctx, slug, city, event_id, topic, query, speaker_id, include_a2a, limi
 def talk_detail(ctx, identifier, event_id, query):
     """Read one talk by talk slug, session ID, speaker ID, or --search text.
 
-    IDENTIFIER is a talk slug, session ID or speaker ID from agenteng talks.
+    IDENTIFIER is a gallery slug, session ID or speaker ID from agenteng talks
+    or agenteng gallery.
     """
     payload = dict(operation="talk", event_id=event_id, query=query)
     if identifier:
