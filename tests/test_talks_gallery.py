@@ -58,7 +58,9 @@ def test_talks_is_the_programme_listing():
     assert sum(r["event_id"] == LONDON for r in rows) == 9
     code = [r for r in rows if r["event_id"] == SF_CODE]
     assert len(code) == 4
-    assert all(r["talk_url"] == f"{SITE}/san-francisco" and r["gallery"] is None for r in code)
+    assert all(
+        r["talk_url"] == f"{SITE}/san-francisco/events" and r["gallery"] is None for r in code
+    )
     assert lookup(operation="talks", city="Online").status == "not_found"
     assert lookup(operation="talks", include_a2a=True, limit=100).data == rows
 
@@ -69,7 +71,7 @@ def test_one_item_by_slug_from_either_command():
     out = run("talks", "london-2026-say-less-grade-harder")["data"]
     assert out["status"] == "recording-coming-soon" and out["abstract"]
     assert run("gallery", "london-2026-say-less-grade-harder")["data"]["slug"] == out["slug"]
-    assert run("talks", "sydney-runkle")["data"]["talk_url"] == f"{SITE}/san-francisco"
+    assert run("talks", "sydney-runkle")["data"]["talk_url"] == f"{SITE}/san-francisco/events"
 
 
 def test_filters():
@@ -86,7 +88,7 @@ def test_sf_code_engineering_speakers_and_event_card():
     assert roles["andrey-risukhin"] == "Recursive Self Improvement"
     event = run("event", SF_CODE)["data"][0]
     assert event["state"] == "upcoming"
-    assert event["page_url"] == f"{SITE}/san-francisco"
+    assert event["page_url"] == f"{SITE}/san-francisco/events"
     assert "gallery_url" not in event
     assert [p["name"] for p in event["lineup"]] == [
         "Seth Karten",
@@ -261,3 +263,20 @@ def test_bingo_has_no_cancelled_talk_terms():
 
     labels = {label.casefold() for label, _ in screens.BINGO_TERMS}
     assert not labels & {CANCELLED[2] + "s", "debugging"}
+
+
+def test_sf_events_page_and_conference_link():
+    service = Service()
+    sf_events = f"{SITE}/san-francisco/events"
+    for event in service.catalogue.events:
+        if event.city == "San Francisco":
+            assert str(event.page_url) == sf_events
+            assert all(str(service.sources[i].url) == sf_events for i in event.source_ids)
+    sf_urls = {str(s.url) for s in service.catalogue.sources if "/san-francisco" in str(s.url)} | {
+        str(t.event_url) for t in service.catalogue.talks if t.city == "San Francisco"
+    }
+    assert sf_urls == {sf_events}
+    assert str(service.catalogue.site_links.next_event.url) == f"{SITE}/san-francisco"
+    links = lookup(operation="about").data["links"]
+    assert links["san_francisco"] == f"{SITE}/san-francisco"
+    assert links["san_francisco_events"] == sf_events

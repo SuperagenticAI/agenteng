@@ -4,7 +4,7 @@ Every displayed AgentEng command must be accepted by the CLI. The hero Orchestra
 
 Run `python scripts/check-website-commands.py WEBSITE_REPO` against a website checkout with Node dependencies installed. It reads public TypeScript literals using the AST, validates them against the actual CLI, and executes public lookup/setup commands. Server loops and coding sessions are parsed without launching them. Dynamic speaker-profile command rendering is covered by the speaker fixture and website tests.
 
-The fixture contains 96 command locations. Tool CI executes each row and requires success. Update it when website commands change.
+The fixture contains 101 command locations. Tool CI executes each row and requires success. Update it when website commands change.
 
 | Command | Website source (`src/`) |
 | --- | --- |
@@ -104,6 +104,11 @@ The fixture contains 96 command locations. Tool CI executes each row and require
 | `agenteng connect mcp --transport http` | `pages/AgentEngPage.tsx` |
 | `agenteng connect acp` | `pages/AgentEngPage.tsx` |
 | `agenteng --info` | `pages/AgentEngPage.tsx` |
+| `agenteng themes` | `pages/SanFranciscoConference.tsx` |
+| `agenteng faq --search different` | `pages/SanFranciscoConference.tsx` |
+| `agenteng speakers --city san-francisco` | `pages/SanFranciscoConference.tsx` |
+| `agenteng events san-francisco --upcoming` | `pages/SanFranciscoConference.tsx` |
+| `agenteng events --city san-francisco` | `pages/SanFranciscoConference.tsx` |
 
 `agenteng guide --london` is shown as text on the /london-2026/guide page header, and `agenteng gallery` and `agenteng event --london` on /gallery and /london-2026, so they are listed by hand: the literal scanner only reads string literals, and skips literals that end like a sentence (such as the /agenteng meta description). `components/TicketsSection.tsx` still contains `agenteng tickets --london`, but the homepage no longer renders that section; the command keeps working and now reports the site's fully booked wording. The exporter fails if the homepage renders `TicketsSection` again, so the registration status is reviewed before the next export.
 
@@ -143,9 +148,15 @@ Pages mirrored:
 Data files read by `scripts/export-website.mjs`:
 
 - `src/data/talks.ts`: exports `londonVideos` (the London welcome recording, then the 9 London talks), `sfGallery` (the Harness Engineering San Francisco event recap, kind `event-recap`, slug `sf-harness-engineering-2026-recap`, with the site's `summary`; the site redirects the old `/gallery/sf-harness-engineering-2026-full-event` and `agenteng gallery` still accepts the old slug) and `talks` (both, then the A2A talks). `/gallery` shows `londonVideos` and `sfGallery`. Event recaps are their own kind: they are never labelled as talk recordings, and the Harness Engineering San Francisco sessions do not point to the recap as their recording. Each exported row has a `gallery` tab (`london`, `san-francisco` or `a2a`), slug, title, kind, city, event, speaker, topics, `youtube_id`, `transcript`, status, AI-generated flag and its `/gallery/<slug>` URL, with one source each. `talks.ts` builds its rows from other data, so the exporter rebuilds them from the same literals (the `londonWelcome` and `sfRecordings` literals, agenda, speakers, `sf-code-engineering.ts` and `agentToAgent.ts`) and fails if the exports, the Gallery page or the mapping change, or if London or Code Engineering talks start publishing a YouTube ID or transcript, so a newly published recording is mirrored deliberately. No transcripts are published today, so none are exported. A2A rows use the `a2a-talks` source kind, so general search leaves them out.
-- `codeEngineeringTalks` in `talks.ts` is kept for /san-francisco only: the four Code Engineering San Francisco talks have no gallery page, so they are exported with `gallery: null` and link to `/san-francisco`.
+- `codeEngineeringTalks` in `talks.ts` is kept for the San Francisco events page only: the four Code Engineering San Francisco talks have no gallery page, so they are exported with `gallery: null` and link to `/san-francisco/events`.
 - `src/data/sf-code-engineering.ts`: roles, companies and links for the Code Engineering San Francisco (27 October 2026) speakers, checked against the SanFrancisco page roster.
 - `src/data/events.ts`: next and previous editions (`site_links.next_event` is Agent Engineering San Francisco, April 2027, `/san-francisco`; `site_links.previous_event` is London 2026, `/london-2026`), plus each event's `page_url`. `site_links` also holds `/gallery` and `/london-2026/videos`. The April 2027 conference is announced without a date or venue, so it is a link labelled "coming April 2027", not a catalogue event. The discovery prompt that used to read "Find the next Agent Engineering Conference in London" now follows `site_links.next_event`: "What is the next Agent Engineering event in San Francisco?", answered with the next published San Francisco event and "Agent Engineering San Francisco is coming April 2027".
 - `src/data/disciplines.ts`: the site now lists 14 disciplines. `agenteng disciplines` (and the site forms `agenteng --themes` and `agenteng --list-disciplines`, plus `agenteng themes --disciplines`) lists all 14 in site order with directory tool counts; Factory Engineering and Decision Engineering are marked "no tool listings yet". `agenteng themes` stays the four London programme tracks. The tool directory keeps its twelve listed disciplines until tools are attributed to the new two.
+
+## San Francisco events and the 2027 conference
+
+Site main 935f076 moved the San Francisco meetups and events to `/san-francisco/events` (still served by `src/pages/SanFrancisco.tsx`), and `/san-francisco` is now the Agent Engineering San Francisco 2027 conference page. Every San Francisco event link in the catalogue (the Code Engineering and Harness Engineering San Francisco events, their speakers, sessions, talks, event cards and sponsor sources) uses `/san-francisco/events`. The site's `talks.ts` still writes `eventHref: "/san-francisco"` for those rows, so the exporter maps it. Only the next-event link (`site_links.next_event`, "coming April 2027", from `events.ts`) stays `/san-francisco`. The exporter fails if `/san-francisco/events` stops routing to `SanFrancisco.tsx`. `agenteng about` lists both pages.
+
+The command scanner reads each line of multi-line code blocks (such as the /agenteng examples) as its own command, drops an environment prefix (`AGENTENG_OUTPUT=json`) and anything after a pipe (`| jq`), and skips accessible labels (`aria-label`, `alt`, `title`) and prose. The check runs in a temporary directory, so commands that write files (`agenteng bingo --format html --output bingo.html`) leave the checkout untouched.
 
 Run `python scripts/check-website-commands.py WEBSITE_REPO` after each sync.

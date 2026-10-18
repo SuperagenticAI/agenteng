@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-3575025765be",
-  "published_at": "2026-10-18T11:49:06.675Z",
-  "source_commit": "b7c271d50775a39e6dff4df6431224831d3acc51",
-  "source_hash": "3575025765be8b66473677c626c3385c1c9ebb98f4fbf808e3774af0c1fe105d",
+  "version": "website-9e3c4ce110f9",
+  "published_at": "2026-10-18T17:35:45.716Z",
+  "source_commit": "935f0765f8785fdecd6c8ece9c4c7336a0df14f6",
+  "source_hash": "9e3c4ce110f9eb4889d81ba9f5a1f71f7cbe788138f39d50f7357fc8a1956cad",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -189,7 +189,7 @@
       "source_ids": [
         "sf-code-engineering-2026"
       ],
-      "page_url": "https://agentengineering.world/san-francisco"
+      "page_url": "https://agentengineering.world/san-francisco/events"
     },
     {
       "id": "sf-harness-engineering-2026",
@@ -203,7 +203,7 @@
       "source_ids": [
         "sf-harness-engineering-2026"
       ],
-      "page_url": "https://agentengineering.world/san-francisco"
+      "page_url": "https://agentengineering.world/san-francisco/events"
     }
   ],
   "speakers": [
@@ -2062,7 +2062,7 @@
       "city": "San Francisco",
       "event_id": "sf-harness-engineering-2026",
       "event_name": "Harness Engineering San Francisco",
-      "event_url": "https://agentengineering.world/san-francisco",
+      "event_url": "https://agentengineering.world/san-francisco/events",
       "date": "2026-07-03",
       "speaker": null,
       "topics": [
@@ -2328,7 +2328,7 @@
       "city": "San Francisco",
       "event_id": "sf-code-engineering-2026",
       "event_name": "Code Engineering San Francisco",
-      "event_url": "https://agentengineering.world/san-francisco",
+      "event_url": "https://agentengineering.world/san-francisco/events",
       "date": "2026-10-27",
       "speaker": {
         "name": "Seth Karten",
@@ -2346,7 +2346,7 @@
       "status": "upcoming",
       "session_id": null,
       "gallery": null,
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "source_ids": [
         "talk-sf-code-engineering-prime-agent-a-self-improving-rlm-harness-with-swarm-communication"
       ]
@@ -2358,7 +2358,7 @@
       "city": "San Francisco",
       "event_id": "sf-code-engineering-2026",
       "event_name": "Code Engineering San Francisco",
-      "event_url": "https://agentengineering.world/san-francisco",
+      "event_url": "https://agentengineering.world/san-francisco/events",
       "date": "2026-10-27",
       "speaker": {
         "name": "Ben Holmes",
@@ -2376,7 +2376,7 @@
       "status": "upcoming",
       "session_id": null,
       "gallery": null,
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "source_ids": [
         "talk-sf-code-engineering-building-a-self-improving-software-factory"
       ]
@@ -2388,7 +2388,7 @@
       "city": "San Francisco",
       "event_id": "sf-code-engineering-2026",
       "event_name": "Code Engineering San Francisco",
-      "event_url": "https://agentengineering.world/san-francisco",
+      "event_url": "https://agentengineering.world/san-francisco/events",
       "date": "2026-10-27",
       "speaker": {
         "name": "Sydney Runkle",
@@ -2406,7 +2406,7 @@
       "status": "upcoming",
       "session_id": null,
       "gallery": null,
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "source_ids": [
         "talk-sf-code-engineering-building-agents-that-work-like-coding-agents"
       ]
@@ -2418,7 +2418,7 @@
       "city": "San Francisco",
       "event_id": "sf-code-engineering-2026",
       "event_name": "Code Engineering San Francisco",
-      "event_url": "https://agentengineering.world/san-francisco",
+      "event_url": "https://agentengineering.world/san-francisco/events",
       "date": "2026-10-27",
       "speaker": {
         "name": "Andrey Risukhin",
@@ -2436,7 +2436,7 @@
       "status": "upcoming",
       "session_id": null,
       "gallery": null,
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "source_ids": [
         "talk-sf-code-engineering-reducing-coding-harness-latency-with-the-software-factory"
       ]
@@ -2806,70 +2806,70 @@
     },
     {
       "id": "sf-code-engineering-2026",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Code Engineering: From Coding Agents to Software Factories. 27 October 2026. AWS Builder Loft, 525 Market St, San Francisco.",
       "event_id": "sf-code-engineering-2026",
       "kind": "event"
     },
     {
       "id": "sf-code-engineering-2026-seth-karten",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Seth Karten, Prime Intellect. Prime Agent: A Self-Improving RLM Harness with Swarm Communication",
       "event_id": "sf-code-engineering-2026",
       "kind": "speaker"
     },
     {
       "id": "sf-code-engineering-2026-ben-holmes",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Ben Holmes, Warp. Building a self-improving software factory",
       "event_id": "sf-code-engineering-2026",
       "kind": "speaker"
     },
     {
       "id": "sf-code-engineering-2026-sydney-runkle",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Sydney Runkle, LangChain. Building agents that work like coding agents",
       "event_id": "sf-code-engineering-2026",
       "kind": "speaker"
     },
     {
       "id": "sf-code-engineering-2026-andrey-risukhin",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Andrey Risukhin, Factory. Reducing Coding Harness Latency with the Software Factory",
       "event_id": "sf-code-engineering-2026",
       "kind": "speaker"
     },
     {
       "id": "sf-harness-engineering-2026",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Harness Engineering: State of the Art in Agent Harnesses. 3 July 2026. AWS Builder Loft, 525 Market St, San Francisco.",
       "event_id": "sf-harness-engineering-2026",
       "kind": "event"
     },
     {
       "id": "sf-harness-engineering-2026-dat-ngo",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Dat Ngo, Arize AI. The Harness Is the Product: How to Build, Break, and Evaluate",
       "event_id": "sf-harness-engineering-2026",
       "kind": "speaker"
     },
     {
       "id": "sf-harness-engineering-2026-arun-kumar",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Arun Kumar, RapidFire AI. Stop Tuning One Harness at a Time!",
       "event_id": "sf-harness-engineering-2026",
       "kind": "speaker"
     },
     {
       "id": "sf-harness-engineering-2026-myeongsoo-kim",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Myeongsoo Kim, AWS AI Labs. Harness Optimization Through Live Traffic Analysis",
       "event_id": "sf-harness-engineering-2026",
       "kind": "speaker"
     },
     {
       "id": "sf-harness-engineering-2026-linghua-jin",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Linghua Jin, CocoIndex. Fresh Context for Coding Agents",
       "event_id": "sf-harness-engineering-2026",
       "kind": "speaker"
@@ -3037,14 +3037,14 @@
     },
     {
       "id": "sponsor-arize-ai",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Arize AI. AI observability and evaluation for agents in production.",
       "event_id": null,
       "kind": "sponsor"
     },
     {
       "id": "sponsor-cocoindex",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "CocoIndex. Open-source data indexing that keeps agent context fresh.",
       "event_id": null,
       "kind": "sponsor"
@@ -3380,28 +3380,28 @@
     },
     {
       "id": "talk-sf-code-engineering-prime-agent-a-self-improving-rlm-harness-with-swarm-communication",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Prime Agent: A Self-Improving RLM Harness with Swarm Communication\nSeth Karten, Research, Lead on Prime Agent & Continual Harness at Prime Intellect\nCode Engineering San Francisco\nupcoming",
       "event_id": "sf-code-engineering-2026",
       "kind": "talk"
     },
     {
       "id": "talk-sf-code-engineering-building-a-self-improving-software-factory",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Building a self-improving software factory\nBen Holmes, Agent Infrastructure at Warp\nCode Engineering San Francisco\nupcoming",
       "event_id": "sf-code-engineering-2026",
       "kind": "talk"
     },
     {
       "id": "talk-sf-code-engineering-building-agents-that-work-like-coding-agents",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Building agents that work like coding agents\nSydney Runkle, Product Manager for Open Source at LangChain\nCode Engineering San Francisco\nupcoming",
       "event_id": "sf-code-engineering-2026",
       "kind": "talk"
     },
     {
       "id": "talk-sf-code-engineering-reducing-coding-harness-latency-with-the-software-factory",
-      "url": "https://agentengineering.world/san-francisco",
+      "url": "https://agentengineering.world/san-francisco/events",
       "text": "Reducing Coding Harness Latency with the Software Factory\nAndrey Risukhin, Recursive Self Improvement at Factory\nCode Engineering San Francisco\nupcoming",
       "event_id": "sf-code-engineering-2026",
       "kind": "talk"

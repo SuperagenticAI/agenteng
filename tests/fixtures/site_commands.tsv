@@ -95,3 +95,8 @@ works	agenteng connect a2a	pages/AgentEngPage.tsx	agenteng connect a2a	Verified 
 works	agenteng connect mcp --transport http	pages/AgentEngPage.tsx	agenteng connect mcp --transport http	Verified against the CLI
 works	agenteng connect acp	pages/AgentEngPage.tsx	agenteng connect acp	Verified against the CLI
 alias	agenteng --info	pages/AgentEngPage.tsx	agenteng --info	runs agenteng about
+works	agenteng themes	pages/SanFranciscoConference.tsx	agenteng themes	SF 2027 conference page (/san-francisco)
+works	agenteng faq --search different	pages/SanFranciscoConference.tsx	agenteng faq --search different	SF 2027 conference page (/san-francisco)
+alias	agenteng speakers --city san-francisco	pages/SanFranciscoConference.tsx	agenteng speakers --city san-francisco	city slugs accepted everywhere a city is
+alias	agenteng events san-francisco --upcoming	pages/SanFranciscoConference.tsx	agenteng events san-francisco --upcoming	optional CITY argument
+alias	agenteng events --city san-francisco	pages/SanFranciscoConference.tsx	agenteng events --city san-francisco	city slugs accepted everywhere a city is

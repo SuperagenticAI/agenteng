@@ -3,6 +3,7 @@
 
 import argparse
 import json
+import os
 from pathlib import Path
 import shlex
 import subprocess
@@ -25,6 +26,8 @@ rows = json.loads(
 errors = []
 executed = 0
 with tempfile.TemporaryDirectory(prefix="agenteng-command-check-") as temporary:
+    # Commands such as `bingo --output bingo.html` write files: keep them out of the checkout.
+    os.chdir(temporary)
     runner = CliRunner(env={"AGENTENG_OUTPUT": "json", "AGENTENG_CONFIG_DIR": temporary})
     for row in rows:
         command = row["command"]
