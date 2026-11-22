@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.0.29 - 2026-11-22
+
 - Catalogue re-exported from site main 01239dd: Agents in Production at MongoDB (19 November 2026) is a past event at MongoDB UK, 240 Blackfriars Rd, with the published recording https://www.youtube.com/watch?v=Cn3t7ucLVcE, its event page at `/london/events/agents-in-production-at-mongodb`, and the four speakers plus talks and panel from the site.
 - `agenteng events --london --latest` returns that MongoDB evening. The published alias `mongodb-london` works with `agenteng faq --event mongodb-london` and other event-id options. `agenteng event --london` still opens the AgentEng London 2026 conference. After the conference, general questions such as tickets, lunch and talk topics still default to it, not a later meetup.
 - London 2026 gallery and recordings now follow `/london-2026/videos`: the welcome video, seven published talk recordings, Alexander Korchagin's talk still marked "Recording coming soon, awaiting approval.", and the lightning talks (`PAI0XECBeSM`). Meryem Arik's programme talk is not on the recordings page, so `agenteng gallery` omits it and `agenteng talks` still lists it.
