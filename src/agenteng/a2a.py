@@ -117,9 +117,9 @@ def agent_card(service):
                 name="Video gallery",
                 description="The website video gallery (gallery; optional city, event_id, topic, "
                 "query and speaker_id), mirroring /gallery: the AgentEng London 2026 recordings "
-                "from /london-2026/videos (the welcome video, then talks marked "
-                "recording-coming-soon) and the Harness Engineering San Francisco event recap "
-                "video, with YouTube IDs when published and /gallery/<slug> links. One item "
+                "from /london-2026/videos (the welcome video, published talks, lightning talks, "
+                "and any talk still marked recording-coming-soon) and the San Francisco event recap "
+                "videos, with YouTube IDs when published and /gallery/<slug> links. One item "
                 "by slug: talk with session_id set to the slug. A2A talks are added only with "
                 "include_a2a, listed last and labelled AI-generated. Model-free.",
                 tags=["gallery", "videos", "recordings", "london-2026", "san-francisco"],

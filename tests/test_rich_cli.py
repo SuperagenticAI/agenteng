@@ -98,7 +98,7 @@ def test_use_json_flag_and_env(monkeypatch):
 
 def test_json_flag_unchanged_shape():
     runner = CliRunner()
-    result = runner.invoke(main, ["--json", "events", "--upcoming"])
+    result = runner.invoke(main, ["--json", "events", "--past"])
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
@@ -109,7 +109,7 @@ def test_json_flag_unchanged_shape():
 
 def test_pipe_defaults_to_result_json():
     runner = CliRunner()
-    result = runner.invoke(main, ["events", "--upcoming"])
+    result = runner.invoke(main, ["events", "--past"])
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
@@ -122,7 +122,7 @@ def test_env_forces_json_even_if_tty(monkeypatch):
         patch("agenteng.cli.stdout_is_tty", return_value=True),
         patch("agenteng.output.stdout_is_tty", return_value=True),
     ):
-        result = runner.invoke(main, ["events", "--upcoming"], env={"AGENTENG_OUTPUT": "json"})
+        result = runner.invoke(main, ["events", "--past"], env={"AGENTENG_OUTPUT": "json"})
     assert result.exit_code == 0, result.output
     assert json.loads(result.output)["engine"] == "lookup"
 
@@ -133,10 +133,10 @@ def test_tty_uses_rich_not_raw_json():
         patch("agenteng.cli.stdout_is_tty", return_value=True),
         patch("agenteng.output.stdout_is_tty", return_value=True),
     ):
-        result = runner.invoke(main, ["events", "--upcoming"])
+        result = runner.invoke(main, ["events", "--past"])
     assert result.exit_code == 0, result.output
-    assert "Code Engineering" in result.output
-    assert "upcoming" in result.output
+    assert "AgentEng London 2026" in result.output
+    assert "past" in result.output
     # Should not be a bare Result JSON document.
     with pytest.raises(json.JSONDecodeError):
         json.loads(result.output)

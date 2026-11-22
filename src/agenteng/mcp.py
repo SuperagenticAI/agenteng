@@ -43,7 +43,7 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
             "and bingo for a reproducible talk bingo card in data (seed, size 4 or 5; format text, svg or html adds a printable copy in artifact). "
             "Use a2a-talks for the Agent-to-Agent (A2A) Talks: AI-generated videos by the Agent Engineering team, "
             "separate from the conference programme and never speakers or sessions (optional topic filters by tag). "
-            "Use gallery for the website video gallery (/gallery: London 2026 recordings, then San Francisco; "
+            "Use gallery for the website video gallery (/gallery: London 2026 recordings, then San Francisco event recaps; "
             "optional city, event_id, topic, query, speaker_id; status recorded, recording-coming-soon or upcoming, "
             "with youtube_id when published). gallery adds A2A talks only with include_a2a, listed last and "
             "labelled AI-generated. Use talks for programme talks with abstracts (never A2A), and talk with "

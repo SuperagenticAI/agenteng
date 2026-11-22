@@ -355,6 +355,7 @@ class Talk(Model):
     youtube_id: str | None = None
     transcript: str | None = None
     summary: str | None = None
+    recording_notice: str | None = None
     ai_generated: bool = False
     status: Literal["upcoming", "recording-coming-soon", "recorded"]
     session_id: str | None = None
@@ -364,11 +365,19 @@ class Talk(Model):
     source_ids: list[str]
 
 
+class DisciplineOrigin(Model):
+    """Optional credit for who named a discipline, from the site's origin field."""
+
+    label: str
+    href: HttpUrl
+
+
 class SiteDiscipline(Model):
     id: str
     title: str
     short: str
     description: str
+    origin: DisciplineOrigin | None = None
 
 
 class SiteEventLink(Model):
@@ -526,6 +535,7 @@ class Request(Model):
     topic: str | None = Field(default=None, max_length=200)
     upcoming: bool = False
     past: bool = False
+    latest: bool = False
     include_a2a: bool = False
     format: Literal["json", "ics", "text", "svg", "html"] = "json"
     section: str | None = Field(default=None, max_length=64)
@@ -557,6 +567,7 @@ class Request(Model):
             or self.topic
             or self.upcoming
             or self.past
+            or self.latest
         ):
             raise ValueError("Chat accepts a question and history, not engines or event filters")
         if self.section and not (
@@ -591,6 +602,7 @@ class Request(Model):
             or self.city
             or self.upcoming
             or self.past
+            or self.latest
             or self.topic
             or self.speaker_id
             or self.session_id
@@ -609,6 +621,10 @@ class Request(Model):
             raise ValueError("session_id only applies to talk or agenda")
         if self.upcoming and self.past:
             raise ValueError("Choose upcoming or past, not both")
+        if self.latest and self.operation != "events":
+            raise ValueError("latest only applies to events")
+        if self.latest and (self.upcoming or self.past):
+            raise ValueError("Choose latest, upcoming or past, not a combination")
         if self.operation in {"event", "agenda", "tickets", "venue"} and not self.event_id:
             raise ValueError(f"{self.operation} requires event_id")
         if self.operation == "speaker" and not self.speaker_id:

@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-ac21bf7ea812",
-  "published_at": "2026-10-18T20:03:49.408Z",
-  "source_commit": "d39c1c6ada37f6c5c14ee083ec8c655f258521d0",
-  "source_hash": "ac21bf7ea812daefacd7d84c9272047b0f1115f93d175c716cc0d693296625c8",
+  "version": "website-ce3c9ab1d2cb",
+  "published_at": "2026-11-22T09:34:40.273Z",
+  "source_commit": "01239ddea3660cd2fdadbdde01fd75ce7d2ee989",
+  "source_hash": "ce3c9ab1d2cb0e2b29b6eaf1bd466d4bc0bc1227505469f7d1f0e5e477130847",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -58,6 +58,23 @@
       "page_url": "https://agentengineering.world/london-2026"
     },
     {
+      "id": "london-mongodb-2026",
+      "title": "Agents in Production at MongoDB",
+      "city": "London",
+      "timezone": "Europe/London",
+      "date": "2026-11-19",
+      "date_precision": "day",
+      "venue": "MongoDB UK, 240 Blackfriars Rd, London SE1 8NW",
+      "page_url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "registration_url": "https://luma.com/london-zufm",
+      "recording_url": "https://www.youtube.com/watch?v=Cn3t7ucLVcE",
+      "source_ids": [
+        "london-mongodb-2026"
+      ],
+      "start": "2026-11-19T18:00:00+00:00",
+      "end": "2026-11-19T20:30:00+00:00"
+    },
+    {
       "id": "london-harness-engineering-with-amazon",
       "title": "Harness Engineering with Amazon",
       "city": "London",
@@ -65,12 +82,12 @@
       "date": "2026-07",
       "date_precision": "month",
       "venue": "Amazon LHR16, London",
+      "page_url": "https://agentengineering.world/london",
       "registration_url": "https://luma.com/758nubw3",
       "recording_url": "https://www.youtube.com/watch?v=BDAI-ZygvC4",
       "source_ids": [
         "london-harness-engineering-with-amazon"
-      ],
-      "page_url": "https://agentengineering.world/london"
+      ]
     },
     {
       "id": "london-agentic-engineering-with-alibaba-cloud",
@@ -80,12 +97,12 @@
       "date": "2026-06",
       "date_precision": "month",
       "venue": "Tessl, London",
+      "page_url": "https://agentengineering.world/london",
       "registration_url": "https://luma.com/hdygxmyx",
       "recording_url": "https://www.youtube.com/watch?v=GAoSHdZL4gQ",
       "source_ids": [
         "london-agentic-engineering-with-alibaba-cloud"
-      ],
-      "page_url": "https://agentengineering.world/london"
+      ]
     },
     {
       "id": "london-the-london-ai-agents-showcase-at-databricks",
@@ -95,12 +112,12 @@
       "date": "2026-05",
       "date_precision": "month",
       "venue": "Databricks London HQ",
+      "page_url": "https://agentengineering.world/london",
       "registration_url": "https://luma.com/rduuz4od",
       "recording_url": "https://www.youtube.com/watch?v=VXCT8Yc2zE8",
       "source_ids": [
         "london-the-london-ai-agents-showcase-at-databricks"
-      ],
-      "page_url": "https://agentengineering.world/london"
+      ]
     },
     {
       "id": "london-coding-agents-and-acp-with-jetbrains",
@@ -110,12 +127,12 @@
       "date": "2026-03",
       "date_precision": "month",
       "venue": "Tessl, London",
+      "page_url": "https://agentengineering.world/london",
       "registration_url": "https://luma.com/4hs6hs36",
       "recording_url": "https://www.youtube.com/watch?v=Tr6hMit_e1A",
       "source_ids": [
         "london-coding-agents-and-acp-with-jetbrains"
-      ],
-      "page_url": "https://agentengineering.world/london"
+      ]
     },
     {
       "id": "london-agentic-coding-at-google-deepmind",
@@ -125,12 +142,12 @@
       "date": "2026-02",
       "date_precision": "month",
       "venue": "Google Campus, London",
+      "page_url": "https://agentengineering.world/london",
       "registration_url": "https://luma.com/p88yqsna",
       "recording_url": "https://www.youtube.com/watch?v=-fEq34tkPCI",
       "source_ids": [
         "london-agentic-coding-at-google-deepmind"
-      ],
-      "page_url": "https://agentengineering.world/london"
+      ]
     },
     {
       "id": "london-agentic-ai-evals-at-databricks",
@@ -140,12 +157,12 @@
       "date": "2025-11",
       "date_precision": "month",
       "venue": "Databricks London HQ",
+      "page_url": "https://agentengineering.world/london",
       "registration_url": "https://www.meetup.com/london-agentic-ai/events/311630656/",
       "recording_url": "https://www.youtube.com/watch?v=BLINPRC3AS8",
       "source_ids": [
         "london-agentic-ai-evals-at-databricks"
-      ],
-      "page_url": "https://agentengineering.world/london"
+      ]
     },
     {
       "id": "london-agentic-ai-and-model-context-protocol",
@@ -155,12 +172,12 @@
       "date": "2025-10",
       "date_precision": "month",
       "venue": "Tessl, London",
+      "page_url": "https://agentengineering.world/london",
       "registration_url": "https://www.meetup.com/london-agentic-ai/events/310615112/",
       "recording_url": null,
       "source_ids": [
         "london-agentic-ai-and-model-context-protocol"
-      ],
-      "page_url": "https://agentengineering.world/london"
+      ]
     },
     {
       "id": "london-building-reliable-ai-agents-from-context-to-evals",
@@ -170,12 +187,12 @@
       "date": "2025-09",
       "date_precision": "month",
       "venue": "AutogenAI, London",
+      "page_url": "https://agentengineering.world/london",
       "registration_url": "https://www.meetup.com/london-agentic-ai/events/310601023/",
       "recording_url": null,
       "source_ids": [
         "london-building-reliable-ai-agents-from-context-to-evals"
-      ],
-      "page_url": "https://agentengineering.world/london"
+      ]
     },
     {
       "id": "sf-code-engineering-2026",
@@ -632,6 +649,74 @@
       ]
     },
     {
+      "id": "adam-wong",
+      "name": "Adam Wong",
+      "role": "Solutions Architect",
+      "company": "MongoDB",
+      "company_url": "https://www.mongodb.com",
+      "links": {
+        "linkedin": "https://www.linkedin.com/in/adam-winston-wong/"
+      },
+      "event_ids": [
+        "london-mongodb-2026"
+      ],
+      "talk_title": "Agents in Production: The Questions Your Demo Skipped",
+      "source_ids": [
+        "london-mongodb-2026-adam-wong"
+      ]
+    },
+    {
+      "id": "animesh-mishra",
+      "name": "Animesh Mishra",
+      "role": "Solutions Architect",
+      "company": "MongoDB",
+      "company_url": "https://www.mongodb.com",
+      "links": {
+        "linkedin": "https://www.linkedin.com/in/siranimesh/"
+      },
+      "event_ids": [
+        "london-mongodb-2026"
+      ],
+      "talk_title": "Agents in Production: The Questions Your Demo Skipped",
+      "source_ids": [
+        "london-mongodb-2026-animesh-mishra"
+      ]
+    },
+    {
+      "id": "daniela-petruzalek",
+      "name": "Daniela Petruzalek",
+      "role": "Senior Developer Relations Engineer",
+      "company": "Google",
+      "company_url": null,
+      "links": {
+        "linkedin": "https://www.linkedin.com/in/petruzalek/"
+      },
+      "event_ids": [
+        "london-mongodb-2026"
+      ],
+      "talk_title": "AI Agents from Scratch with Google ADK",
+      "source_ids": [
+        "london-mongodb-2026-daniela-petruzalek"
+      ]
+    },
+    {
+      "id": "harrison-reeves",
+      "name": "Harrison Reeves",
+      "role": "GTM and Engineering",
+      "company": "Cognition",
+      "company_url": null,
+      "links": {
+        "linkedin": "https://www.linkedin.com/in/harrilovestech/"
+      },
+      "event_ids": [
+        "london-mongodb-2026"
+      ],
+      "talk_title": "Your Agent Needs Its Own Computer",
+      "source_ids": [
+        "london-mongodb-2026-harrison-reeves"
+      ]
+    },
+    {
       "id": "seth-karten",
       "name": "Seth Karten",
       "company": "Prime Intellect",
@@ -968,6 +1053,63 @@
       ]
     },
     {
+      "id": "london-mongodb-2026-talk-0",
+      "event_id": "london-mongodb-2026",
+      "title": "Agents in Production: The Questions Your Demo Skipped",
+      "kind": "talk",
+      "start": "2026-11-19T18:45:00+00:00",
+      "end": "2026-11-19T19:05:00+00:00",
+      "speaker_id": "adam-wong",
+      "topics": [
+        "memory"
+      ],
+      "source_ids": [
+        "london-mongodb-2026-talk-0"
+      ]
+    },
+    {
+      "id": "london-mongodb-2026-talk-1",
+      "event_id": "london-mongodb-2026",
+      "title": "AI Agents from Scratch with Google ADK",
+      "kind": "talk",
+      "start": "2026-11-19T19:05:00+00:00",
+      "end": "2026-11-19T19:25:00+00:00",
+      "speaker_id": "daniela-petruzalek",
+      "topics": [],
+      "source_ids": [
+        "london-mongodb-2026-talk-1"
+      ]
+    },
+    {
+      "id": "london-mongodb-2026-talk-2",
+      "event_id": "london-mongodb-2026",
+      "title": "Your Agent Needs Its Own Computer",
+      "kind": "talk",
+      "start": "2026-11-19T19:25:00+00:00",
+      "end": "2026-11-19T19:45:00+00:00",
+      "speaker_id": "harrison-reeves",
+      "topics": [],
+      "source_ids": [
+        "london-mongodb-2026-talk-2"
+      ]
+    },
+    {
+      "id": "london-mongodb-2026-panel",
+      "event_id": "london-mongodb-2026",
+      "title": "Agents in Production: Beyond the Prototype",
+      "kind": "panel",
+      "start": "2026-11-19T19:45:00+00:00",
+      "end": "2026-11-19T20:05:00+00:00",
+      "speaker_id": null,
+      "topics": [
+        "memory",
+        "security"
+      ],
+      "source_ids": [
+        "london-mongodb-2026-panel"
+      ]
+    },
+    {
       "id": "sf-code-engineering-2026-0",
       "event_id": "sf-code-engineering-2026",
       "title": "Prime Agent: A Self-Improving RLM Harness with Swarm Communication",
@@ -1234,6 +1376,114 @@
       "event_id": "agenteng-london-2026",
       "source_ids": [
         "faq-17"
+      ]
+    },
+    {
+      "id": "mongodb-faq-0",
+      "question": "What are the best agentic AI events in London in November 2026?",
+      "answer": "A confirmed technical evening that week was Agents in Production at MongoDB, a London Agentic AI meetup on Thursday 19 November 2026 from 6:00 PM to 8:30 PM GMT at MongoDB UK, 240 Blackfriars Rd, London SE1 8NW. Talks from MongoDB, Google ADK and Cognition covered production AI agents, memory, state, agent runtimes, observability, security and governance, followed by a panel. The recording is on YouTube: https://www.youtube.com/watch?v=Cn3t7ucLVcE. Event page: https://agentengineering.world/london/events/agents-in-production-at-mongodb. Other London Agentic AI dates are on https://luma.com/londonagenticai.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-0"
+      ]
+    },
+    {
+      "id": "mongodb-faq-1",
+      "question": "Is there an AI agents meetup in London on 19 November?",
+      "answer": "Yes. London Agentic AI hosted Agents in Production at MongoDB on Thursday 19 November 2026, 6:00 PM to 8:30 PM GMT, at MongoDB UK on Blackfriars Road, London. It was an in-person evening for engineers building production AI agents, with talks from MongoDB, Google ADK and Cognition. Watch the recording: https://www.youtube.com/watch?v=Cn3t7ucLVcE. Event page: https://agentengineering.world/london/events/agents-in-production-at-mongodb.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-1"
+      ]
+    },
+    {
+      "id": "mongodb-faq-2",
+      "question": "Who is speaking at Agents in Production at MongoDB?",
+      "answer": "Speakers are Adam Wong and Animesh Mishra, Solutions Architects at MongoDB, on Agents in Production: The Questions Your Demo Skipped, including how Atlas Agent Engine approaches memory, credentials, containment and tracing. Daniela Petruzalek, Senior Developer Relations Engineer at Google, speaks on AI Agents from Scratch with Google ADK. Harrison Reeves, GTM and Engineering at Cognition, speaks on Your Agent Needs Its Own Computer. A 20-minute panel, Agents in Production: Beyond the Prototype, follows the talks.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-2"
+      ]
+    },
+    {
+      "id": "mongodb-faq-3",
+      "question": "What talks are on the agenda for Agents in Production at MongoDB?",
+      "answer": "Doors open at 6:00 PM for registration and networking. Welcome from London Agentic AI at 6:40 PM. Talk 1, MongoDB, 6:45 PM to 7:05 PM: Agents in Production: The Questions Your Demo Skipped. Talk 2, Google ADK, 7:05 PM to 7:25 PM: AI Agents from Scratch with Google ADK. Talk 3, Cognition, 7:25 PM to 7:45 PM: Your Agent Needs Its Own Computer. Panel discussion and audience Q&A, 7:45 PM to 8:05 PM. Networking from 8:05 PM onwards.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-3"
+      ]
+    },
+    {
+      "id": "mongodb-faq-4",
+      "question": "What is the MongoDB talk and Atlas Agent Engine session about?",
+      "answer": "In Agents in Production: The Questions Your Demo Skipped, Adam Wong and Animesh Mishra of MongoDB walk through the engineering questions that decide whether an agent ships: where memory and state live and how they survive between runs, whose credentials the agent is using and what it is allowed to touch, how you contain what it can do, and how you trace what it did and why. They then show how Atlas Agent Engine approaches each of these in a working system.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-4"
+      ]
+    },
+    {
+      "id": "mongodb-faq-5",
+      "question": "What is the Google ADK talk at the London meetup about?",
+      "answer": "In AI Agents from Scratch with Google ADK, Daniela Petruzalek, Senior Developer Relations Engineer at Google, shows how to use Agent Development Kit (ADK) to take an agent from idea to production. The session covers how to bootstrap agents, deploy them to the cloud and protect them from malicious behaviour.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-5"
+      ]
+    },
+    {
+      "id": "mongodb-faq-6",
+      "question": "What is the Cognition talk about cloud agents?",
+      "answer": "In Your Agent Needs Its Own Computer, Harrison Reeves of Cognition discusses the difference between a cloud agent running in its own VM and a local agent, including benefits such as running at unbounded scale and executing whenever engineering work is needed, for example when a production error occurs.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-6"
+      ]
+    },
+    {
+      "id": "mongodb-faq-7",
+      "question": "Who should attend Agents in Production at MongoDB?",
+      "answer": "The evening is for AI and ML engineers and agent builders, software engineers and platform engineers, AI architects and engineering managers, CTOs and technical founders, AI researchers and practitioners, and teams building and deploying agentic AI systems.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-7"
+      ]
+    },
+    {
+      "id": "mongodb-faq-8",
+      "question": "Where can I watch the Agents in Production at MongoDB recording?",
+      "answer": "The recording is on YouTube at https://www.youtube.com/watch?v=Cn3t7ucLVcE, titled Agents in Production at MongoDB: London Agentic AI, and is also embedded on the event page at https://agentengineering.world/london/events/agents-in-production-at-mongodb. The London Agentic AI page is https://londonagenticai.com/events/agents-in-production-mongodb.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-8"
+      ]
+    },
+    {
+      "id": "mongodb-faq-9",
+      "question": "Is the Agents in Production at MongoDB event free?",
+      "answer": "Yes. Attendance was free. The evening was sponsored and hosted by MongoDB for the London Agentic AI community. The recording is free to watch at https://www.youtube.com/watch?v=Cn3t7ucLVcE.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-9"
+      ]
+    },
+    {
+      "id": "mongodb-faq-10",
+      "question": "Where is the London AI agents meetup on 19 November 2026?",
+      "answer": "MongoDB UK, 240 Blackfriars Rd, London SE1 8NW, United Kingdom. Doors open at 6:00 PM. Map: see the event page at https://agentengineering.world/london/events/agents-in-production-at-mongodb.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-10"
+      ]
+    },
+    {
+      "id": "mongodb-faq-11",
+      "question": "What AI engineering topics does the MongoDB London meetup cover?",
+      "answer": "Production AI agents and agentic systems: persistent memory and state, agent runtimes, deployment, observability, security, governance, and moving from prototypes to systems you can operate. Talks cover Atlas Agent Engine, Google Agent Development Kit (ADK) and cloud agents that run in their own VM. Speakers come from MongoDB, Google and Cognition.",
+      "event_id": "london-mongodb-2026",
+      "source_ids": [
+        "mongodb-faq-11"
       ]
     }
   ],
@@ -1776,6 +2026,7 @@
       "youtube_id": "iTV8VSrVJEk",
       "transcript": null,
       "summary": null,
+      "recording_notice": null,
       "ai_generated": false,
       "status": "recorded",
       "session_id": null,
@@ -1806,6 +2057,7 @@
       ],
       "youtube_id": null,
       "transcript": null,
+      "recording_notice": "Recording coming soon, awaiting approval.",
       "ai_generated": false,
       "status": "recording-coming-soon",
       "session_id": "agenteng-london-2026-2",
@@ -1816,8 +2068,8 @@
       ]
     },
     {
-      "slug": "london-2026-inference-engineering-for-long-running-agents",
-      "title": "Inference Engineering for Long-Running Agents",
+      "slug": "london-2026-security-for-ai-native-developers",
+      "title": "Security for AI-Native Developers",
       "kind": "talk",
       "city": "London",
       "event_id": "agenteng-london-2026",
@@ -1825,23 +2077,25 @@
       "event_url": "https://agentengineering.world/london-2026",
       "date": "2026-10-16",
       "speaker": {
-        "name": "Meryem Arik",
-        "role": "CEO",
-        "company": "Doubleword",
-        "slug": "meryem-arik"
+        "name": "Ismail Homan Pelaseyed",
+        "role": "Co-founder & CTO",
+        "company": "Superagent",
+        "slug": "ismail-pelaseyed"
       },
       "topics": [
-        "Inference"
+        "Harness",
+        "Code"
       ],
-      "youtube_id": null,
+      "youtube_id": "64-KF26shew",
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "recording-coming-soon",
-      "session_id": "agenteng-london-2026-3",
+      "status": "recorded",
+      "session_id": "agenteng-london-2026-11",
       "gallery": "london",
-      "url": "https://agentengineering.world/gallery/london-2026-inference-engineering-for-long-running-agents",
+      "url": "https://agentengineering.world/gallery/london-2026-security-for-ai-native-developers",
       "source_ids": [
-        "talk-london-2026-inference-engineering-for-long-running-agents"
+        "talk-london-2026-security-for-ai-native-developers"
       ]
     },
     {
@@ -1864,45 +2118,16 @@
         "Eval",
         "Loop"
       ],
-      "youtube_id": null,
+      "youtube_id": "zzMAcl8XcUg",
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "recording-coming-soon",
+      "status": "recorded",
       "session_id": "agenteng-london-2026-4",
       "gallery": "london",
       "url": "https://agentengineering.world/gallery/london-2026-software-development-as-constrained-optimization",
       "source_ids": [
         "talk-london-2026-software-development-as-constrained-optimization"
-      ]
-    },
-    {
-      "slug": "london-2026-the-right-information-at-the-right-time",
-      "title": "The right information at the right time",
-      "kind": "talk",
-      "city": "London",
-      "event_id": "agenteng-london-2026",
-      "event_name": "Agent Engineering London 2026",
-      "event_url": "https://agentengineering.world/london-2026",
-      "date": "2026-10-16",
-      "speaker": {
-        "name": "Jon Bratseth",
-        "role": "CEO",
-        "company": "Vespa.ai",
-        "slug": "jon-bratseth"
-      },
-      "topics": [
-        "Context",
-        "Search"
-      ],
-      "youtube_id": null,
-      "transcript": null,
-      "ai_generated": false,
-      "status": "recording-coming-soon",
-      "session_id": "agenteng-london-2026-6",
-      "gallery": "london",
-      "url": "https://agentengineering.world/gallery/london-2026-the-right-information-at-the-right-time",
-      "source_ids": [
-        "talk-london-2026-the-right-information-at-the-right-time"
       ]
     },
     {
@@ -1924,15 +2149,47 @@
         "Agentic",
         "Code"
       ],
-      "youtube_id": null,
+      "youtube_id": "pDliDj6sr7o",
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "recording-coming-soon",
+      "status": "recorded",
       "session_id": "agenteng-london-2026-7",
       "gallery": "london",
       "url": "https://agentengineering.world/gallery/london-2026-if-coding-is-solved-what-s-left",
       "source_ids": [
         "talk-london-2026-if-coding-is-solved-what-s-left"
+      ]
+    },
+    {
+      "slug": "london-2026-the-right-information-at-the-right-time",
+      "title": "The right information at the right time",
+      "kind": "talk",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": {
+        "name": "Jon Bratseth",
+        "role": "CEO",
+        "company": "Vespa.ai",
+        "slug": "jon-bratseth"
+      },
+      "topics": [
+        "Context",
+        "Search"
+      ],
+      "youtube_id": "TSr2W8KAZIM",
+      "transcript": null,
+      "recording_notice": null,
+      "ai_generated": false,
+      "status": "recorded",
+      "session_id": "agenteng-london-2026-6",
+      "gallery": "london",
+      "url": "https://agentengineering.world/gallery/london-2026-the-right-information-at-the-right-time",
+      "source_ids": [
+        "talk-london-2026-the-right-information-at-the-right-time"
       ]
     },
     {
@@ -1953,45 +2210,16 @@
       "topics": [
         "Protocol"
       ],
-      "youtube_id": null,
+      "youtube_id": "Eje5JXSXkYI",
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "recording-coming-soon",
+      "status": "recorded",
       "session_id": "agenteng-london-2026-10",
       "gallery": "london",
       "url": "https://agentengineering.world/gallery/london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
       "source_ids": [
         "talk-london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api"
-      ]
-    },
-    {
-      "slug": "london-2026-security-for-ai-native-developers",
-      "title": "Security for AI-Native Developers",
-      "kind": "talk",
-      "city": "London",
-      "event_id": "agenteng-london-2026",
-      "event_name": "Agent Engineering London 2026",
-      "event_url": "https://agentengineering.world/london-2026",
-      "date": "2026-10-16",
-      "speaker": {
-        "name": "Ismail Homan Pelaseyed",
-        "role": "Co-founder & CTO",
-        "company": "Superagent",
-        "slug": "ismail-pelaseyed"
-      },
-      "topics": [
-        "Harness",
-        "Code"
-      ],
-      "youtube_id": null,
-      "transcript": null,
-      "ai_generated": false,
-      "status": "recording-coming-soon",
-      "session_id": "agenteng-london-2026-11",
-      "gallery": "london",
-      "url": "https://agentengineering.world/gallery/london-2026-security-for-ai-native-developers",
-      "source_ids": [
-        "talk-london-2026-security-for-ai-native-developers"
       ]
     },
     {
@@ -2013,10 +2241,11 @@
         "Prompt",
         "Eval"
       ],
-      "youtube_id": null,
+      "youtube_id": "zqIoC_ic7fM",
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "recording-coming-soon",
+      "status": "recorded",
       "session_id": "agenteng-london-2026-13",
       "gallery": "london",
       "url": "https://agentengineering.world/gallery/london-2026-say-less-grade-harder",
@@ -2044,15 +2273,70 @@
         "Memory",
         "Graph"
       ],
-      "youtube_id": null,
+      "youtube_id": "Xv_F5xygrN4",
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "recording-coming-soon",
+      "status": "recorded",
       "session_id": "agenteng-london-2026-14",
       "gallery": "london",
       "url": "https://agentengineering.world/gallery/london-2026-memory-is-not-a-bigger-context-window-memory-engineering-for-production-agents",
       "source_ids": [
         "talk-london-2026-memory-is-not-a-bigger-context-window-memory-engineering-for-production-agents"
+      ]
+    },
+    {
+      "slug": "london-2026-lightning-talks",
+      "title": "Lightning Talks: Eito & John, Data Security & Video Generation",
+      "kind": "event-recording",
+      "city": "London",
+      "event_id": "agenteng-london-2026",
+      "event_name": "Agent Engineering London 2026",
+      "event_url": "https://agentengineering.world/london-2026",
+      "date": "2026-10-16",
+      "speaker": null,
+      "topics": [
+        "Data Security",
+        "Video Generation"
+      ],
+      "youtube_id": "PAI0XECBeSM",
+      "transcript": null,
+      "summary": "Eito and John's lightning talks, together in one session recording.",
+      "recording_notice": null,
+      "ai_generated": false,
+      "status": "recorded",
+      "session_id": null,
+      "gallery": "london",
+      "url": "https://agentengineering.world/gallery/london-2026-lightning-talks",
+      "source_ids": [
+        "talk-london-2026-lightning-talks"
+      ]
+    },
+    {
+      "slug": "sf-code-engineering-2026-recap",
+      "title": "Code Engineering San Francisco: event recap",
+      "kind": "event-recap",
+      "city": "San Francisco",
+      "event_id": "sf-code-engineering-2026",
+      "event_name": "Code Engineering San Francisco",
+      "event_url": "https://agentengineering.world/san-francisco/events/code-engineering-2026",
+      "date": "2026-10-27",
+      "speaker": null,
+      "topics": [
+        "Code",
+        "Harness"
+      ],
+      "youtube_id": "eyuQSOIuG_0",
+      "transcript": null,
+      "summary": "Highlights from Code Engineering: From Coding Agents to Software Factories at AWS Builder Loft.",
+      "recording_notice": null,
+      "ai_generated": false,
+      "status": "recorded",
+      "session_id": null,
+      "gallery": "san-francisco",
+      "url": "https://agentengineering.world/gallery/sf-code-engineering-2026-recap",
+      "source_ids": [
+        "talk-sf-code-engineering-2026-recap"
       ]
     },
     {
@@ -2072,6 +2356,7 @@
       "youtube_id": "AP1RRbXZhsE",
       "transcript": null,
       "summary": "Recap of our Harness Engineering evening in San Francisco, attended by 300+ members.",
+      "recording_notice": null,
       "ai_generated": false,
       "status": "recorded",
       "session_id": null,
@@ -2342,8 +2627,9 @@
       ],
       "youtube_id": null,
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "upcoming",
+      "status": "recording-coming-soon",
       "session_id": null,
       "gallery": null,
       "url": "https://agentengineering.world/san-francisco/events",
@@ -2372,8 +2658,9 @@
       ],
       "youtube_id": null,
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "upcoming",
+      "status": "recording-coming-soon",
       "session_id": null,
       "gallery": null,
       "url": "https://agentengineering.world/san-francisco/events",
@@ -2402,8 +2689,9 @@
       ],
       "youtube_id": null,
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "upcoming",
+      "status": "recording-coming-soon",
       "session_id": null,
       "gallery": null,
       "url": "https://agentengineering.world/san-francisco/events",
@@ -2432,8 +2720,9 @@
       ],
       "youtube_id": null,
       "transcript": null,
+      "recording_notice": null,
       "ai_generated": false,
-      "status": "upcoming",
+      "status": "recording-coming-soon",
       "session_id": null,
       "gallery": null,
       "url": "https://agentengineering.world/san-francisco/events",
@@ -2749,6 +3038,13 @@
       "kind": "session"
     },
     {
+      "id": "london-mongodb-2026",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "text": "Agents in Production at MongoDB. 19 November 2026, 6:00 PM. MongoDB UK, 240 Blackfriars Rd, London SE1 8NW.",
+      "event_id": "london-mongodb-2026",
+      "kind": "event"
+    },
+    {
       "id": "london-harness-engineering-with-amazon",
       "url": "https://agentengineering.world/london",
       "text": "Harness Engineering with Amazon. July 2026. Amazon LHR16, London.",
@@ -2803,6 +3099,62 @@
       "text": "Building Reliable AI Agents: From Context to Evals. September 2025. AutogenAI, London.",
       "event_id": "london-building-reliable-ai-agents-from-context-to-evals",
       "kind": "event"
+    },
+    {
+      "id": "london-mongodb-2026-adam-wong",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "text": "Adam Wong, Solutions Architect at MongoDB.",
+      "event_id": "london-mongodb-2026",
+      "kind": "speaker"
+    },
+    {
+      "id": "london-mongodb-2026-animesh-mishra",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "text": "Animesh Mishra, Solutions Architect at MongoDB.",
+      "event_id": "london-mongodb-2026",
+      "kind": "speaker"
+    },
+    {
+      "id": "london-mongodb-2026-daniela-petruzalek",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "text": "Daniela Petruzalek, Senior Developer Relations Engineer at Google.",
+      "event_id": "london-mongodb-2026",
+      "kind": "speaker"
+    },
+    {
+      "id": "london-mongodb-2026-harrison-reeves",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "text": "Harrison Reeves, GTM and Engineering at Cognition.",
+      "event_id": "london-mongodb-2026",
+      "kind": "speaker"
+    },
+    {
+      "id": "london-mongodb-2026-talk-0",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "text": "Agents in Production: The Questions Your Demo Skipped. Adam Wong, Animesh Mishra, MongoDB. Building an agent demo is easy. Running it reliably in production... not so much. We'll walk through the engineering questions that decide whether an agent ships: where memory and state live and how they survive between runs, whose credentials the agent is using and what it's allowed to touch, how you contain what it can do, and how you trace what it did and why. We'll then show how Atlas Agent Engine approaches each of these in a working system, so you can see the trade-offs for yourself.",
+      "event_id": "london-mongodb-2026",
+      "kind": "session"
+    },
+    {
+      "id": "london-mongodb-2026-talk-1",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "text": "AI Agents from Scratch with Google ADK. Daniela Petruzalek, Google ADK. In this session you are going to learn how to use Agent Development Kit (ADK) to take your agent from idea to production. We are going to explore how to bootstrap your agents, deploy them to the cloud and protect them from malicious behaviour. At the end of this session you will have all the knowledge to start putting your ideas into practice.",
+      "event_id": "london-mongodb-2026",
+      "kind": "session"
+    },
+    {
+      "id": "london-mongodb-2026-talk-2",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "text": "Your Agent Needs Its Own Computer. Harrison Reeves, Cognition. The delta between a cloud agent (running in its own VM) and a local agent, highlighting benefits like running at unbounded scale and executing whenever engineering work is needed (for example, when a production error occurs).",
+      "event_id": "london-mongodb-2026",
+      "kind": "session"
+    },
+    {
+      "id": "london-mongodb-2026-panel",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb",
+      "text": "Agents in Production: Beyond the Prototype. Following the three technical talks, the speakers come together for a 20-minute panel discussion and audience Q&A on the engineering challenges of moving agents into production, including reliability, memory, orchestration, observability, security and operational control. Get your hard questions ready.",
+      "event_id": "london-mongodb-2026",
+      "kind": "session"
     },
     {
       "id": "sf-code-engineering-2026",
@@ -3120,6 +3472,90 @@
       "kind": "about"
     },
     {
+      "id": "mongodb-faq-0",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "What are the best agentic AI events in London in November 2026?\nA confirmed technical evening that week was Agents in Production at MongoDB, a London Agentic AI meetup on Thursday 19 November 2026 from 6:00 PM to 8:30 PM GMT at MongoDB UK, 240 Blackfriars Rd, London SE1 8NW. Talks from MongoDB, Google ADK and Cognition covered production AI agents, memory, state, agent runtimes, observability, security and governance, followed by a panel. The recording is on YouTube: https://www.youtube.com/watch?v=Cn3t7ucLVcE. Event page: https://agentengineering.world/london/events/agents-in-production-at-mongodb. Other London Agentic AI dates are on https://luma.com/londonagenticai.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-1",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "Is there an AI agents meetup in London on 19 November?\nYes. London Agentic AI hosted Agents in Production at MongoDB on Thursday 19 November 2026, 6:00 PM to 8:30 PM GMT, at MongoDB UK on Blackfriars Road, London. It was an in-person evening for engineers building production AI agents, with talks from MongoDB, Google ADK and Cognition. Watch the recording: https://www.youtube.com/watch?v=Cn3t7ucLVcE. Event page: https://agentengineering.world/london/events/agents-in-production-at-mongodb.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-2",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "Who is speaking at Agents in Production at MongoDB?\nSpeakers are Adam Wong and Animesh Mishra, Solutions Architects at MongoDB, on Agents in Production: The Questions Your Demo Skipped, including how Atlas Agent Engine approaches memory, credentials, containment and tracing. Daniela Petruzalek, Senior Developer Relations Engineer at Google, speaks on AI Agents from Scratch with Google ADK. Harrison Reeves, GTM and Engineering at Cognition, speaks on Your Agent Needs Its Own Computer. A 20-minute panel, Agents in Production: Beyond the Prototype, follows the talks.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-3",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "What talks are on the agenda for Agents in Production at MongoDB?\nDoors open at 6:00 PM for registration and networking. Welcome from London Agentic AI at 6:40 PM. Talk 1, MongoDB, 6:45 PM to 7:05 PM: Agents in Production: The Questions Your Demo Skipped. Talk 2, Google ADK, 7:05 PM to 7:25 PM: AI Agents from Scratch with Google ADK. Talk 3, Cognition, 7:25 PM to 7:45 PM: Your Agent Needs Its Own Computer. Panel discussion and audience Q&A, 7:45 PM to 8:05 PM. Networking from 8:05 PM onwards.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-4",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "What is the MongoDB talk and Atlas Agent Engine session about?\nIn Agents in Production: The Questions Your Demo Skipped, Adam Wong and Animesh Mishra of MongoDB walk through the engineering questions that decide whether an agent ships: where memory and state live and how they survive between runs, whose credentials the agent is using and what it is allowed to touch, how you contain what it can do, and how you trace what it did and why. They then show how Atlas Agent Engine approaches each of these in a working system.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-5",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "What is the Google ADK talk at the London meetup about?\nIn AI Agents from Scratch with Google ADK, Daniela Petruzalek, Senior Developer Relations Engineer at Google, shows how to use Agent Development Kit (ADK) to take an agent from idea to production. The session covers how to bootstrap agents, deploy them to the cloud and protect them from malicious behaviour.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-6",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "What is the Cognition talk about cloud agents?\nIn Your Agent Needs Its Own Computer, Harrison Reeves of Cognition discusses the difference between a cloud agent running in its own VM and a local agent, including benefits such as running at unbounded scale and executing whenever engineering work is needed, for example when a production error occurs.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-7",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "Who should attend Agents in Production at MongoDB?\nThe evening is for AI and ML engineers and agent builders, software engineers and platform engineers, AI architects and engineering managers, CTOs and technical founders, AI researchers and practitioners, and teams building and deploying agentic AI systems.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-8",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "Where can I watch the Agents in Production at MongoDB recording?\nThe recording is on YouTube at https://www.youtube.com/watch?v=Cn3t7ucLVcE, titled Agents in Production at MongoDB: London Agentic AI, and is also embedded on the event page at https://agentengineering.world/london/events/agents-in-production-at-mongodb. The London Agentic AI page is https://londonagenticai.com/events/agents-in-production-mongodb.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-9",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "Is the Agents in Production at MongoDB event free?\nYes. Attendance was free. The evening was sponsored and hosted by MongoDB for the London Agentic AI community. The recording is free to watch at https://www.youtube.com/watch?v=Cn3t7ucLVcE.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-10",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "Where is the London AI agents meetup on 19 November 2026?\nMongoDB UK, 240 Blackfriars Rd, London SE1 8NW, United Kingdom. Doors open at 6:00 PM. Map: see the event page at https://agentengineering.world/london/events/agents-in-production-at-mongodb.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
+      "id": "mongodb-faq-11",
+      "url": "https://agentengineering.world/london/events/agents-in-production-at-mongodb#faq",
+      "text": "What AI engineering topics does the MongoDB London meetup cover?\nProduction AI agents and agentic systems: persistent memory and state, agent runtimes, deployment, observability, security, governance, and moving from prototypes to systems you can operate. Talks cover Atlas Agent Engine, Google Agent Development Kit (ADK) and cloud agents that run in their own VM. Speakers come from MongoDB, Google and Cognition.",
+      "event_id": "london-mongodb-2026",
+      "kind": "faq"
+    },
+    {
       "id": "guide",
       "url": "https://agentengineering.world/london-2026/guide",
       "text": "There are many Agent conferences. This one is truly yours. No sponsor shaped the programme, every talk was curated for the people in the room.\nVenue: Everyman Canary Wharf, Crossrail Place, London E14 5AR\nDate: Fri 16 October 2026\nDoors: 08:00\nArrive: 8:30 to 8:45\nProgramme starts: 9:00 sharp",
@@ -3234,182 +3670,189 @@
     {
       "id": "talk-london-2026-welcome",
       "url": "https://agentengineering.world/gallery/london-2026-welcome",
-      "text": "Welcome to Agent Engineering London 2026\nAgent Engineering London 2026\nrecorded",
+      "text": "Welcome to Agent Engineering London 2026\nAgent Engineering London 2026\nhttps://www.youtube.com/watch?v=iTV8VSrVJEk\nrecorded",
       "event_id": "agenteng-london-2026",
       "kind": "talk"
     },
     {
       "id": "talk-london-2026-agentic-coding-in-2026-watching-300-engineering-orgs-adopting-agents",
       "url": "https://agentengineering.world/gallery/london-2026-agentic-coding-in-2026-watching-300-engineering-orgs-adopting-agents",
-      "text": "Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents\nAlexander Korchagin, Head of Technology Adoption at JetBrains\nAgent Engineering London 2026\nrecording-coming-soon",
-      "event_id": "agenteng-london-2026",
-      "kind": "talk"
-    },
-    {
-      "id": "talk-london-2026-inference-engineering-for-long-running-agents",
-      "url": "https://agentengineering.world/gallery/london-2026-inference-engineering-for-long-running-agents",
-      "text": "Inference Engineering for Long-Running Agents\nMeryem Arik, CEO at Doubleword\nAgent Engineering London 2026\nrecording-coming-soon",
-      "event_id": "agenteng-london-2026",
-      "kind": "talk"
-    },
-    {
-      "id": "talk-london-2026-software-development-as-constrained-optimization",
-      "url": "https://agentengineering.world/gallery/london-2026-software-development-as-constrained-optimization",
-      "text": "Software Development as Constrained Optimization\nSamuel Colvin, Founder & CEO at Pydantic\nAgent Engineering London 2026\nrecording-coming-soon",
-      "event_id": "agenteng-london-2026",
-      "kind": "talk"
-    },
-    {
-      "id": "talk-london-2026-the-right-information-at-the-right-time",
-      "url": "https://agentengineering.world/gallery/london-2026-the-right-information-at-the-right-time",
-      "text": "The right information at the right time\nJon Bratseth, CEO at Vespa.ai\nAgent Engineering London 2026\nrecording-coming-soon",
-      "event_id": "agenteng-london-2026",
-      "kind": "talk"
-    },
-    {
-      "id": "talk-london-2026-if-coding-is-solved-what-s-left",
-      "url": "https://agentengineering.world/gallery/london-2026-if-coding-is-solved-what-s-left",
-      "text": "If coding is solved, what's left?\nAndrey Breslav, Founder at CodeSpeak\nAgent Engineering London 2026\nrecording-coming-soon",
-      "event_id": "agenteng-london-2026",
-      "kind": "talk"
-    },
-    {
-      "id": "talk-london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
-      "url": "https://agentengineering.world/gallery/london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
-      "text": "Browser Use Is the Default. Your UI Is Not Your Agent API.\nFrédéric Barthelet, CTO & Co-founder at Alpic\nAgent Engineering London 2026\nrecording-coming-soon",
+      "text": "Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents\nAlexander Korchagin, Head of Technology Adoption at JetBrains\nRecording coming soon, awaiting approval.\nAgent Engineering London 2026\nrecording-coming-soon",
       "event_id": "agenteng-london-2026",
       "kind": "talk"
     },
     {
       "id": "talk-london-2026-security-for-ai-native-developers",
       "url": "https://agentengineering.world/gallery/london-2026-security-for-ai-native-developers",
-      "text": "Security for AI-Native Developers\nIsmail Homan Pelaseyed, Co-founder & CTO at Superagent\nAgent Engineering London 2026\nrecording-coming-soon",
+      "text": "Security for AI-Native Developers\nIsmail Homan Pelaseyed, Co-founder & CTO at Superagent\nAgent Engineering London 2026\nhttps://www.youtube.com/watch?v=64-KF26shew\nrecorded",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-software-development-as-constrained-optimization",
+      "url": "https://agentengineering.world/gallery/london-2026-software-development-as-constrained-optimization",
+      "text": "Software Development as Constrained Optimization\nSamuel Colvin, Founder & CEO at Pydantic\nAgent Engineering London 2026\nhttps://www.youtube.com/watch?v=zzMAcl8XcUg\nrecorded",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-if-coding-is-solved-what-s-left",
+      "url": "https://agentengineering.world/gallery/london-2026-if-coding-is-solved-what-s-left",
+      "text": "If coding is solved, what's left?\nAndrey Breslav, Founder at CodeSpeak\nAgent Engineering London 2026\nhttps://www.youtube.com/watch?v=pDliDj6sr7o\nrecorded",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-the-right-information-at-the-right-time",
+      "url": "https://agentengineering.world/gallery/london-2026-the-right-information-at-the-right-time",
+      "text": "The right information at the right time\nJon Bratseth, CEO at Vespa.ai\nAgent Engineering London 2026\nhttps://www.youtube.com/watch?v=TSr2W8KAZIM\nrecorded",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
+      "url": "https://agentengineering.world/gallery/london-2026-browser-use-is-the-default-your-ui-is-not-your-agent-api",
+      "text": "Browser Use Is the Default. Your UI Is Not Your Agent API.\nFrédéric Barthelet, CTO & Co-founder at Alpic\nAgent Engineering London 2026\nhttps://www.youtube.com/watch?v=Eje5JXSXkYI\nrecorded",
       "event_id": "agenteng-london-2026",
       "kind": "talk"
     },
     {
       "id": "talk-london-2026-say-less-grade-harder",
       "url": "https://agentengineering.world/gallery/london-2026-say-less-grade-harder",
-      "text": "Say Less, Grade Harder\nJocelyn D'Arcy, CEO at Poindexter Labs\nAgent Engineering London 2026\nrecording-coming-soon",
+      "text": "Say Less, Grade Harder\nJocelyn D'Arcy, CEO at Poindexter Labs\nAgent Engineering London 2026\nhttps://www.youtube.com/watch?v=zqIoC_ic7fM\nrecorded",
       "event_id": "agenteng-london-2026",
       "kind": "talk"
     },
     {
       "id": "talk-london-2026-memory-is-not-a-bigger-context-window-memory-engineering-for-production-agents",
       "url": "https://agentengineering.world/gallery/london-2026-memory-is-not-a-bigger-context-window-memory-engineering-for-production-agents",
-      "text": "Memory Is Not a Bigger Context Window: Memory Engineering for Production Agents\nTobie Morgan Hitchcock, Founder & CEO at SurrealDB\nAgent Engineering London 2026\nrecording-coming-soon",
+      "text": "Memory Is Not a Bigger Context Window: Memory Engineering for Production Agents\nTobie Morgan Hitchcock, Founder & CEO at SurrealDB\nAgent Engineering London 2026\nhttps://www.youtube.com/watch?v=Xv_F5xygrN4\nrecorded",
       "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-london-2026-lightning-talks",
+      "url": "https://agentengineering.world/gallery/london-2026-lightning-talks",
+      "text": "Lightning Talks: Eito & John, Data Security & Video Generation\nEito and John's lightning talks, together in one session recording.\nAgent Engineering London 2026\nhttps://www.youtube.com/watch?v=PAI0XECBeSM\nrecorded",
+      "event_id": "agenteng-london-2026",
+      "kind": "talk"
+    },
+    {
+      "id": "talk-sf-code-engineering-2026-recap",
+      "url": "https://agentengineering.world/gallery/sf-code-engineering-2026-recap",
+      "text": "Code Engineering San Francisco: event recap\nHighlights from Code Engineering: From Coding Agents to Software Factories at AWS Builder Loft.\nCode Engineering San Francisco\nhttps://www.youtube.com/watch?v=eyuQSOIuG_0\nrecorded",
+      "event_id": "sf-code-engineering-2026",
       "kind": "talk"
     },
     {
       "id": "talk-sf-harness-engineering-2026-recap",
       "url": "https://agentengineering.world/gallery/sf-harness-engineering-2026-recap",
-      "text": "Harness Engineering San Francisco: event recap\nRecap of our Harness Engineering evening in San Francisco, attended by 300+ members.\nHarness Engineering San Francisco\nrecorded",
+      "text": "Harness Engineering San Francisco: event recap\nRecap of our Harness Engineering evening in San Francisco, attended by 300+ members.\nHarness Engineering San Francisco\nhttps://www.youtube.com/watch?v=AP1RRbXZhsE\nrecorded",
       "event_id": "sf-harness-engineering-2026",
       "kind": "talk"
     },
     {
       "id": "talk-a2a-001-coding-agent-engineering",
       "url": "https://agentengineering.world/gallery/a2a-001-coding-agent-engineering",
-      "text": "Coding Agent Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "Coding Agent Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=ZVYEIFYx-ME\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-a2a-002-inference-engineering",
       "url": "https://agentengineering.world/gallery/a2a-002-inference-engineering",
-      "text": "Inference Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "Inference Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=7EmnKaM9UkQ\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-a2a-003-software-optimisation-engineering",
       "url": "https://agentengineering.world/gallery/a2a-003-software-optimisation-engineering",
-      "text": "Software Optimisation Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "Software Optimisation Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=VwzeMfJGZ2I\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-a2a-004-search-engineering",
       "url": "https://agentengineering.world/gallery/a2a-004-search-engineering",
-      "text": "Search Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "Search Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=-iLD6n8ggcg\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-a2a-005-code-engineering",
       "url": "https://agentengineering.world/gallery/a2a-005-code-engineering",
-      "text": "Code Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "Code Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=G_26Mubidms\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-a2a-006-voice-engineering",
       "url": "https://agentengineering.world/gallery/a2a-006-voice-engineering",
-      "text": "Voice Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "Voice Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=5Hv8xfb6g1I\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-a2a-007-mcp-app-engineering",
       "url": "https://agentengineering.world/gallery/a2a-007-mcp-app-engineering",
-      "text": "MCP App Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "MCP App Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=FF6Uo6Lskz4\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-a2a-008-security-engineering",
       "url": "https://agentengineering.world/gallery/a2a-008-security-engineering",
-      "text": "Security Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "Security Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=nOAlnJn3I38\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-a2a-009-benchmark-engineering",
       "url": "https://agentengineering.world/gallery/a2a-009-benchmark-engineering",
-      "text": "Benchmark Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "Benchmark Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=a1v82hpibw4\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-a2a-010-memory-engineering",
       "url": "https://agentengineering.world/gallery/a2a-010-memory-engineering",
-      "text": "Memory Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nrecorded",
+      "text": "Memory Engineering\nAgent-to-Agent (A2A) Talks\nAI-generated video.\nhttps://www.youtube.com/watch?v=tumzJBGV79U\nrecorded",
       "event_id": null,
       "kind": "a2a-talks"
     },
     {
       "id": "talk-sf-code-engineering-prime-agent-a-self-improving-rlm-harness-with-swarm-communication",
       "url": "https://agentengineering.world/san-francisco/events",
-      "text": "Prime Agent: A Self-Improving RLM Harness with Swarm Communication\nSeth Karten, Research, Lead on Prime Agent & Continual Harness at Prime Intellect\nCode Engineering San Francisco\nupcoming",
+      "text": "Prime Agent: A Self-Improving RLM Harness with Swarm Communication\nSeth Karten, Research, Lead on Prime Agent & Continual Harness at Prime Intellect\nCode Engineering San Francisco\nrecording-coming-soon",
       "event_id": "sf-code-engineering-2026",
       "kind": "talk"
     },
     {
       "id": "talk-sf-code-engineering-building-a-self-improving-software-factory",
       "url": "https://agentengineering.world/san-francisco/events",
-      "text": "Building a self-improving software factory\nBen Holmes, Agent Infrastructure at Warp\nCode Engineering San Francisco\nupcoming",
+      "text": "Building a self-improving software factory\nBen Holmes, Agent Infrastructure at Warp\nCode Engineering San Francisco\nrecording-coming-soon",
       "event_id": "sf-code-engineering-2026",
       "kind": "talk"
     },
     {
       "id": "talk-sf-code-engineering-building-agents-that-work-like-coding-agents",
       "url": "https://agentengineering.world/san-francisco/events",
-      "text": "Building agents that work like coding agents\nSydney Runkle, Product Manager for Open Source at LangChain\nCode Engineering San Francisco\nupcoming",
+      "text": "Building agents that work like coding agents\nSydney Runkle, Product Manager for Open Source at LangChain\nCode Engineering San Francisco\nrecording-coming-soon",
       "event_id": "sf-code-engineering-2026",
       "kind": "talk"
     },
     {
       "id": "talk-sf-code-engineering-reducing-coding-harness-latency-with-the-software-factory",
       "url": "https://agentengineering.world/san-francisco/events",
-      "text": "Reducing Coding Harness Latency with the Software Factory\nAndrey Risukhin, Recursive Self Improvement at Factory\nCode Engineering San Francisco\nupcoming",
+      "text": "Reducing Coding Harness Latency with the Software Factory\nAndrey Risukhin, Recursive Self Improvement at Factory\nCode Engineering San Francisco\nrecording-coming-soon",
       "event_id": "sf-code-engineering-2026",
       "kind": "talk"
     },
     {
       "id": "london-videos",
       "url": "https://agentengineering.world/london-2026/videos",
-      "text": "Agent Engineering London 2026 recordings: Welcome to Agent Engineering London 2026 (https://www.youtube.com/watch?v=iTV8VSrVJEk). Talk recordings coming soon.",
+      "text": "Agent Engineering London 2026 recordings. Playlist: https://www.youtube.com/playlist?list=PLCo4Vkhf-jQk. Welcome to Agent Engineering London 2026 (https://www.youtube.com/watch?v=iTV8VSrVJEk). Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents (Recording coming soon, awaiting approval.). Security for AI-Native Developers (https://www.youtube.com/watch?v=64-KF26shew). Software Development as Constrained Optimization (https://www.youtube.com/watch?v=zzMAcl8XcUg). If coding is solved, what's left? (https://www.youtube.com/watch?v=pDliDj6sr7o). The right information at the right time (https://www.youtube.com/watch?v=TSr2W8KAZIM). Browser Use Is the Default. Your UI Is Not Your Agent API. (https://www.youtube.com/watch?v=Eje5JXSXkYI). Say Less, Grade Harder (https://www.youtube.com/watch?v=zqIoC_ic7fM). Memory Is Not a Bigger Context Window: Memory Engineering for Production Agents (https://www.youtube.com/watch?v=Xv_F5xygrN4). Lightning Talks: Eito & John, Data Security & Video Generation (https://www.youtube.com/watch?v=PAI0XECBeSM).",
       "event_id": "agenteng-london-2026",
       "kind": "recordings"
     }

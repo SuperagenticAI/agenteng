@@ -132,7 +132,7 @@ async def test_real_mcp_stdio():
         assert len((await session.list_tools()).tools) == 1
         called = await session.call_tool("agenteng", {"request": {"operation": "events"}})
         assert called.structuredContent["catalogue_version"]
-        assert len(called.structuredContent["data"]) == 11
+        assert len(called.structuredContent["data"]) == 12
         tools = await session.call_tool(
             "agenteng", {"request": {"operation": "tools", "discipline": "memory"}}
         )

@@ -18,6 +18,7 @@ from .tool_directory import TOOL_OPERATIONS, ToolDirectory, load_tool_directory
 
 
 LONDON_ID = "agenteng-london-2026"
+EVENT_ALIASES = {"mongodb-london": "london-mongodb-2026"}
 # Renamed gallery slugs; the site redirects the old /gallery/<slug> pages too.
 OLD_GALLERY_SLUGS = {"sf-harness-engineering-2026-full-event": "sf-harness-engineering-2026-recap"}
 # "Will talks be recorded?", "Are the talks recorded?": the published FAQ answer.
@@ -388,6 +389,7 @@ class Service:
                 "talk_url": str(talk.url),
                 "gallery": talk.gallery,
                 **({"summary": talk.summary} if talk.summary else {}),
+                **({"recording_notice": talk.recording_notice} if talk.recording_notice else {}),
                 "source_ids": list(dict.fromkeys([*talk.source_ids, *payload["source_ids"]])),
             }
         )
@@ -435,17 +437,15 @@ class Service:
                     and (session.kind == "talk" or session.speaker_id)
                 ):
                     payload = self.talk_payload(session)
-                    recording = next(
-                        (
-                            t
-                            for t in self.catalogue.talks
-                            if t.event_id == session.event_id and t.kind == "event-recording"
-                        ),
-                        None,
-                    )
-                    if recording:
+                    event_talks = [
+                        t for t in self.catalogue.talks if t.event_id == session.event_id
+                    ]
+                    recordings = [t for t in event_talks if t.kind == "event-recording"]
+                    # Only treat a single event recording as covering leftover talks
+                    # when the event has no per-talk gallery items (meetup style).
+                    if recordings and not any(t.kind == "talk" and t.gallery for t in event_talks):
                         payload["status_label"] = "In the event recording"
-                        payload["recording_slug"] = recording.slug
+                        payload["recording_slug"] = recordings[0].slug
                     rows.append(payload)
         rows += a2a_rows
         if request.session_id:
@@ -518,6 +518,8 @@ class Service:
         rows = []
         for d in self.catalogue.disciplines:
             row = {"id": d.id, "name": d.title, "short": d.short, "description": d.description}
+            if d.origin:
+                row["origin"] = {"label": d.origin.label, "href": str(d.origin.href)}
             if d.id in listed:
                 row.update(
                     tool_count=listed[d.id]["tool_count"],
@@ -540,6 +542,11 @@ class Service:
         )
         if missing:
             result.answer += f" {' and '.join(missing)}: no tool listings yet."
+        credits = [r for r in rows if r.get("origin")]
+        if credits:
+            result.answer += " " + " ".join(
+                f"{r['name']}: {r['origin']['label']} ({r['origin']['href']})." for r in credits
+            )
 
     def default_live_event_id(self, request: Request) -> str | None:
         if request.event_id:
@@ -838,6 +845,8 @@ class Service:
         return None
 
     def lookup(self, request: Request) -> Result:
+        if request.event_id and request.event_id in EVENT_ALIASES:
+            request = request.model_copy(update={"event_id": EVENT_ALIASES[request.event_id]})
         if request.operation == "chat":
             return self.lookup(Request(operation="ask", query=request.query, limit=request.limit))
         if request.operation in TOOL_OPERATIONS:
@@ -1053,17 +1062,22 @@ class Service:
                 city = "San Francisco"
             scope = self.matching_events(request.model_copy(update={"city": city}))
             current = [e for e in scope if self.state(e) in {"upcoming", "ongoing"}]
-            default = self.default_conference() if not city else None
-            # Once the guide event is over and nothing else is current, its
-            # published agenda and registration status stay the default answer.
-            recent = self.past_conference() if not current else None
+            guide = self.default_conference()
+            # Prefer the day-guide conference when it is in scope, even if the
+            # question named the city and another meetup in that city is also upcoming.
+            default = (
+                guide if guide and (not city or guide.city.casefold() == city.casefold()) else None
+            )
+            # The day-guide conference stays the default for tickets, agenda,
+            # speakers and similar questions, even when a later meetup is current.
+            recent = self.past_conference()
             if recent and city and city.casefold() != recent.city.casefold():
                 recent = None
             target = (
                 request.event_id
-                or (current[0].id if len(current) == 1 else None)
                 or (default.id if default else None)
                 or (recent.id if recent else None)
+                or (current[0].id if len(current) == 1 else None)
             )
             operation = None
             if query_terms & {
@@ -1101,6 +1115,7 @@ class Service:
                         "engine": "lookup",
                         "event_id": target
                         if operation in {"tickets", "agenda"}
+                        or (operation == "events" and "conference" in query_terms)
                         else request.event_id,
                         "city": city,
                         "upcoming": bool(query_terms & {"next", "upcoming"}),
@@ -1135,7 +1150,10 @@ class Service:
         events = self.matching_events(request)
         ids = {e.id for e in events}
         if request.operation in {"events", "event"}:
-            rows = sorted(events, key=lambda e: (e.date, e.id))[: request.limit]
+            rows = sorted(events, key=lambda e: (e.date, e.id))
+            if request.latest and rows:
+                rows = [max(rows, key=lambda e: (e.date, e.id))]
+            rows = rows[: request.limit]
             return self.result(
                 f"{len(rows)} published event(s).",
                 [self.event_data(e) for e in rows],
@@ -1544,14 +1562,27 @@ class Service:
                 )
             rows = rows[: request.limit]
             answer = f"{len(rows)} published recording link(s)."
-            if any(
-                t.status == "recording-coming-soon" and t.event_id in ids
+            pending = [
+                t
                 for t in self.catalogue.talks
-            ):
-                answer += (
-                    " The AgentEng London 2026 welcome video is out and the talk recordings"
-                    " are coming soon: run agenteng gallery --city London."
-                )
+                if t.status == "recording-coming-soon" and t.event_id in ids and t.gallery
+            ]
+            recorded_talks = [
+                t
+                for t in self.catalogue.talks
+                if t.status == "recorded" and t.kind == "talk" and t.event_id in ids and t.gallery
+            ]
+            if pending:
+                if recorded_talks:
+                    answer += (
+                        " Some AgentEng London 2026 talk recordings are still coming soon:"
+                        " run agenteng gallery --city London."
+                    )
+                else:
+                    answer += (
+                        " The AgentEng London 2026 welcome video is out and the talk recordings"
+                        " are coming soon: run agenteng gallery --city London."
+                    )
             return self.result(
                 answer,
                 rows,

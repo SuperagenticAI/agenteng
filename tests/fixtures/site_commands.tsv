@@ -6,6 +6,8 @@ alias	agenteng events --city san-francisco	pages/SanFrancisco.tsx	agenteng event
 alias	agenteng events --next san-francisco	pages/SanFrancisco.tsx	agenteng events --next san-francisco	--next = --upcoming; optional CITY argument
 alias	agenteng events --london --next	pages/London.tsx	agenteng events --london --next	--london / --sf shortcuts for --city
 alias	agenteng events --london --history	pages/London.tsx	agenteng events --london --history	--history = --past
+works	agenteng events --london --latest	pages/London.tsx	agenteng events --london --latest	Latest London community event (MongoDB, 19 November 2026)
+works	agenteng faq --event mongodb-london	pages/LondonAgentsInProduction.tsx	agenteng faq --event mongodb-london	Alias for london-mongodb-2026 FAQs
 alias	agenteng events --previous	components/SFProofBand.tsx	agenteng events --previous	--previous = --past
 alias	agenteng agenda --london	pages/Agenda.tsx	agenteng agenda --london	city resolves to its next event
 alias	agenteng tickets --london	components/TicketsSection.tsx	agenteng tickets --london	Public lookup

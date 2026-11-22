@@ -108,9 +108,13 @@ agenteng events [OPTIONS] [CITY]
 | `--city` TEXT | London or San Francisco (slugs such as san-francisco work). |  |
 | `--upcoming`, `--next` | Only upcoming events. |  |
 | `--past`, `--history`, `--previous` | Only past events. |  |
+| `--latest` | Only the most recently held event in the selected city. |  |
+
+`agenteng events --london --latest` is the current latest London community event (Agents in Production at MongoDB, `london-mongodb-2026`). The published alias `mongodb-london` also works with `event`, `faq` and other event-id options (`agenteng faq --event mongodb-london`). `agenteng event --london` still opens the AgentEng London 2026 conference.
 
 ```sh
 agenteng events --city London --upcoming
+agenteng events --london --latest
 ```
 
 ### agenteng event
@@ -187,7 +191,7 @@ agenteng speaker samuel-colvin
 
 List the video gallery, or read one item by SLUG.
 
-Mirrors agentengineering.world/gallery: the London 2026 recordings (the welcome video, then talks marked recording coming soon) and the San Francisco recordings. A2A talks are AI-generated and only appear with --a2a or --city Online, after the event videos.
+Mirrors agentengineering.world/gallery: the London 2026 recordings (the welcome video, published talks, lightning talks, and any talk still marked recording coming soon) and the San Francisco event recaps. A2A talks are AI-generated and only appear with --a2a or --city Online, after the event videos.
 
 ```text
 agenteng gallery [OPTIONS] [SLUG]
@@ -208,7 +212,7 @@ agenteng gallery --city London
 agenteng gallery london-2026-welcome
 ```
 
-The primary command for videos. Order follows [/gallery](https://agentengineering.world/gallery): the [London 2026 recordings](https://agentengineering.world/london-2026/videos) (the welcome video `iTV8VSrVJEk`, then the 9 talks marked "Recording coming soon"), then the Harness Engineering San Francisco event recap (kind `event-recap`, a short recap of the evening, not a talk recording; the old slug `sf-harness-engineering-2026-full-event` still resolves). Each row carries `slug`, `gallery_kind` (`talk`, `event-recording`, `event-recap` or `a2a`), `summary` when the site publishes one, `gallery` (`london`, `san-francisco` or `a2a`), `status` (`recorded`, `recording-coming-soon` or `upcoming`), `status_label`, `youtube_id` and `video_url` when published, and `talk_url` (`/gallery/<slug>`). Transcripts are included only when the website publishes one; none are published today. A2A talks keep their AI-generated label and the A2A disclaimer; `agenteng a2a-talks` remains the dedicated view. Over MCP, A2A and REST use `{"operation":"gallery"}` with optional `city`, `event_id`, `topic`, `query`, `speaker_id` and `include_a2a`, or `{"operation":"talk","session_id":"<slug>"}` for one item.
+The primary command for videos. Order follows [/gallery](https://agentengineering.world/gallery): the [London 2026 recordings](https://agentengineering.world/london-2026/videos) (the welcome video `iTV8VSrVJEk`, then the eight programme talks in the site's recording order, seven of them with published YouTube IDs, then the lightning talks `PAI0XECBeSM`). Alexander Korchagin's talk is still marked "Recording coming soon, awaiting approval." Meryem Arik's programme talk is not on the recordings page, so it does not appear here; use `agenteng talks` for the full speaker programme. The San Francisco tab has two event recaps (kind `event-recap`, a short recap of the evening, not a talk recording): Code Engineering San Francisco (`eyuQSOIuG_0`, event page `/san-francisco/events/code-engineering-2026`) and Harness Engineering San Francisco (the old slug `sf-harness-engineering-2026-full-event` still resolves). Each row carries `slug`, `gallery_kind` (`talk`, `event-recording`, `event-recap` or `a2a`), `summary` and `recording_notice` when the site publishes them, `gallery` (`london`, `san-francisco` or `a2a`), `status` (`recorded`, `recording-coming-soon` or `upcoming`), `status_label`, `youtube_id` and `video_url` when published, and `talk_url` (`/gallery/<slug>`). Transcripts are included only when the website publishes one; none are published today. A2A talks keep their AI-generated label and the A2A disclaimer; `agenteng a2a-talks` remains the dedicated view. Over MCP, A2A and REST use `{"operation":"gallery"}` with optional `city`, `event_id`, `topic`, `query`, `speaker_id` and `include_a2a`, or `{"operation":"talk","session_id":"<slug>"}` for one item.
 
 ### agenteng talks
 
@@ -369,7 +373,7 @@ agenteng recordings [OPTIONS]
 agenteng recordings --city London
 ```
 
-Lists the [London 2026 recordings page](https://agentengineering.world/london-2026/videos), event recordings and gallery recordings with a published YouTube video (the London 2026 welcome video, and the Harness Engineering San Francisco event recap, marked `"kind": "event-recap"`), without duplicates. While London 2026 talk recordings are pending the answer says so and points to `agenteng gallery --city London`. A2A videos are listed by `agenteng a2a-talks`, not here.
+Lists the [London 2026 recordings page](https://agentengineering.world/london-2026/videos), event recordings and gallery recordings with a published YouTube video, without duplicates. That includes the published London 2026 talks, the welcome and lightning-talk videos, the Agents in Production at MongoDB recording (`https://www.youtube.com/watch?v=Cn3t7ucLVcE`), and the Code Engineering and Harness Engineering San Francisco event recaps (marked `"kind": "event-recap"`). When some London 2026 talk recordings are still coming soon the answer says so and points to `agenteng gallery --city London`. A2A videos are listed by `agenteng a2a-talks`, not here.
 
 ### agenteng a2a-talks
 
@@ -625,7 +629,7 @@ agenteng disciplines [OPTIONS]
 agenteng disciplines
 ```
 
-Lists all 14 disciplines from the site's `disciplines.ts`, in site order, with listed and total tool counts from the tool directory. Factory Engineering (`factory`) and Decision Engineering (`decision`) have no tool listings yet: their `tool_count` is `null` and they carry `"note": "no tool listings yet"`. `tools --discipline` accepts the twelve disciplines that have listings. Also runs as `agenteng themes --disciplines`, `agenteng --themes` and `agenteng --list-disciplines`.
+Lists all 14 disciplines from the site's `disciplines.ts`, in site order, with listed and total tool counts from the tool directory. Factory Engineering (`factory`) and Decision Engineering (`decision`) have no tool listings yet: their `tool_count` is `null` and they carry `"note": "no tool listings yet"`. When the site publishes an `origin` credit on a discipline (a label and source link), it appears in the table, in JSON as `"origin": {"label", "href"}`, and in the MCP and A2A answer text. The field is optional and is omitted when the site has not published one. `tools --discipline` accepts the twelve disciplines that have listings. Also runs as `agenteng themes --disciplines`, `agenteng --themes` and `agenteng --list-disciplines`.
 
 ### agenteng tools
 

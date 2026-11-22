@@ -101,6 +101,20 @@ constant.definitionsOnly = name => {
   if (!definitions.has(name)) throw new Error(`Unknown public constant: ${name}`);
   return definitions.get(name);
 };
+function objectInit(name) {
+  let init = constant.definitionsOnly(name);
+  while (ts.isAsExpression(init) || ts.isParenthesizedExpression(init)) init = init.expression;
+  if (!ts.isObjectLiteralExpression(init)) throw new Error(name + ' is not a literal object');
+  return init;
+}
+function pickObject(name, keys) {
+  const init = objectInit(name);
+  return Object.fromEntries(keys.map(key => {
+    const prop = init.properties.find(p => ts.isPropertyAssignment(p) && p.name.text === key);
+    if (!prop) throw new Error(`Missing ${key} in ${name}`);
+    return [key, evaluate(prop.initializer)];
+  }));
+}
 function nestedConstant(file, name) {
   let found = null;
   walk(trees.get(file), n => {
@@ -121,8 +135,14 @@ read('src/data/london-events.ts');
 read('src/data/contact.ts');
 read('src/data/venue.ts');
 read('src/data/disciplines.ts');
+read('src/data/events.ts');
+read('src/data/london-next-event.ts');
+read('src/pages/LondonAgentsInProduction.tsx');
 const sfText = read('src/pages/SanFrancisco.tsx');
-if (!read('src/AppRoutes.tsx').includes('<Route path="/san-francisco/events" element={<SanFrancisco />} />')) throw new Error('SF events route drift: SanFrancisco.tsx no longer serves /san-francisco/events');
+const routesText = read('src/AppRoutes.tsx');
+if (!routesText.includes('<Route path="/san-francisco/events" element={<SanFrancisco />} />')) throw new Error('SF events route drift: SanFrancisco.tsx no longer serves /san-francisco/events');
+if (!routesText.includes('path="/london/events/agents-in-production-at-mongodb"')) throw new Error('MongoDB event page route drift');
+if (!routesText.includes('path="/san-francisco/events/code-engineering-2026"')) throw new Error('Code Engineering recap route drift');
 const sponsorText = read('src/components/SponsorStrip.tsx');
 const tracksText = read('src/components/ProgramTracksSection.tsx');
 // London 2026 support options, organiser and supporters moved from /support (Sponsors.tsx)
@@ -201,16 +221,77 @@ const sessions = constant('agenda').map(s => {
 });
 const months = Object.fromEntries(['January','February','March','April','May','June','July','August','September','October','November','December'].map((m,i)=>[m,String(i+1).padStart(2,'0')]));
 const slug = text => text.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const meetups = constant('meetups');
+const londonNext = pickObject('londonNextEvent', ['title', 'start', 'end', 'youtubeId', 'pagePath', 'speakers', 'talks', 'panel']);
 for (const e of constant('londonPastEvents')) {
-  const [month,year] = e.date.split(' '); const id = 'london-'+slug(e.title);
-  const ref = source(id,e.page ?? site+'/london',`${e.title}. ${e.date}. ${e.venue}.`,id,'event');
-  events.push({id,title:e.title,city:'London',timezone:'Europe/London',date:`${year}-${months[month]}`,
-    date_precision:'month',venue:e.venue,registration_url:e.luma ?? e.meetup ?? null,
-    recording_url:e.videoId ? `https://www.youtube.com/watch?v=${e.videoId}` : null,source_ids:[ref]});
+  const [month, year] = e.date.split(' ');
+  const meetup = meetups.find(m => m.title === e.title && m.city === 'London');
+  const id = meetup?.id ?? ('london-' + slug(e.title));
+  const date = meetup?.date ?? `${year}-${months[month]}`;
+  const date_precision = meetup?.date ? 'day' : 'month';
+  const venue = meetup?.venue ?? e.venue;
+  const videoId = meetup?.youtubeId ?? e.videoId;
+  const page = meetup && !meetup.external ? site + meetup.href : site + '/london';
+  if (meetup?.youtubeId && e.videoId && meetup.youtubeId !== e.videoId) {
+    throw new Error('London meetup recording drift: ' + e.title);
+  }
+  if (meetup?.date && meetup.date.slice(0, 7) !== `${year}-${months[month]}`) {
+    throw new Error('London meetup date drift: ' + e.title);
+  }
+  const ref = source(id, page, `${e.title}. ${meetup?.when ?? e.date}. ${venue}.`, id, 'event');
+  const event = {id, title:e.title, city:'London', timezone:'Europe/London', date,
+    date_precision, venue, page_url:page, registration_url:e.luma ?? e.meetup ?? null,
+    recording_url:videoId ? `https://www.youtube.com/watch?v=${videoId}` : null, source_ids:[ref]};
+  if (londonNext.title === e.title) {
+    if ((londonNext.youtubeId || videoId) && londonNext.youtubeId !== videoId) {
+      throw new Error('london-next-event recording drift: ' + e.title);
+    }
+    if (meetup?.date && londonNext.start.slice(0, 10) !== meetup.date) {
+      throw new Error('london-next-event date drift: ' + e.title);
+    }
+    event.start = londonNext.start;
+    event.end = londonNext.end;
+  }
+  events.push(event);
+}
+const nextLondonEvent = events.find(e => e.title === londonNext.title);
+if (!nextLondonEvent || !nextLondonEvent.recording_url) {
+  throw new Error('london-next-event.ts has no matching past London event with a recording: ' + londonNext.title);
+}
+for (const s of londonNext.speakers) {
+  const sid = slug(s.name);
+  const collision = speakers.find(p => p.id === sid && !p.event_ids.includes(nextLondonEvent.id));
+  if (collision) throw new Error('Speaker id collision: ' + sid);
+  const sr = source(nextLondonEvent.id + '-' + sid, nextLondonEvent.page_url,
+    `${s.name}, ${s.role}.`, nextLondonEvent.id, 'speaker');
+  speakers.push({id:sid, name:s.name, role:s.jobTitle || s.role, company:s.organization,
+    company_url:s.organizationUrl || null,
+    links:s.href ? {linkedin:s.href} : null,
+    event_ids:[nextLondonEvent.id], talk_title:null, source_ids:[sr]});
+}
+for (const [i, t] of londonNext.talks.entries()) {
+  const primary = slug(t.speakers[0]);
+  const sr = source(nextLondonEvent.id + '-talk-' + i, nextLondonEvent.page_url,
+    `${t.title}. ${t.speakers.join(', ')}, ${t.org}. ${t.abstract}`, nextLondonEvent.id, 'session');
+  sessions.push({id:nextLondonEvent.id + '-talk-' + i, event_id:nextLondonEvent.id, title:t.title,
+    kind:'talk', start:t.start, end:t.end, speaker_id:primary,
+    topics:topics(t.title + ' ' + t.abstract), source_ids:[sr]});
+  for (const name of t.speakers) {
+    const sp = speakers.find(p => p.id === slug(name) && p.event_ids.includes(nextLondonEvent.id));
+    if (sp) sp.talk_title = t.title;
+  }
+}
+if (londonNext.panel) {
+  const panel = londonNext.panel;
+  const sr = source(nextLondonEvent.id + '-panel', nextLondonEvent.page_url,
+    `${panel.title}. ${panel.description}`, nextLondonEvent.id, 'session');
+  sessions.push({id:nextLondonEvent.id + '-panel', event_id:nextLondonEvent.id, title:panel.title,
+    kind:'panel', start:panel.start, end:panel.end, speaker_id:null,
+    topics:topics(panel.title + ' ' + panel.description), source_ids:[sr]});
 }
 // Inline SF metadata is verified against the public page; fail on source drift.
 for (const e of [
-  {id:'sf-code-engineering-2026',title:'Code Engineering: From Coding Agents to Software Factories',date:'2026-10-27',marker:'27 October 2026',registration:'https://luma.com/cico2dxy',roster:'upcomingSpeakers',start:'2026-10-27T18:00:00-07:00'},
+  {id:'sf-code-engineering-2026',title:'Code Engineering: From Coding Agents to Software Factories',date:'2026-10-27',marker:'27 October 2026',registration:'https://luma.com/cico2dxy',roster:'codeSpeakers',start:'2026-10-27T18:00:00-07:00'},
   {id:'sf-harness-engineering-2026',title:'Harness Engineering: State of the Art in Agent Harnesses',date:'2026-07-03',marker:'3 July 2026',registration:'https://luma.com/rtd0f6ka',roster:'sfSpeakers'},
 ]) {
   const venue='AWS Builder Loft, 525 Market St, San Francisco';
@@ -338,6 +419,13 @@ const about = {definition, organiser:{name:organiserName, url:organiserUrl, blur
 // directions. JSX prose only; links come from literal href/label pairs.
 const clean = text => text.replace(/\s*\u2014\s*/g, ', ').replace(/\u2013/g, '-')
   .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').replace(/\s+([.,;:])/g, '$1').trim();
+
+for (const [i, f] of constant('londonMongodbFaqs').entries()) {
+  const sid = source('mongodb-faq-' + i, nextLondonEvent.page_url + '#faq',
+    f.question + '\n' + f.answer, nextLondonEvent.id, 'faq');
+  faqs.push({id:'mongodb-faq-' + i, question:clean(f.question), answer:clean(f.answer),
+    event_id:nextLondonEvent.id, source_ids:[sid]});
+}
 const guideFile = 'src/pages/Guide.tsx';
 read(guideFile);
 read('src/lib/event-day.ts');
@@ -512,46 +600,72 @@ const talksFile = 'src/data/talks.ts';
 const talksText = read(talksFile);
 const sfCodeFile = 'src/data/sf-code-engineering.ts';
 read(sfCodeFile);
-read('src/data/events.ts');
 for (const needle of [
   'slug: `london-2026-${slugify(slot.title)}`.slice(0, 90).replace(/-$/, "")',
   'status: "recording-coming-soon"',
   'slug: `sf-code-engineering-${slugify(s.talk!.title)}`.slice(0, 90).replace(/-$/, "")',
   'topics: ["Code", "Harness"],',
-  'status: "upcoming"',
+  'slot.speakerSlug !== "meryem-arik"',
+  'slug: "london-2026-lightning-talks"',
+  'slug: "sf-code-engineering-2026-recap"',
+  'const londonRecordingIds',
+  'const londonRecordingOrder',
   'slug: `a2a-${v.session}-${slugify(v.title)}`',
   'aiGenerated: true',
-  'export const londonVideos: Talk[] = [londonWelcome, ...londonTalks];',
+  'export const londonVideos: Talk[] = [londonWelcome, ...londonTalks, londonLightningTalks];',
   'export const sfGallery: Talk[] = sfRecordings;',
   'export const talks: Talk[] = [...londonVideos, ...sfRecordings, ...a2aTalks];',
 ]) if (!talksText.includes(needle)) throw new Error('talks.ts drift: ' + needle);
+const korchaginNotice = 'Recording coming soon, awaiting approval.';
+if (!talksText.includes('"' + korchaginNotice + '"')) throw new Error('talks.ts drift: Korchagin recording notice');
 const londonBlock = talksText.slice(talksText.indexOf('const londonTalks'), talksText.indexOf('const londonWelcome'));
 const sfCodeBlock = talksText.slice(talksText.indexOf('export const codeEngineeringTalks'), talksText.indexOf('const sfRecordings'));
-if (/youtubeId|transcript/.test(londonBlock + sfCodeBlock)) throw new Error('talks.ts now publishes recordings or transcripts; mirror them');
+if (/transcript/.test(londonBlock + sfCodeBlock)) throw new Error('talks.ts now publishes transcripts on London or Code Engineering talks; mirror them');
+if (!/status: "recording-coming-soon"/.test(sfCodeBlock) || /status: "upcoming"|youtubeId/.test(sfCodeBlock)) {
+  throw new Error('talks.ts drift: Code Engineering talks must stay recording-coming-soon without a YouTube id');
+}
 const galleryPagesText = read('src/pages/Gallery.tsx');
 if (!galleryPagesText.includes('const all = [...londonVideos, ...sfGallery];')) throw new Error('Gallery page drift');
 const londonVideosPage = site + '/london-2026/videos';
 read('src/pages/LondonVideos.tsx');
 const talkSlug = text => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const siteDisciplines = constant('disciplines').map(d => ({id: d.id, title: clean(d.title), short: d.short, description: clean(d.description)}));
+const siteDisciplines = constant('disciplines').map(d => ({
+  id: d.id, title: clean(d.title), short: d.short, description: clean(d.description),
+  ...(d.origin && d.origin.label && d.origin.href ? {origin: {label: d.origin.label, href: d.origin.href}} : {}),
+}));
 const shortFor = slug => siteDisciplines.filter(d => (speakerDisciplines[slug] || []).includes(d.id)).map(d => d.short);
 const eventIdFor = id => id === 'london-2026' ? london : id;
-const literalTalk = r => ({slug: r.slug, title: r.title, kind: r.kind, city: r.city, event_id: eventIdFor(r.eventId),
-  event_name: r.eventName, event_url: r.eventHref === '/san-francisco' ? sfEvents : site + r.eventHref, date: r.date, speaker: null, topics: r.topics,
+const literalTalk = r => ({slug: r.slug, title: clean(r.title), kind: r.kind, city: r.city, event_id: eventIdFor(r.eventId),
+  event_name: r.eventName, event_url: r.eventHref === '/san-francisco' ? sfEvents : site + r.eventHref, date: r.date || null, speaker: r.speaker ?? null, topics: r.topics,
   youtube_id: r.youtubeId ?? null, transcript: r.transcript ? clean(r.transcript) : null,
   summary: r.summary ? clean(r.summary) : null,
+  recording_notice: r.recordingNotice || null,
   ai_generated: false, status: r.status, session_id: null});
 const talks = [];
 const welcome = constant('londonWelcome');
+const lightning = constant('londonLightningTalks');
+const recordingIds = constant('londonRecordingIds');
+const recordingOrder = constant('londonRecordingOrder');
 talks.push({...literalTalk(welcome), gallery: 'london'});
-for (const slot of constant('agenda').filter(a => a.kind === 'talk' && a.speakerSlug)) {
+const londonTalkSlots = constant('agenda')
+  .filter(a => a.kind === 'talk' && a.speakerSlug && a.speakerSlug !== 'meryem-arik')
+  .sort((a, b) => recordingOrder.indexOf(a.speakerSlug) - recordingOrder.indexOf(b.speakerSlug));
+if (recordingOrder.length !== londonTalkSlots.length ||
+    recordingOrder.some(s => !londonTalkSlots.some(a => a.speakerSlug === s))) {
+  throw new Error('talks.ts drift: londonRecordingOrder does not match the published London talks (Meryem Arik is excluded from /london-2026/videos)');
+}
+for (const slot of londonTalkSlots) {
   const sp = roster.find(r => r.slug === slot.speakerSlug);
   const slug = `london-2026-${talkSlug(slot.title)}`.slice(0, 90).replace(/-$/, '');
+  const youtubeId = recordingIds[sp.slug] || null;
+  const recordingNotice = sp.slug === 'alexander-korchagin' ? korchaginNotice : null;
   talks.push({slug, title: slot.title, kind: 'talk', city: 'London', event_id: london,
     event_name: 'Agent Engineering London 2026', event_url: site + '/london-2026', date: '2026-10-16',
     speaker: {name: sp.name, role: sp.role, company: sp.company, slug: sp.slug}, topics: shortFor(sp.slug),
-    youtube_id: null, transcript: null, ai_generated: false, status: 'recording-coming-soon', session_id: slot.id, gallery: 'london'});
+    youtube_id: youtubeId, transcript: null, recording_notice: recordingNotice,
+    ai_generated: false, status: youtubeId ? 'recorded' : 'recording-coming-soon', session_id: slot.id, gallery: 'london'});
 }
+talks.push({...literalTalk(lightning), gallery: 'london'});
 for (const r of constant('sfRecordings')) talks.push({...literalTalk(r), gallery: 'san-francisco'});
 for (const v of a2aVideos) {
   talks.push({slug: `a2a-${v.session}-${talkSlug(v.title)}`, title: v.title, kind: 'a2a', city: 'Online',
@@ -565,16 +679,21 @@ for (const s of codeSpeakers) {
   talks.push({slug, title: s.talk.title, kind: 'talk', city: 'San Francisco', event_id: 'sf-code-engineering-2026',
     event_name: 'Code Engineering San Francisco', event_url: sfEvents, date: '2026-10-27',
     speaker: {name: s.name, role: s.role, company: s.company, slug: s.slug}, topics: ['Code', 'Harness'],
-    youtube_id: null, transcript: null, ai_generated: false, status: 'upcoming', session_id: null, gallery: null});
+    youtube_id: null, transcript: null, recording_notice: null, ai_generated: false, status: 'recording-coming-soon', session_id: null, gallery: null});
 }
 if (new Set(talks.map(t => t.slug)).size !== talks.length) throw new Error('Duplicate talk slugs');
 for (const t of talks) {
   t.url = t.gallery ? site + '/gallery/' + t.slug : sfEvents;
   t.source_ids = [source('talk-' + t.slug, t.url, [t.title, t.speaker ? `${t.speaker.name}, ${t.speaker.role} at ${t.speaker.company}` : null,
-    t.summary || null, t.event_name, t.ai_generated ? 'AI-generated video.' : null, t.status].filter(Boolean).join('\n'), t.event_id, t.kind === 'a2a' ? 'a2a-talks' : 'talk')];
+    t.summary || null, t.recording_notice || null, t.event_name, t.ai_generated ? 'AI-generated video.' : null,
+    t.youtube_id ? 'https://www.youtube.com/watch?v=' + t.youtube_id : null, t.status].filter(Boolean).join('\n'), t.event_id, t.kind === 'a2a' ? 'a2a-talks' : 'talk')];
 }
-source('london-videos', londonVideosPage, 'Agent Engineering London 2026 recordings: ' + welcome.title +
-  ' (https://www.youtube.com/watch?v=' + welcome.youtubeId + '). Talk recordings coming soon.', london, 'recordings');
+source('london-videos', londonVideosPage, 'Agent Engineering London 2026 recordings. Playlist: ' +
+  constant('LONDON_RECORDINGS_PLAYLIST') + '. ' +
+  talks.filter(t => t.gallery === 'london').map(t => t.title + (t.youtube_id
+    ? ' (https://www.youtube.com/watch?v=' + t.youtube_id + ')'
+    : ' (' + (t.recording_notice || 'recording coming soon') + ')')).join('. ') + '.',
+  london, 'recordings');
 // SF Code Engineering roster: roles and links from sf-code-engineering.ts.
 for (const s of codeSpeakers) {
   const sp = speakers.find(p => p.id === s.slug && p.event_ids.includes('sf-code-engineering-2026'));
@@ -589,7 +708,7 @@ const prevConf = conferencesData.find(c => c.status === 'past');
 const site_links = {next_event: nextConf ? {name: nextConf.name, when: nextConf.when, url: site + nextConf.href} : null,
   previous_event: prevConf ? {name: prevConf.name, when: prevConf.when, url: site + prevConf.href} : null,
   london_2026: site + '/london-2026', gallery: site + '/gallery', london_videos: londonVideosPage, agenteng: site + '/agenteng'};
-for (const e of events) e.page_url = e.id === london ? site + '/london-2026' : e.city === 'San Francisco' ? sfEvents : site + '/london';
+for (const e of events) e.page_url = e.page_url || (e.id === london ? site + '/london-2026' : e.city === 'San Francisco' ? sfEvents : site + '/london');
 const source_hash=hash.digest('hex');
 const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),published_at:new Date().toISOString(),
   source_commit:execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),source_hash,
