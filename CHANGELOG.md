@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Catalogue re-exported from site main 01239dd: Agents in Production at MongoDB (19 November 2026) is a past event at MongoDB UK, 240 Blackfriars Rd, with the published recording https://www.youtube.com/watch?v=Cn3t7ucLVcE, its event page at `/london/events/agents-in-production-at-mongodb`, and the four speakers plus talks and panel from the site.
+- `agenteng events --london --latest` returns that MongoDB evening. The published alias `mongodb-london` works with `agenteng faq --event mongodb-london` and other event-id options. `agenteng event --london` still opens the AgentEng London 2026 conference. After the conference, general questions such as tickets, lunch and talk topics still default to it, not a later meetup.
+- London 2026 gallery and recordings now follow `/london-2026/videos`: the welcome video, seven published talk recordings, Alexander Korchagin's talk still marked "Recording coming soon, awaiting approval.", and the lightning talks (`PAI0XECBeSM`). Meryem Arik's programme talk is not on the recordings page, so `agenteng gallery` omits it and `agenteng talks` still lists it.
+- The San Francisco gallery adds the Code Engineering event recap (`sf-code-engineering-2026-recap`, `eyuQSOIuG_0`). The four Code Engineering talks are status `recording-coming-soon` rather than `upcoming`.
+- `agenteng recordings` lists the new YouTube links, including the MongoDB evening, and says some London 2026 talk recordings are still coming soon when that is true.
+- `scripts/export-website.mjs` follows the current site structure: the Code Engineering roster constant is `codeSpeakers` (no longer `upcomingSpeakers`); London YouTube IDs come from `londonRecordingIds`; lightning talks and both San Francisco recaps are mirrored; `meetups` and `london-next-event.ts` enrich past London evenings. Drift guards still fail when those mappings, recording ids, routes or statuses change, including if a transcript appears or a Code Engineering talk gains a YouTube id.
+- Disciplines gain an optional `origin` `{label, href}` from `disciplines.ts`, shown as a credit line and source link in `agenteng disciplines` (rich and JSON) and in the MCP and A2A answers. The field is omitted when the site has not published one. The committed catalogue is from site main (14 disciplines, no origins yet). Goal Engineering, when the site adds it, is marked "no tool listings yet" like Factory and Decision.
+
 ## 0.0.28 - 2026-10-18
 
 - Catalogue re-exported from site main d39c1c6 (site PR #10): the London 2026 support options, organiser and supporters moved from `/support` to `/london-2026/team`. Support option sources and the sponsorship FAQ now link to `/london-2026/team`; only the general support enquiry stays on `/support`. The organiser, chair and associates source points to `/agent-engineering-hq`, where the site renders the chair card.

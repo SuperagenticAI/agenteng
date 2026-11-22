@@ -4,8 +4,11 @@ import json
 
 from click.testing import CliRunner
 
+from agenteng.catalogue import load_catalogue
 from agenteng.cli import main
-from agenteng.models import Request
+from agenteng.models import Catalogue, Request
+from agenteng.output import make_console
+from agenteng.render import render_result
 from agenteng.service import Service
 
 SITE = "https://agentengineering.world"
@@ -29,14 +32,25 @@ def run(*args):
 
 def test_gallery_mirrors_site_order_without_a2a():
     rows = lookup(operation="gallery", limit=100).data
-    assert [r["gallery"] for r in rows] == ["london"] * 10 + ["san-francisco"]
+    assert [r["gallery"] for r in rows] == ["london"] * 10 + ["san-francisco"] * 2
     assert rows[0]["slug"] == "london-2026-welcome"
     assert rows[0]["youtube_id"] == "iTV8VSrVJEk" and rows[0]["status"] == "recorded"
-    assert {r["status_label"] for r in rows[1:10]} == {"Recording coming soon"}
-    assert rows[-1]["youtube_id"] == "AP1RRbXZhsE"
+    assert rows[1]["slug"].startswith("london-2026-agentic-coding")
+    assert rows[1]["status_label"] == "Recording coming soon"
+    assert rows[1]["recording_notice"] == "Recording coming soon, awaiting approval."
+    assert all(r["status"] == "recorded" and r["youtube_id"] for r in rows[2:10])
+    assert rows[9]["slug"] == "london-2026-lightning-talks"
+    assert rows[9]["gallery_kind"] == "event-recording"
+    assert rows[9]["youtube_id"] == "PAI0XECBeSM"
+    assert rows[-2]["slug"] == "sf-code-engineering-2026-recap"
+    assert rows[-2]["gallery_kind"] == "event-recap" and rows[-2]["youtube_id"] == "eyuQSOIuG_0"
+    assert rows[-1]["slug"] == RECAP and rows[-1]["youtube_id"] == "AP1RRbXZhsE"
     assert all(r["talk_url"] == f"{SITE}/gallery/{r['slug']}" for r in rows)
-    assert not any(r.get("ai_generated") or r["event_id"] == SF_CODE for r in rows)
-    assert all(r["youtube_id"] is None and "transcript" not in r for r in rows[1:10])
+    assert not any(r.get("ai_generated") for r in rows)
+    assert "meryem-arik" not in {
+        (r.get("speaker") or {}).get("slug") or r.get("speaker_id") for r in rows
+    }
+    assert all("transcript" not in r for r in rows)
 
 
 def test_gallery_a2a_opt_in_last_and_labelled():
@@ -69,7 +83,7 @@ def test_one_item_by_slug_from_either_command():
     welcome = run("gallery", "london-2026-welcome")["data"]
     assert welcome["video_url"] == "https://www.youtube.com/watch?v=iTV8VSrVJEk"
     out = run("talks", "london-2026-say-less-grade-harder")["data"]
-    assert out["status"] == "recording-coming-soon" and out["abstract"]
+    assert out["status"] == "recorded" and out["youtube_id"] == "zqIoC_ic7fM" and out["abstract"]
     assert run("gallery", "london-2026-say-less-grade-harder")["data"]["slug"] == out["slug"]
     assert run("talks", "sydney-runkle")["data"]["talk_url"] == f"{SITE}/san-francisco/events"
 
@@ -87,9 +101,9 @@ def test_sf_code_engineering_speakers_and_event_card():
     assert roles["seth-karten"] == "Research, Lead on Prime Agent & Continual Harness"
     assert roles["andrey-risukhin"] == "Recursive Self Improvement"
     event = run("event", SF_CODE)["data"][0]
-    assert event["state"] == "upcoming"
+    assert event["state"] == "past"
     assert event["page_url"] == f"{SITE}/san-francisco/events"
-    assert "gallery_url" not in event
+    assert event["gallery_url"] == f"{SITE}/gallery" and event["gallery_count"] == 1
     assert [p["name"] for p in event["lineup"]] == [
         "Seth Karten",
         "Ben Holmes",
@@ -125,8 +139,11 @@ def test_recordings_include_london_videos_and_welcome():
     assert "https://www.youtube.com/watch?v=iTV8VSrVJEk" in urls
     recap = next(r for r in result.data if r.get("slug") == RECAP)
     assert recap["kind"] == "event-recap" and recap["summary"] == RECAP_SUMMARY
-    assert len(urls) == len(set(urls))
-    assert "talk recordings are coming soon" in result.answer
+    assert "https://www.youtube.com/watch?v=Cn3t7ucLVcE" in urls
+    assert "https://www.youtube.com/watch?v=eyuQSOIuG_0" in urls
+    assert "https://www.youtube.com/watch?v=zqIoC_ic7fM" in urls
+    assert len(urls) == len(set(urls)) == 19
+    assert "Some AgentEng London 2026 talk recordings are still coming soon" in result.answer
     assert "agenteng gallery --city London" in result.answer
 
 
@@ -172,7 +189,6 @@ def test_next_event_prompt_and_coming_label():
         Request(operation="ask", query="What is the next Agent Engineering event in San Francisco?")
     ).answer
     assert "Agent Engineering San Francisco is coming April 2027" in answer
-    assert "27 October 2026" in answer
 
 
 def test_no_em_dashes_in_new_output():
@@ -197,7 +213,7 @@ def test_recorded_question_uses_public_faq():
     ):
         result = lookup(operation="ask", query=question)
         assert result.answer == PUBLIC_RECORDINGS, question
-    assert lookup(operation="ask", query="Show the recordings").answer.startswith("9 published")
+    assert lookup(operation="ask", query="Show the recordings").answer.startswith("19 published")
 
 
 def test_no_ticket_holder_recording_wording():
@@ -212,8 +228,8 @@ def test_no_ticket_holder_recording_wording():
 
 def test_sf_harness_video_is_an_event_recap():
     rows = lookup(operation="gallery", city="San Francisco").data
-    assert len(rows) == 1
-    recap = rows[0]
+    assert [r["slug"] for r in rows] == ["sf-code-engineering-2026-recap", RECAP]
+    recap = rows[1]
     assert recap["slug"] == RECAP and recap["gallery_kind"] == "event-recap"
     assert recap["title"] == "Harness Engineering San Francisco: event recap"
     assert recap["summary"] == RECAP_SUMMARY and recap["status_label"] == "Event recap"
@@ -251,9 +267,14 @@ def test_cancelled_london_talk_is_gone():
         assert word not in text, word
     london_talks = [s for s in service.catalogue.sessions if s.event_id == LONDON and s.speaker_id]
     assert len(london_talks) == 9
-    assert (
-        len([t for t in service.catalogue.talks if t.event_id == LONDON and t.kind == "talk"]) == 9
-    )
+    # /london-2026/videos omits Meryem Arik's talk; the programme still lists all 9.
+    gallery_talks = [
+        t for t in service.catalogue.talks if t.event_id == LONDON and t.kind == "talk"
+    ]
+    assert len(gallery_talks) == 8
+    assert "meryem-arik" not in {t.speaker.slug for t in gallery_talks if t.speaker}
+    assert "meryem-arik" in {s.speaker_id for s in london_talks}
+    assert lookup(operation="talk", speaker_id="meryem-arik").status == "ok"
     assert lookup(operation="talk", session_id=CANCELLED_SLUG).status == "not_found"
     assert lookup(operation="speaker", speaker_id=CANCELLED_SPEAKER).status == "not_found"
 
@@ -272,11 +293,104 @@ def test_sf_events_page_and_conference_link():
         if event.city == "San Francisco":
             assert str(event.page_url) == sf_events
             assert all(str(service.sources[i].url) == sf_events for i in event.source_ids)
+    recap_page = f"{SITE}/san-francisco/events/code-engineering-2026"
     sf_urls = {str(s.url) for s in service.catalogue.sources if "/san-francisco" in str(s.url)} | {
         str(t.event_url) for t in service.catalogue.talks if t.city == "San Francisco"
     }
-    assert sf_urls == {sf_events}
+    assert sf_events in sf_urls and recap_page in sf_urls
+    assert f"{SITE}/san-francisco" not in sf_urls
     assert str(service.catalogue.site_links.next_event.url) == f"{SITE}/san-francisco"
     links = lookup(operation="about").data["links"]
     assert links["san_francisco"] == f"{SITE}/san-francisco"
     assert links["san_francisco_events"] == sf_events
+
+
+MONGODB = "london-mongodb-2026"
+MONGODB_VIDEO = "https://www.youtube.com/watch?v=Cn3t7ucLVcE"
+
+
+def test_mongodb_meetup_is_a_past_event_with_its_recording():
+    event = run("event", MONGODB)["data"][0]
+    assert event["title"] == "Agents in Production at MongoDB"
+    assert event["date"] == "2026-11-19" and event["state"] == "past"
+    assert event["recording_url"] == MONGODB_VIDEO
+    assert event["page_url"] == f"{SITE}/london/events/agents-in-production-at-mongodb"
+    assert event["venue"].startswith("MongoDB UK")
+    lineup = {p["speaker_id"]: p for p in event["lineup"]}
+    assert set(lineup) == {"adam-wong", "animesh-mishra", "daniela-petruzalek", "harrison-reeves"}
+    talks = lookup(operation="talks", event_id=MONGODB, limit=100).data
+    assert {r["title"] for r in talks} >= {
+        "Agents in Production: The Questions Your Demo Skipped",
+        "AI Agents from Scratch with Google ADK",
+        "Your Agent Needs Its Own Computer",
+    }
+    gallery = lookup(operation="gallery", event_id=MONGODB, limit=100)
+    assert gallery.status == "not_found" or gallery.data == []
+    recordings = lookup(operation="recordings", event_id=MONGODB)
+    assert MONGODB_VIDEO in [r["url"] for r in recordings.data]
+
+
+def catalogue_with_discipline_origins() -> Catalogue:
+    data = load_catalogue().model_dump(mode="json")
+    for row in data["disciplines"]:
+        if row["id"] == "factory":
+            row["origin"] = {
+                "label": "Term coined by Warp",
+                "href": "https://www.warp.dev/blog/factory-engineering-software-factories",
+            }
+    goal = {
+        "id": "goal",
+        "title": "Goal Engineering",
+        "short": "Goal",
+        "description": (
+            "Designing the goals that long-running agents work towards. "
+            "Covers scoping a goal so people can review the work and give feedback easily."
+        ),
+        "origin": {
+            "label": "Term popularised by LangChain",
+            "href": "https://www.langchain.com/blog/goal-engineering",
+        },
+    }
+    decision_at = next(i for i, row in enumerate(data["disciplines"]) if row["id"] == "decision")
+    data["disciplines"].insert(decision_at, goal)
+    return Catalogue.model_validate(data)
+
+
+def test_discipline_origin_is_optional_and_shown():
+    live = lookup(operation="disciplines")
+    assert len(live.data["items"]) == 14
+    assert all(not d.get("origin") for d in live.data["items"])
+    service = Service(catalogue=catalogue_with_discipline_origins())
+    result = service.lookup(Request(operation="disciplines"))
+    items = result.data["items"]
+    assert [d["id"] for d in items][-3:] == ["factory", "goal", "decision"]
+    assert len(items) == 15
+    factory = next(d for d in items if d["id"] == "factory")
+    assert factory["origin"]["label"] == "Term coined by Warp"
+    assert factory["origin"]["href"].endswith("factory-engineering-software-factories")
+    goal = next(d for d in items if d["id"] == "goal")
+    assert goal["in_directory"] is False and goal["note"] == "no tool listings yet"
+    assert "Goal Engineering" in result.answer
+    assert (
+        "Factory Engineering and Goal Engineering and Decision Engineering: no tool listings yet."
+        in result.answer
+    )
+    assert "Term coined by Warp" in result.answer
+    assert "Term popularised by LangChain" in result.answer
+    assert "https://www.langchain.com/blog/goal-engineering" in result.answer
+    assert "\N{EM DASH}" not in json.dumps(result.model_dump(mode="json"))
+    console = make_console(record=True, width=120)
+    render_result(result, "disciplines", console)
+    text = console.export_text()
+    assert "Term coined by Warp" in text
+    assert "https://www.warp.dev/blog/factory-engineering-software-factories" in text
+    assert "Term popularised by LangChain" in text
+
+
+def test_events_latest_and_mongodb_faq_alias():
+    latest = run("events", "--london", "--latest")
+    assert latest["data"][0]["id"] == MONGODB
+    assert len(latest["data"]) == 1
+    faqs = run("faq", "--event", "mongodb-london")
+    assert faqs["data"] and all(r["event_id"] == MONGODB for r in faqs["data"])
+    assert run("event", "mongodb-london")["data"][0]["id"] == MONGODB

@@ -236,6 +236,12 @@ def published_talk_answer(service, request):
             [],
             status="not_found",
         )
+    # After the conference, keep its programme as the default answer unless the
+    # question named another event or only a later meetup matches.
+    if recent and not request.event_id:
+        conference_matches = [item for item in matches if item[1].event_id == recent.id]
+        if conference_matches:
+            matches = conference_matches
     # Exact title/topic matches take precedence over incidental abstract mentions.
     best = max(score for score, _, _ in matches)
     matches = [item for item in matches if item[0] == best][: request.limit]

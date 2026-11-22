@@ -699,13 +699,21 @@ def render_disciplines(console: Console, result: Result) -> None:
     )
     table.add_column("ID", style="ae.accent", no_wrap=True)
     table.add_column("Name", overflow="fold")
+    table.add_column("Origin", overflow="fold")
     table.add_column("Listed", justify="right", no_wrap=True)
     table.add_column("Total", justify="right", no_wrap=True)
     for row in items:
         listed = row.get("tool_count")
+        origin = row.get("origin") or {}
+        origin_text = ""
+        if origin.get("label"):
+            origin_text = origin["label"]
+            if origin.get("href"):
+                origin_text += "\n" + str(origin["href"])
         table.add_row(
             row.get("id") or "",
             row.get("name") or "",
+            origin_text,
             "no tool listings yet" if listed is None else str(listed),
             "" if row.get("total_tool_count") is None else str(row["total_tool_count"]),
         )

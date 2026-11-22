@@ -239,11 +239,14 @@ def city_shortcuts(command):
 
 
 def city_event_id(ctx, city: str) -> str:
-    """Pick a city's event: the next upcoming one, else the most recent."""
+    """Pick a city's event: the conference if the city has one, else the next upcoming, else the most recent."""
     result = dispatch(ctx, dict(operation="events", city=city), quiet=True)
     rows = result.data if result.status == "ok" and isinstance(result.data, list) else []
     if not rows:
         raise click.ClickException(f"No published events in {city}.")
+    conference = next((e for e in rows if e.get("id") == "agenteng-london-2026"), None)
+    if conference and city == "London":
+        return conference["id"]
     ahead = sorted(
         (e for e in rows if e.get("state") in {"ongoing", "upcoming"}),
         key=lambda e: (e.get("state") != "ongoing", e.get("date") or ""),
@@ -271,13 +274,25 @@ def event_or_city(ctx, event_id: str | None, city: str | None = None) -> str | N
 @city_shortcuts
 @click.option("--upcoming", "--next", is_flag=True, help="Only upcoming events.")
 @click.option("--past", "--history", "--previous", is_flag=True, help="Only past events.")
+@click.option(
+    "--latest", is_flag=True, help="Only the most recently held event in the selected city."
+)
 @click.pass_context
-def events(ctx, where, city, upcoming, past):
+def events(ctx, where, city, upcoming, past, latest):
     """List events with published date precision and current state.
 
     CITY is optional: London or San Francisco (slugs such as san-francisco work).
     """
-    dispatch(ctx, dict(operation="events", city=city or where, upcoming=upcoming, past=past))
+    dispatch(
+        ctx,
+        dict(
+            operation="events",
+            city=city or where,
+            upcoming=upcoming,
+            past=past,
+            latest=latest,
+        ),
+    )
 
 
 @main.command()
@@ -406,9 +421,10 @@ def gallery(ctx, slug, city, event_id, topic, query, speaker_id, include_a2a, li
     """List the video gallery, or read one item by SLUG.
 
     Mirrors agentengineering.world/gallery: the London 2026 recordings
-    (the welcome video, then talks marked recording coming soon) and the
-    San Francisco recordings. A2A talks are AI-generated and only appear with
-    --a2a or --city Online, after the event videos.
+    (the welcome video, published talks, lightning talks, and any talk still
+    marked recording coming soon) and the San Francisco event recaps. A2A
+    talks are AI-generated and only appear with --a2a or --city Online, after
+    the event videos.
     """
     if slug:
         ctx.invoke(talk_detail, identifier=slug, event_id=event_id, query="")
