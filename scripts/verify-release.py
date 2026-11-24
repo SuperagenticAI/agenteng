@@ -96,7 +96,7 @@ assert version("agenteng") == agenteng.__version__
         text=True,
     )
     result = json.loads(output)
-    assert result["engine"] == "lookup" and len(result["data"]) == 12
+    assert result["engine"] == "lookup" and len(result["data"]) == 14
     tools_output = subprocess.check_output(
         [str(environment / "bin/agenteng"), "--json", "tools", "--limit", "100", "--status", "all"],
         cwd=target,

@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "version": "website-ce3c9ab1d2cb",
-  "published_at": "2026-11-22T09:34:40.273Z",
-  "source_commit": "01239ddea3660cd2fdadbdde01fd75ce7d2ee989",
-  "source_hash": "ce3c9ab1d2cb0e2b29b6eaf1bd466d4bc0bc1227505469f7d1f0e5e477130847",
+  "version": "website-570b6be2da7a",
+  "published_at": "2026-11-24T13:35:38.495Z",
+  "source_commit": "2e0393961640b6b05e99973e7af072983ff7b0fd",
+  "source_hash": "570b6be2da7a147c2486611d079b24e85a1a14c932e071155e82d673648f5435",
   "events": [
     {
       "id": "agenteng-london-2026",
@@ -221,6 +221,45 @@
         "sf-harness-engineering-2026"
       ],
       "page_url": "https://agentengineering.world/san-francisco/events"
+    },
+    {
+      "id": "agenteng-london-2027",
+      "title": "Agent Engineering London 2027: Builders Edition",
+      "city": "London",
+      "timezone": "Europe/London",
+      "date": "2027-02-17",
+      "date_precision": "day",
+      "venue": "Everyman Canary Wharf, Crossrail Place, Level Minus Two, London E14 5AR",
+      "venue_tour_url": "https://my.matterport.com/show/?m=WL1mZonGN11",
+      "page_url": "https://agentengineering.world/london-2027",
+      "track": "single",
+      "start": "2027-02-17T08:30:00+00:00",
+      "end": "2027-02-17T16:15:00+00:00",
+      "speaker_submission_status": "invited_only",
+      "tagline": "One day. One track. The engineering behind AI agents.",
+      "registration_status": "coming_soon",
+      "registration_note": "Early registration opening soon. Limited spaces. Speakers announcing soon.",
+      "source_ids": [
+        "agenteng-london-2027"
+      ]
+    },
+    {
+      "id": "agenteng-sf-2027",
+      "title": "Agent Engineering San Francisco 2027",
+      "city": "San Francisco",
+      "timezone": "America/Los_Angeles",
+      "date": "2027-06-29",
+      "date_precision": "day",
+      "venue": "San Francisco, venue to be announced",
+      "page_url": "https://agentengineering.world/san-francisco",
+      "track": "single",
+      "speaker_submission_status": "invited_only",
+      "tagline": "There are many Agent conferences. This one is truly yours.",
+      "registration_status": "coming_soon",
+      "registration_note": "Speakers and venue announcing soon.",
+      "source_ids": [
+        "agenteng-sf-2027"
+      ]
     }
   ],
   "speakers": [
@@ -1485,6 +1524,195 @@
       "source_ids": [
         "mongodb-faq-11"
       ]
+    },
+    {
+      "id": "london2027-faq-0",
+      "question": "When is Agent Engineering London 2027?",
+      "answer": "Wednesday, 17 February 2027.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-0"
+      ]
+    },
+    {
+      "id": "london2027-faq-1",
+      "question": "Where is the conference taking place?",
+      "answer": "Everyman Canary Wharf, Crossrail Place, Level Minus Two, London E14 5AR, United Kingdom.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-1"
+      ]
+    },
+    {
+      "id": "london2027-faq-2",
+      "question": "What makes Agent Engineering London 2027 different from other AI conferences in London?",
+      "answer": "Agent Engineering London 2027 (Builders Edition) is a single-track, engineering-first conference dedicated exclusively to the systems behind production AI agents: runtimes, harnesses, context, memory, evaluation, inference, protocols (MCP, A2A, ACP) and coding agents. Speaking slots are never sold, sponsors do not shape the technical agenda, and the conference ships its own open-source CLI, MCP server and A2A 1.0 agent.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-2"
+      ]
+    },
+    {
+      "id": "london2027-faq-3",
+      "question": "Is this a full-day, single-track conference?",
+      "answer": "Yes. Builders Edition is planned as a one-day, in-person, single-track technical conference with limited spaces, around 8 main talks and 2 lightning talks.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-3"
+      ]
+    },
+    {
+      "id": "london2027-faq-4",
+      "question": "How can developers and AI agents query London 2027 via MCP, A2A, ACP or CLI?",
+      "answer": "Install the open-source agenteng tool (curl -fsSL https://agentengineering.world/install.sh | sh), connect over hosted Streamable HTTP MCP at https://a2a.agentengineering.world/mcp/, discover the live A2A 1.0 agent card at https://a2a.agentengineering.world/.well-known/agent-card.json, or read the machine-readable summary at https://agentengineering.world/llms.txt.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-4"
+      ]
+    },
+    {
+      "id": "london2027-faq-5",
+      "question": "Who should attend?",
+      "answer": "AI engineers, agent builders, software engineers, infrastructure engineers, research engineers, developer tooling engineers, Staff and Principal engineers, and technical founders building production AI agents.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-5"
+      ]
+    },
+    {
+      "id": "london2027-faq-6",
+      "question": "When will speakers be announced?",
+      "answer": "Speakers are announcing soon. The programme is currently being curated around practical production engineering depth and real-world implementations.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-6"
+      ]
+    },
+    {
+      "id": "london2027-faq-7",
+      "question": "How can I recommend a speaker or express interest in speaking?",
+      "answer": "Speakers are curated directly by the programme team for technical depth rather than job title, and speaking slots are never sold. Engineers building production agent systems can reach out or recommend a practitioner via events@agentengineering.world.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-7"
+      ]
+    },
+    {
+      "id": "london2027-faq-8",
+      "question": "When will early registration open?",
+      "answer": "Early registration is opening soon. Ticket details and registration links will be published on this page as soon as early registration opens.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-8"
+      ]
+    },
+    {
+      "id": "london2027-faq-9",
+      "question": "Will there be food and refreshments?",
+      "answer": "Lunch and refreshments are planned. Final catering details will be shared before the event.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-9"
+      ]
+    },
+    {
+      "id": "london2027-faq-10",
+      "question": "Can companies sponsor or support Agent Engineering London 2027?",
+      "answer": "Yes. Agent labs, model and inference providers, developer toolmakers, database and memory platforms, and cloud infrastructure teams interested in supporting Builders Edition can contact events@agentengineering.world. Supporting partners help make the event accessible to engineers and do not influence the technical programme.",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-10"
+      ]
+    },
+    {
+      "id": "london2027-faq-11",
+      "question": "Is this the same as London 2026?",
+      "answer": "No. Builders Edition is the second London edition on Wednesday 17 February 2027. The October 2026 Founders Edition remains available in the event archive at https://agentengineering.world/london-2026",
+      "event_id": "agenteng-london-2027",
+      "source_ids": [
+        "london2027-faq-11"
+      ]
+    },
+    {
+      "id": "sf2027-faq-0",
+      "question": "When and where is Agent Engineering San Francisco?",
+      "answer": "Agent Engineering San Francisco takes place on Tuesday 29 June 2027. The venue will be announced here and on the Agent Engineering HQ calendar on Luma (https://luma.com/agent-engineering).",
+      "event_id": "agenteng-sf-2027",
+      "source_ids": [
+        "sf2027-faq-0"
+      ]
+    },
+    {
+      "id": "sf2027-faq-1",
+      "question": "What makes Agent Engineering San Francisco different from other AI conferences in San Francisco?",
+      "answer": "Agent Engineering San Francisco is a builder-led, single-track technical conference dedicated solely to the engineering behind production AI agents. There are no pay-to-speak slots or disguised vendor pitches, and the conference ships its own open-source CLI, MCP server, ACP workflow and A2A 1.0 agent.",
+      "event_id": "agenteng-sf-2027",
+      "source_ids": [
+        "sf2027-faq-1"
+      ]
+    },
+    {
+      "id": "sf2027-faq-2",
+      "question": "What will the conference cover?",
+      "answer": "All 14 engineering disciplines behind production AI agents: harness, context, prompt, memory, evaluation, inference, loop, agentic, code, protocol (MCP, A2A 1.0, ACP, A2UI), graph, search, factory and decision engineering. It brings together agent labs, coding agent labs, model labs, inference labs and the engineers who build with them.",
+      "event_id": "agenteng-sf-2027",
+      "source_ids": [
+        "sf2027-faq-2"
+      ]
+    },
+    {
+      "id": "sf2027-faq-3",
+      "question": "How are speakers chosen?",
+      "answer": "Speakers are invited by the programme team, based on the systems they have built and run. Speaking slots are never sold. The line-up will be announced on this page.",
+      "event_id": "agenteng-sf-2027",
+      "source_ids": [
+        "sf2027-faq-3"
+      ]
+    },
+    {
+      "id": "sf2027-faq-4",
+      "question": "Who is it for?",
+      "answer": "AI engineers, agent builders, ML engineers, infrastructure engineers, researchers, developer tooling builders and technical founders who design, build and operate agent systems in production.",
+      "event_id": "agenteng-sf-2027",
+      "source_ids": [
+        "sf2027-faq-4"
+      ]
+    },
+    {
+      "id": "sf2027-faq-5",
+      "question": "How is it different from the London edition?",
+      "answer": "It follows the same single-track, engineering-first format as Agent Engineering London (Founders Edition in October 2026 and Builders Edition on 17 February 2027), tailored to the San Francisco ecosystem of agent labs, coding agent labs, model labs and inference teams. See https://agentengineering.world/london-2027",
+      "event_id": "agenteng-sf-2027",
+      "source_ids": [
+        "sf2027-faq-5"
+      ]
+    },
+    {
+      "id": "sf2027-faq-6",
+      "question": "How can developers and AI agents query the conference via MCP, A2A, ACP or CLI?",
+      "answer": "Install agenteng (curl -fsSL https://agentengineering.world/install.sh | sh), connect to the hosted Streamable HTTP MCP server at https://a2a.agentengineering.world/mcp/, inspect the live A2A 1.0 agent card at https://a2a.agentengineering.world/.well-known/agent-card.json, or read https://agentengineering.world/llms.txt.",
+      "event_id": "agenteng-sf-2027",
+      "source_ids": [
+        "sf2027-faq-6"
+      ]
+    },
+    {
+      "id": "sf2027-faq-7",
+      "question": "Can my company support the conference?",
+      "answer": "Support is optional and comes with no obligation. Companies can help with food, drinks or recording if it suits them. Support never includes a speaking slot or a say in the programme. Details: https://agentengineering.world/support",
+      "event_id": "agenteng-sf-2027",
+      "source_ids": [
+        "sf2027-faq-7"
+      ]
+    },
+    {
+      "id": "sf2027-faq-8",
+      "question": "How do I hear when tickets and speakers are announced?",
+      "answer": "Follow the Agent Engineering HQ calendar on Luma (https://luma.com/agent-engineering), or write to events@agentengineering.world.",
+      "event_id": "agenteng-sf-2027",
+      "source_ids": [
+        "sf2027-faq-8"
+      ]
     }
   ],
   "sponsors": [
@@ -1548,7 +1776,7 @@
   ],
   "hq": {
     "url": "https://agentengineering.world/agent-engineering-hq",
-    "summary": "Agent Engineering HQ runs the AgentEng conference and technical events in London and San Francisco, and publishes the Agent Engineering manifesto.",
+    "summary": "Agent Engineering HQ defines the 14 disciplines of Agent Engineering and runs builder-led AI agent conferences in London (17 February 2027) and San Francisco (29 June 2027), backed by the open-source agenteng CLI, MCP server, ACP workflow and A2A 1.0 agent.",
     "cities": "Agent Engineering HQ runs San Francisco. London events run with London Agentic AI. Both hold the same standard of technical depth.",
     "manifesto": [
       "Agents are not features. They are long-running systems with their own development lifecycle, and they need their own engineering discipline.",
@@ -2819,15 +3047,17 @@
   ],
   "site_links": {
     "next_event": {
-      "name": "Agent Engineering San Francisco",
-      "when": "April 2027",
-      "url": "https://agentengineering.world/san-francisco"
+      "name": "Agent Engineering London 2027",
+      "when": "17 February 2027",
+      "url": "https://agentengineering.world/london-2027"
     },
     "previous_event": {
       "name": "Agent Engineering London",
       "when": "16 October 2026",
       "url": "https://agentengineering.world/london-2026"
     },
+    "london_2027": "https://agentengineering.world/london-2027",
+    "san_francisco_2027": "https://agentengineering.world/san-francisco",
     "london_2026": "https://agentengineering.world/london-2026",
     "gallery": "https://agentengineering.world/gallery",
     "london_videos": "https://agentengineering.world/london-2026/videos",
@@ -3855,6 +4085,167 @@
       "text": "Agent Engineering London 2026 recordings. Playlist: https://www.youtube.com/playlist?list=PLCo4Vkhf-jQk. Welcome to Agent Engineering London 2026 (https://www.youtube.com/watch?v=iTV8VSrVJEk). Agentic Coding in 2026: Watching 300 Engineering Orgs adopting agents (Recording coming soon, awaiting approval.). Security for AI-Native Developers (https://www.youtube.com/watch?v=64-KF26shew). Software Development as Constrained Optimization (https://www.youtube.com/watch?v=zzMAcl8XcUg). If coding is solved, what's left? (https://www.youtube.com/watch?v=pDliDj6sr7o). The right information at the right time (https://www.youtube.com/watch?v=TSr2W8KAZIM). Browser Use Is the Default. Your UI Is Not Your Agent API. (https://www.youtube.com/watch?v=Eje5JXSXkYI). Say Less, Grade Harder (https://www.youtube.com/watch?v=zqIoC_ic7fM). Memory Is Not a Bigger Context Window: Memory Engineering for Production Agents (https://www.youtube.com/watch?v=Xv_F5xygrN4). Lightning Talks: Eito & John, Data Security & Video Generation (https://www.youtube.com/watch?v=PAI0XECBeSM).",
       "event_id": "agenteng-london-2026",
       "kind": "recordings"
+    },
+    {
+      "id": "agenteng-london-2027",
+      "url": "https://agentengineering.world/london-2027",
+      "text": "Agent Engineering London 2027: Builders Edition. Wednesday, 17 February 2027. Everyman Canary Wharf, Crossrail Place, Level Minus Two, London E14 5AR. One-day, single-track technical conference with limited spaces. One day. One track. The engineering behind AI agents. Speakers announcing soon; early registration opening soon.",
+      "event_id": "agenteng-london-2027",
+      "kind": "event"
+    },
+    {
+      "id": "london2027-faq-0",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "When is Agent Engineering London 2027?\nWednesday, 17 February 2027.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-1",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "Where is the conference taking place?\nEveryman Canary Wharf, Crossrail Place, Level Minus Two, London E14 5AR, United Kingdom.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-2",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "What makes Agent Engineering London 2027 different from other AI conferences in London?\nAgent Engineering London 2027 (Builders Edition) is a single-track, engineering-first conference dedicated exclusively to the systems behind production AI agents: runtimes, harnesses, context, memory, evaluation, inference, protocols (MCP, A2A, ACP) and coding agents. Speaking slots are never sold, sponsors do not shape the technical agenda, and the conference ships its own open-source CLI, MCP server and A2A 1.0 agent.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-3",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "Is this a full-day, single-track conference?\nYes. Builders Edition is planned as a one-day, in-person, single-track technical conference with limited spaces, around 8 main talks and 2 lightning talks.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-4",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "How can developers and AI agents query London 2027 via MCP, A2A, ACP or CLI?\nInstall the open-source agenteng tool (curl -fsSL https://agentengineering.world/install.sh | sh), connect over hosted Streamable HTTP MCP at https://a2a.agentengineering.world/mcp/, discover the live A2A 1.0 agent card at https://a2a.agentengineering.world/.well-known/agent-card.json, or read the machine-readable summary at https://agentengineering.world/llms.txt.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-5",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "Who should attend?\nAI engineers, agent builders, software engineers, infrastructure engineers, research engineers, developer tooling engineers, Staff and Principal engineers, and technical founders building production AI agents.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-6",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "When will speakers be announced?\nSpeakers are announcing soon. The programme is currently being curated around practical production engineering depth and real-world implementations.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-7",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "How can I recommend a speaker or express interest in speaking?\nSpeakers are curated directly by the programme team for technical depth rather than job title, and speaking slots are never sold. Engineers building production agent systems can reach out or recommend a practitioner via events@agentengineering.world.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-8",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "When will early registration open?\nEarly registration is opening soon. Ticket details and registration links will be published on this page as soon as early registration opens.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-9",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "Will there be food and refreshments?\nLunch and refreshments are planned. Final catering details will be shared before the event.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-10",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "Can companies sponsor or support Agent Engineering London 2027?\nYes. Agent labs, model and inference providers, developer toolmakers, database and memory platforms, and cloud infrastructure teams interested in supporting Builders Edition can contact events@agentengineering.world. Supporting partners help make the event accessible to engineers and do not influence the technical programme.",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "london2027-faq-11",
+      "url": "https://agentengineering.world/london-2027#faq",
+      "text": "Is this the same as London 2026?\nNo. Builders Edition is the second London edition on Wednesday 17 February 2027. The October 2026 Founders Edition remains available in the event archive at https://agentengineering.world/london-2026",
+      "event_id": "agenteng-london-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "agenteng-sf-2027",
+      "url": "https://agentengineering.world/san-francisco",
+      "text": "Agent Engineering San Francisco 2027. 29 June 2027. San Francisco, venue to be announced. Builder-led technical AI agent conference covering all 14 agent engineering disciplines. Speakers and venue announcing soon.",
+      "event_id": "agenteng-sf-2027",
+      "kind": "event"
+    },
+    {
+      "id": "sf2027-faq-0",
+      "url": "https://agentengineering.world/san-francisco#faq",
+      "text": "When and where is Agent Engineering San Francisco?\nAgent Engineering San Francisco takes place on Tuesday 29 June 2027. The venue will be announced here and on the Agent Engineering HQ calendar on Luma (https://luma.com/agent-engineering).",
+      "event_id": "agenteng-sf-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "sf2027-faq-1",
+      "url": "https://agentengineering.world/san-francisco#faq",
+      "text": "What makes Agent Engineering San Francisco different from other AI conferences in San Francisco?\nAgent Engineering San Francisco is a builder-led, single-track technical conference dedicated solely to the engineering behind production AI agents. There are no pay-to-speak slots or disguised vendor pitches, and the conference ships its own open-source CLI, MCP server, ACP workflow and A2A 1.0 agent.",
+      "event_id": "agenteng-sf-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "sf2027-faq-2",
+      "url": "https://agentengineering.world/san-francisco#faq",
+      "text": "What will the conference cover?\nAll 14 engineering disciplines behind production AI agents: harness, context, prompt, memory, evaluation, inference, loop, agentic, code, protocol (MCP, A2A 1.0, ACP, A2UI), graph, search, factory and decision engineering. It brings together agent labs, coding agent labs, model labs, inference labs and the engineers who build with them.",
+      "event_id": "agenteng-sf-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "sf2027-faq-3",
+      "url": "https://agentengineering.world/san-francisco#faq",
+      "text": "How are speakers chosen?\nSpeakers are invited by the programme team, based on the systems they have built and run. Speaking slots are never sold. The line-up will be announced on this page.",
+      "event_id": "agenteng-sf-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "sf2027-faq-4",
+      "url": "https://agentengineering.world/san-francisco#faq",
+      "text": "Who is it for?\nAI engineers, agent builders, ML engineers, infrastructure engineers, researchers, developer tooling builders and technical founders who design, build and operate agent systems in production.",
+      "event_id": "agenteng-sf-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "sf2027-faq-5",
+      "url": "https://agentengineering.world/san-francisco#faq",
+      "text": "How is it different from the London edition?\nIt follows the same single-track, engineering-first format as Agent Engineering London (Founders Edition in October 2026 and Builders Edition on 17 February 2027), tailored to the San Francisco ecosystem of agent labs, coding agent labs, model labs and inference teams. See https://agentengineering.world/london-2027",
+      "event_id": "agenteng-sf-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "sf2027-faq-6",
+      "url": "https://agentengineering.world/san-francisco#faq",
+      "text": "How can developers and AI agents query the conference via MCP, A2A, ACP or CLI?\nInstall agenteng (curl -fsSL https://agentengineering.world/install.sh | sh), connect to the hosted Streamable HTTP MCP server at https://a2a.agentengineering.world/mcp/, inspect the live A2A 1.0 agent card at https://a2a.agentengineering.world/.well-known/agent-card.json, or read https://agentengineering.world/llms.txt.",
+      "event_id": "agenteng-sf-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "sf2027-faq-7",
+      "url": "https://agentengineering.world/san-francisco#faq",
+      "text": "Can my company support the conference?\nSupport is optional and comes with no obligation. Companies can help with food, drinks or recording if it suits them. Support never includes a speaking slot or a say in the programme. Details: https://agentengineering.world/support",
+      "event_id": "agenteng-sf-2027",
+      "kind": "faq"
+    },
+    {
+      "id": "sf2027-faq-8",
+      "url": "https://agentengineering.world/san-francisco#faq",
+      "text": "How do I hear when tickets and speakers are announced?\nFollow the Agent Engineering HQ calendar on Luma (https://luma.com/agent-engineering), or write to events@agentengineering.world.",
+      "event_id": "agenteng-sf-2027",
+      "kind": "faq"
     }
   ]
 }

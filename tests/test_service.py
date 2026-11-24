@@ -14,11 +14,11 @@ LONDON = "agenteng-london-2026"
 
 def test_export_has_evidence_and_honest_dates(service):
     c = service.catalogue
-    assert (len(c.events), len(c.speakers), len(c.sessions)) == (12, 21, 28)
+    assert (len(c.events), len(c.speakers), len(c.sessions)) == (14, 21, 28)
     past = [e for e in c.events if e.date_precision == "month"]
     assert len(past) == 8
     assert all(e.start is None and e.end is None for e in past)
-    assert len(service.lookup(Request(operation="events", upcoming=True)).data) == 3
+    assert len(service.lookup(Request(operation="events", upcoming=True)).data) == 5
 
 
 def test_unknown_references_rejected():

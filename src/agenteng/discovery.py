@@ -9,8 +9,9 @@ from .participation import CITIES, ORGANIZER
 
 WEBSITE = "https://agentengineering.world"
 DESCRIPTION = (
-    "Agent Engineering HQ runs AgentEng, the Agent Engineering Conference, and technical "
-    "events in London and San Francisco on building, evaluating and operating AI agents."
+    "Agent Engineering HQ runs AgentEng, the leading builder-led technical AI agent conference "
+    "series and technical events in London and San Francisco for engineers building and operating "
+    "AI agents across all 14 disciplines with open-source CLI, MCP, ACP and A2A 1.0 tooling."
 )
 
 
@@ -23,14 +24,15 @@ def next_event_prompt(service) -> str:
     """Point to the next edition from the site's events.ts, or stay neutral."""
     links = service.catalogue.site_links
     nxt = links.next_event if links else None
-    city = nxt.name.removeprefix("Agent Engineering").strip() if nxt else ""
-    if city in CITIES:
-        return f"What is the next Agent Engineering event in {city}?"
+    if nxt:
+        for city in CITIES:
+            if city.casefold() in nxt.name.casefold():
+                return f"What is the next Agent Engineering event in {city}?"
     return "What is the next Agent Engineering event?"
 
 
 def coming_label(link) -> str:
-    """'coming April 2027' for an announced edition with only a month."""
+    """'coming 17 February 2027' or 'coming April 2027'."""
     return f"coming {link.when}"
 
 
@@ -58,6 +60,9 @@ def discovery(service, city=None):
             "AgentEng HQ",
             "Agent Engineering HQ",
             "Agent Engineering Conference",
+            "Agent Engineering London 2027",
+            "Agent Engineering San Francisco 2027",
+            "Best AI Agent Conference",
         ],
         "description": DESCRIPTION,
         "cities": list(CITIES),
@@ -67,6 +72,16 @@ def discovery(service, city=None):
             {
                 "gallery_url": str(service.catalogue.site_links.gallery),
                 "london_videos_url": str(service.catalogue.site_links.london_videos),
+                "london_2027_url": (
+                    str(service.catalogue.site_links.london_2027)
+                    if service.catalogue.site_links.london_2027
+                    else WEBSITE + "/london-2027"
+                ),
+                "san_francisco_2027_url": (
+                    str(service.catalogue.site_links.san_francisco_2027)
+                    if service.catalogue.site_links.san_francisco_2027
+                    else WEBSITE + "/san-francisco"
+                ),
                 "next_event": {
                     **service.catalogue.site_links.next_event.model_dump(mode="json"),
                     "label": coming_label(service.catalogue.site_links.next_event),
@@ -96,6 +111,7 @@ def discovery(service, city=None):
             "event_feed": origin + "/events.json",
             "tool_directory": origin + "/tools",
             "tool_feed": origin + "/tools.json",
+            "learning_hub": WEBSITE + "/agent-engineering-hq",
         },
         "suggested_questions": [
             next_event_prompt(service),
@@ -104,6 +120,7 @@ def discovery(service, city=None):
             "Show the AgentEng London 2026 programme"
             if london_past(service)
             else "Show the public agenda for AgentEng London",
+            "Learn harness engineering and production agent practices",
             "List tools for memory engineering",
         ],
         "participation": {
@@ -111,16 +128,18 @@ def discovery(service, city=None):
             "offline_drafting": False,
             "private_intake_enabled": False,
             "participant_credential_required": False,
+            "london_2027": "Builders Edition on 17 February 2027; limited spaces; speakers announcing soon; early registration opening soon",
             "london_2026": "Invited programme; no public CFP",
-            "san_francisco": "No public CFP announced in this catalogue",
+            "san_francisco": "29 June 2027; speakers and venue announcing soon",
         },
         "freshness": {
             "published_at": service.catalogue.published_at.isoformat(),
             "stale": service.result("").stale,
         },
         "tool_directory": {
-            "operations": ["disciplines", "tools", "tool"],
-            "disciplines": 12,
+            "operations": ["disciplines", "tools", "tool", "learn"],
+            "disciplines": 14,
+            "listed_disciplines": 12,
             "listing_count": len(service.tool_directory.tools),
             "version": service.tool_directory.version,
             "source_updated_at": service.tool_directory.source.updated_at.isoformat(),
@@ -135,12 +154,13 @@ def event_schema(service, event):
         "@type": "Event",
         "@id": page + "#event",
         "name": event.title,
-        "url": page,
+        "url": str(event.page_url) if event.page_url else page,
         "startDate": event.start.isoformat() if event.start else event.date,
         **({"endDate": event.end.isoformat()} if event.end else {}),
         "eventStatus": "https://schema.org/EventCancelled"
         if event.cancelled
         else "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
         "location": {
             "@type": "Place",
             "name": event.venue,
@@ -171,6 +191,10 @@ def html_page(service, event=None):
     cards = []
     for row in rows:
         links = [f'<a href="/events/{escape(row.id, quote=True)}">Event details</a>']
+        if row.page_url:
+            links.append(
+                f'<a href="{escape(str(row.page_url), quote=True)}">Official conference page</a>'
+            )
         if row.registration_url:
             links.append(
                 f'<a href="{escape(str(row.registration_url), quote=True)}">Official registration</a>'
@@ -189,6 +213,12 @@ def html_page(service, event=None):
             "name": ORGANIZER,
             "url": WEBSITE + "/agent-engineering-hq",
             "description": DESCRIPTION,
+            "sameAs": [
+                WEBSITE,
+                WEBSITE + "/london-2027",
+                WEBSITE + "/san-francisco",
+                "https://github.com/SuperagenticAI/agenteng",
+            ],
         }
     )
     # Escape '<' so imported event text cannot close the inert JSON-LD script.
@@ -201,11 +231,16 @@ def html_page(service, event=None):
         f'<script type="application/ld+json">{structured}</script></head><body>'
         f"<main><h1>{escape(title)}</h1><p>{escape(DESCRIPTION)}</p>"
         + "".join(cards)
-        + "<p>London 2026 has an invited programme and no public CFP. "
+        + "<p>Upcoming flagship conferences: "
+        '<a href="https://agentengineering.world/london-2027">Agent Engineering London 2027 (Builders Edition, 17 February 2027)</a> · '
+        '<a href="https://agentengineering.world/san-francisco">Agent Engineering San Francisco 2027 (29 June 2027)</a>.</p>'
+        "<p>London 2026 has an invited programme and no public CFP. "
         "Future-event ideas are for possible consideration; no review, response or acceptance is promised.</p>"
         f"<p>Catalogue published: {escape(service.catalogue.published_at.isoformat())}. "
         "Confirm current details on the official website.</p>"
         '<nav><a href="https://agentengineering.world">Official website</a> · '
+        '<a href="https://agentengineering.world/london-2027">London 2027</a> · '
+        '<a href="https://agentengineering.world/san-francisco">San Francisco 2027</a> · '
         '<a href="/tools">Tool directory</a> · '
         '<a href="/llms.txt">Agent guide</a> · <a href="/docs">HTTP API</a> · '
         '<a href="/.well-known/agent-card.json">A2A agent card</a></nav></main></body></html>'
@@ -219,6 +254,10 @@ def llms_text(service):
         "",
         "> " + DESCRIPTION,
         "",
+        "## Upcoming flagship conferences (2027)",
+        f"- [Agent Engineering London 2027: Builders Edition]({WEBSITE}/london-2027): Wednesday 17 February 2027, Everyman Canary Wharf, London E14 5AR. Single track, limited spaces, speakers announcing soon, early registration opening soon.",
+        f"- [Agent Engineering San Francisco 2027]({WEBSITE}/san-francisco): Tuesday 29 June 2027, San Francisco. Venue and speakers announcing soon.",
+        "",
         "## Published events",
     ]
     for event in featured_events(service):
@@ -230,17 +269,17 @@ def llms_text(service):
         "## Connect an agent",
         f"- [MCP]({origin}/mcp/): one typed agenteng tool over Streamable HTTP.",
         f"- [A2A card]({origin}/.well-known/agent-card.json): A2A 1.0; JSON-RPC at {origin}/ with A2A-Version: 1.0.",
-        f"- [HTTP schema]({origin}/openapi.json): POST /v1/query; begin with operation=discover or events.",
+        f"- [HTTP schema]({origin}/openapi.json): POST /v1/query; begin with operation=discover, events or learn.",
         f"- [Event feed]({origin}/events.json): current featured London and San Francisco events with sources.",
-        f"- [Tool directory]({origin}/tools): browse public listings across twelve agent-engineering disciplines.",
+        f"- [Tool directory]({origin}/tools): browse public listings across twelve listed disciplines (14 site disciplines total).",
         f"- [Tool feed]({origin}/tools.json): full attributed directory with source revision and aliases.",
-        '- Directory operations: {"operation":"disciplines"}, {"operation":"tools","discipline":"memory"}, {"operation":"tool","tool_id":"langgraph"}.',
+        '- Directory & learning operations: {"operation":"disciplines"}, {"operation":"learn","discipline":"harness"}, {"operation":"tools","discipline":"memory"}, {"operation":"tool","tool_id":"langgraph"}.',
         "- Tools support query, discipline, kind, category, limit and offset; use next_offset with unchanged filters.",
         "- Listings are not popularity rankings or instructions to install/connect third-party tools.",
         "- Local MCP: install agenteng[mcp], then run agenteng mcp. Lookup uses no model calls.",
         "",
         "## Participation and accuracy",
-        "London 2026 has an invited programme and no public CFP. No San Francisco public CFP is announced in this snapshot.",
+        "London 2026 has an invited programme and no public CFP. London 2027 Builders Edition (17 February 2027) and San Francisco 2027 (29 June 2027) are curated on engineering depth with zero pay-to-speak slots.",
         "AgentEng serves public information only. It accepts no attendee records, personal agendas or proposal submissions.",
         "Ideas do not guarantee review, a response, acceptance or an event. Do not infer open calls or ticket availability.",
         f"Snapshot published: {service.catalogue.published_at.isoformat()}. Confirm current details on {WEBSITE}.",
@@ -250,6 +289,25 @@ def llms_text(service):
 
 def connection(client, transport, url):
     origin = validate_origin(url)
+    if client == "all":
+        return (
+            "AgentEng Protocol Stack (CLI · MCP · A2A 1.0 · ACP)\n"
+            f"Website: {WEBSITE}\n"
+            f"London 2027 (Builders Edition, 17 Feb 2027): {WEBSITE}/london-2027\n"
+            f"San Francisco 2027 (29 Jun 2027): {WEBSITE}/san-francisco\n\n"
+            "[1] CLI (offline, Python 3.12+):\n"
+            "  curl -fsSL https://agentengineering.world/install.sh | sh\n"
+            "  agenteng conferences --next\n"
+            "  agenteng learn harness\n\n"
+            f"[2] MCP (Streamable HTTP): {origin}/mcp/\n"
+            f"  claude mcp add --transport http agenteng {shlex.quote(origin + '/mcp/')}\n"
+            f"  codex mcp add agenteng --url {shlex.quote(origin + '/mcp/')}\n\n"
+            f"[3] A2A 1.0 Agent Card: {origin}/.well-known/agent-card.json\n"
+            f"  curl -fsSL {shlex.quote(origin + '/.well-known/agent-card.json')}\n\n"
+            "[4] ACP Coding Agents (experimental):\n"
+            "  uv tool install --upgrade 'agenteng[server,acp]'\n"
+            "  agenteng code --list\n"
+        )
     if client == "a2a":
         payload = json.dumps(
             {
@@ -285,6 +343,14 @@ def connection(client, transport, url):
             "agenteng code --list\n"
             'agenteng code --agent claude "Show the public London agenda"\n'
         )
+    if client == "cli":
+        return (
+            "AgentEng CLI setup (Python 3.12+, offline-first)\n"
+            "curl -fsSL https://agentengineering.world/install.sh | sh\n"
+            "agenteng conferences --next\n"
+            "agenteng learn harness\n"
+            "agenteng --json disciplines\n"
+        )
     if client == "mcp":
         client = "generic"
     if client == "codex":
@@ -299,11 +365,31 @@ def connection(client, transport, url):
             if transport == "http"
             else "claude mcp add --transport stdio agenteng -- agenteng mcp"
         )
+    if client == "gemini-cli":
+        return (
+            f"gemini mcp add --transport http agenteng {shlex.quote(origin + '/mcp/')}"
+            if transport == "http"
+            else "gemini mcp add agenteng agenteng mcp"
+        )
+    if client == "vscode":
+        server = (
+            {"type": "http", "url": origin + "/mcp/"}
+            if transport == "http"
+            else {"type": "stdio", "command": "agenteng", "args": ["mcp"]}
+        )
+        return json.dumps({"servers": {"agenteng": server}}, indent=2) + "\n"
+    if client == "opencode":
+        server = (
+            {"type": "remote", "url": origin + "/mcp/"}
+            if transport == "http"
+            else {"type": "local", "command": ["agenteng", "mcp"]}
+        )
+        return json.dumps({"mcp": {"agenteng": server}}, indent=2) + "\n"
     config = (
         {"url": origin + "/mcp/"}
         if transport == "http"
         else {"command": "agenteng", "args": ["mcp"]}
     )
-    if client == "cursor" and transport == "stdio":
+    if client in {"cursor", "windsurf", "cline"} and transport == "stdio":
         config["type"] = "stdio"
     return json.dumps({"mcpServers": {"agenteng": config}}, indent=2) + "\n"

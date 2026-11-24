@@ -40,6 +40,8 @@ function evaluate(n) {
   if (ts.isNumericLiteral(n)) return Number(n.text);
   if (n.kind === ts.SyntaxKind.TrueKeyword) return true;
   if (n.kind === ts.SyntaxKind.FalseKeyword) return false;
+  if (n.kind === ts.SyntaxKind.NullKeyword) return null;
+  if (ts.isPrefixUnaryExpression(n) && n.operator === ts.SyntaxKind.MinusToken) return -evaluate(n.operand);
   if (ts.isIdentifier(n)) return constant(n.text);
   if (ts.isArrayLiteralExpression(n)) return n.elements.map(evaluate);
   if (ts.isObjectLiteralExpression(n)) return Object.fromEntries(n.properties.map(p => {
@@ -82,8 +84,15 @@ function jsxAttribute(file, tag, key, keyValue, wanted) {
     const open = ts.isJsxElement(n) ? n.openingElement : ts.isJsxSelfClosingElement(n) ? n : null;
     if (!open || open.tagName.getText() !== tag) return;
     const attrs = Object.fromEntries(open.attributes.properties.filter(ts.isJsxAttribute)
-      .filter(a => a.initializer && ts.isStringLiteral(a.initializer))
-      .map(a => [a.name.getText(), a.initializer.text]));
+      .map(a => {
+        if (!a.initializer) return null;
+        if (ts.isStringLiteral(a.initializer)) return [a.name.getText(), a.initializer.text];
+        if (ts.isJsxExpression(a.initializer) && a.initializer.expression) {
+          try { return [a.name.getText(), String(evaluate(a.initializer.expression))]; } catch { return null; }
+        }
+        return null;
+      })
+      .filter(Boolean));
     if (attrs[key] === keyValue && attrs[wanted]) found = attrs[wanted];
   });
   if (!found) throw new Error(`Missing ${tag} ${key}=${keyValue} in ${file}`);
@@ -136,6 +145,8 @@ read('src/data/contact.ts');
 read('src/data/venue.ts');
 read('src/data/disciplines.ts');
 read('src/data/events.ts');
+read('src/data/london-2027.ts');
+read('src/data/sf-2027.ts');
 read('src/data/london-next-event.ts');
 read('src/pages/LondonAgentsInProduction.tsx');
 const sfText = read('src/pages/SanFrancisco.tsx');
@@ -707,7 +718,76 @@ const nextConf = conferencesData.find(c => c.status === 'announced' || c.status 
 const prevConf = conferencesData.find(c => c.status === 'past');
 const site_links = {next_event: nextConf ? {name: nextConf.name, when: nextConf.when, url: site + nextConf.href} : null,
   previous_event: prevConf ? {name: prevConf.name, when: prevConf.when, url: site + prevConf.href} : null,
+  london_2027: site + '/london-2027', san_francisco_2027: site + '/san-francisco',
   london_2026: site + '/london-2026', gallery: site + '/gallery', london_videos: londonVideosPage, agenteng: site + '/agenteng'};
+
+// Upcoming 2027 conferences: London 2027 Builders Edition and San Francisco 2027.
+const london2027Data = constant('london2027');
+const london2027Id = 'agenteng-london-2027';
+const london2027Url = site + '/london-2027';
+const london2027Venue = `${london2027Data.venue.name}, ${london2027Data.venue.streetAddress}, ${london2027Data.venue.locality} ${london2027Data.venue.postalCode}`;
+const london2027Src = source(
+  london2027Id,
+  london2027Url,
+  `${london2027Data.name}: ${london2027Data.edition}. ${london2027Data.dayLabel}. ${london2027Venue}. One-day, single-track technical conference with limited spaces. ${london2027Data.tagline} Speakers announcing soon; early registration opening soon.`,
+  london2027Id,
+  'event',
+);
+events.push({
+  id: london2027Id,
+  title: `${london2027Data.name}: ${london2027Data.edition}`,
+  city: london2027Data.city,
+  timezone: 'Europe/London',
+  date: london2027Data.date,
+  date_precision: 'day',
+  venue: london2027Venue,
+  venue_tour_url: venueTour,
+  page_url: london2027Url,
+  track: 'single',
+  start: london2027Data.startDateIso,
+  end: london2027Data.endDateIso,
+  speaker_submission_status: 'invited_only',
+  tagline: london2027Data.tagline,
+  registration_status: 'coming_soon',
+  registration_note: 'Early registration opening soon. Limited spaces. Speakers announcing soon.',
+  source_ids: [london2027Src],
+});
+for (const [i, f] of constant('london2027Faqs').entries()) {
+  const sid = source('london2027-faq-' + i, london2027Url + '#faq', f.question + '\n' + f.answer, london2027Id, 'faq');
+  faqs.push({id: 'london2027-faq-' + i, question: clean(f.question), answer: clean(f.answer), event_id: london2027Id, source_ids: [sid]});
+}
+
+const sf2027Conf = conferencesData.find(c => c.id === 'san-francisco-2027');
+if (!sf2027Conf || !sf2027Conf.startDate) throw new Error('San Francisco 2027 conference drift in events.ts');
+const sf2027Id = 'agenteng-sf-2027';
+const sf2027Url = site + '/san-francisco';
+const sf2027Src = source(
+  sf2027Id,
+  sf2027Url,
+  `${sf2027Conf.name} 2027. ${sf2027Conf.when}. San Francisco, venue to be announced. Builder-led technical AI agent conference covering all 14 agent engineering disciplines. Speakers and venue announcing soon.`,
+  sf2027Id,
+  'event',
+);
+events.push({
+  id: sf2027Id,
+  title: `${sf2027Conf.name} 2027`,
+  city: 'San Francisco',
+  timezone: 'America/Los_Angeles',
+  date: sf2027Conf.startDate,
+  date_precision: 'day',
+  venue: 'San Francisco, venue to be announced',
+  page_url: sf2027Url,
+  track: 'single',
+  speaker_submission_status: 'invited_only',
+  tagline: 'There are many Agent conferences. This one is truly yours.',
+  registration_status: 'coming_soon',
+  registration_note: 'Speakers and venue announcing soon.',
+  source_ids: [sf2027Src],
+});
+for (const [i, f] of constant('sfFaqs').entries()) {
+  const sid = source('sf2027-faq-' + i, sf2027Url + '#faq', f.question + '\n' + f.answer, sf2027Id, 'faq');
+  faqs.push({id: 'sf2027-faq-' + i, question: clean(f.question), answer: clean(f.answer), event_id: sf2027Id, source_ids: [sid]});
+}
 for (const e of events) e.page_url = e.page_url || (e.id === london ? site + '/london-2026' : e.city === 'San Francisco' ? sfEvents : site + '/london');
 const source_hash=hash.digest('hex');
 const catalogue={schema_version:1,version:'website-'+source_hash.slice(0,12),published_at:new Date().toISOString(),

@@ -128,8 +128,10 @@ def test_restructured_urls_and_no_talks_urls():
     assert str(service.events[LONDON].page_url) == f"{SITE}/london-2026"
     links = service.catalogue.site_links
     assert str(links.gallery) == f"{SITE}/gallery"
-    assert str(links.next_event.url) == f"{SITE}/san-francisco"
+    assert str(links.next_event.url) == f"{SITE}/london-2027"
     assert str(links.previous_event.url) == f"{SITE}/london-2026"
+    assert str(links.london_2027) == f"{SITE}/london-2027"
+    assert str(links.san_francisco_2027) == f"{SITE}/san-francisco"
 
 
 def test_recordings_include_london_videos_and_welcome():
@@ -180,15 +182,13 @@ def test_next_event_prompt_and_coming_label():
     service = Service()
     data = discovery(service)
     assert "Find the next Agent Engineering Conference in London" not in data["suggested_questions"]
-    assert (
-        "What is the next Agent Engineering event in San Francisco?" in data["suggested_questions"]
-    )
-    assert data["next_event"]["label"] == "coming April 2027"
+    assert "What is the next Agent Engineering event in London?" in data["suggested_questions"]
+    assert data["next_event"]["label"] == "coming 17 February 2027"
     assert set(data["next_event"]) == {"name", "when", "url", "label"}
     answer = service.lookup(
-        Request(operation="ask", query="What is the next Agent Engineering event in San Francisco?")
+        Request(operation="ask", query="What is the next Agent Engineering event in London?")
     ).answer
-    assert "Agent Engineering San Francisco is coming April 2027" in answer
+    assert "Agent Engineering London 2027 is coming 17 February 2027" in answer
 
 
 def test_no_em_dashes_in_new_output():
@@ -289,19 +289,20 @@ def test_bingo_has_no_cancelled_talk_terms():
 def test_sf_events_page_and_conference_link():
     service = Service()
     sf_events = f"{SITE}/san-francisco/events"
+    sf_conf = f"{SITE}/san-francisco"
     for event in service.catalogue.events:
         if event.city == "San Francisco":
-            assert str(event.page_url) == sf_events
-            assert all(str(service.sources[i].url) == sf_events for i in event.source_ids)
+            expected = sf_conf if event.id == "agenteng-sf-2027" else sf_events
+            assert str(event.page_url) == expected
+            assert all(str(service.sources[i].url) == expected for i in event.source_ids)
     recap_page = f"{SITE}/san-francisco/events/code-engineering-2026"
     sf_urls = {str(s.url) for s in service.catalogue.sources if "/san-francisco" in str(s.url)} | {
         str(t.event_url) for t in service.catalogue.talks if t.city == "San Francisco"
     }
-    assert sf_events in sf_urls and recap_page in sf_urls
-    assert f"{SITE}/san-francisco" not in sf_urls
-    assert str(service.catalogue.site_links.next_event.url) == f"{SITE}/san-francisco"
+    assert sf_events in sf_urls and recap_page in sf_urls and sf_conf in sf_urls
+    assert str(service.catalogue.site_links.san_francisco_2027) == sf_conf
     links = lookup(operation="about").data["links"]
-    assert links["san_francisco"] == f"{SITE}/san-francisco"
+    assert links["san_francisco"] == sf_conf
     assert links["san_francisco_events"] == sf_events
 
 

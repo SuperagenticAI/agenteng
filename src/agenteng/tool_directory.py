@@ -266,6 +266,11 @@ class ToolDirectory(Model):
                 "directory": metadata,
             }
             answer = f"{len(page)} of {len(rows)} matching listings."
+            if request.discipline in {"factory", "decision"} and not rows:
+                answer = (
+                    f"0 directory tool listings yet for {request.discipline} engineering. "
+                    f"Run `agenteng learn {request.discipline}` for architecture practices and conference resources."
+                )
         return Result(
             answer=answer,
             data=data,

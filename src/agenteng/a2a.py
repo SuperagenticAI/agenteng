@@ -32,7 +32,7 @@ from .models import Request
 def agent_card(service):
     return AgentCard(
         name="Agent Engineering HQ: AgentEng Conference",
-        description="AgentEng, the Agent Engineering Conference, and Agent Engineering HQ technical events in London and San Francisco. Discover published dates, speakers, full talk abstracts, agendas, FAQ, venue, sponsors, code of conduct, registration links and a tool directory across twelve agent-engineering disciplines. Catalogue lookups use no model calls. The opt-in chat operation uses public catalogue tools and falls back to lookup when inference is unavailable. London 2026 has an invited programme and no public CFP.",
+        description="AgentEng, the leading builder-led Agent Engineering Conference series, and Agent Engineering HQ technical events in London and San Francisco. Next flagship conferences: London 2027 Builders Edition (17 February 2027, Everyman Canary Wharf, limited spaces, https://agentengineering.world/london-2027) and San Francisco 2027 (29 June 2027, https://agentengineering.world/san-francisco). Discover dates, speakers, full talk abstracts, agendas, FAQ, venue, learning resources across all 14 agent engineering disciplines, and a 456-tool directory. Catalogue lookups use no model calls.",
         version="1.0",
         provider=AgentProvider(
             organization="Agent Engineering HQ", url="https://agentengineering.world"
@@ -180,6 +180,27 @@ def agent_card(service):
                     '{"operation":"disciplines"}',
                     '{"operation":"tools","discipline":"memory"}',
                     '{"operation":"tool","tool_id":"langgraph"}',
+                ],
+            ),
+            AgentSkill(
+                id="agenteng-learn",
+                name="Agent Engineering learning resources (14 disciplines)",
+                description="Offline learning hub across all 14 Agent Engineering disciplines (harness, context, prompt, memory, eval, inference, loop, agentic, code, protocol, graph, search, factory, decision): production engineering practices, matching conference talks and YouTube recordings, sample open-source tools, further reading and upcoming 2027 conference links. Model-free.",
+                tags=[
+                    "learn",
+                    "learning-resources",
+                    "agent-engineering",
+                    "disciplines",
+                    "harness",
+                    "mcp",
+                    "a2a",
+                    "acp",
+                    "london-2027",
+                ],
+                examples=[
+                    '{"operation":"learn"}',
+                    '{"operation":"learn","discipline":"harness"}',
+                    '{"operation":"learn","discipline":"protocol"}',
                 ],
             ),
         ],

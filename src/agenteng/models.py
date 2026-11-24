@@ -96,7 +96,7 @@ class Event(Model):
     recording_url: HttpUrl | None = None
     offers: list[Offer] = Field(default_factory=list)
     tagline: str | None = None
-    registration_status: Literal["open", "fully_booked"] | None = None
+    registration_status: Literal["open", "coming_soon", "fully_booked"] | None = None
     registration_note: str | None = None
     source_ids: list[str]
 
@@ -389,6 +389,8 @@ class SiteEventLink(Model):
 class SiteLinks(Model):
     next_event: SiteEventLink | None = None
     previous_event: SiteEventLink | None = None
+    london_2027: HttpUrl | None = None
+    san_francisco_2027: HttpUrl | None = None
     london_2026: HttpUrl
     gallery: HttpUrl
     london_videos: HttpUrl
@@ -525,6 +527,7 @@ class Request(Model):
         "disciplines",
         "tools",
         "tool",
+        "learn",
     ]
     event_id: str | None = Field(default=None, max_length=128)
     speaker_id: str | None = Field(default=None, max_length=128)
@@ -545,7 +548,7 @@ class Request(Model):
     engine: Literal["lookup", "auto", "standard", "rlm"] = "lookup"
     limit: int = Field(default=20, ge=1, le=100)
     tool_id: str | None = Field(default=None, min_length=1, max_length=128)
-    discipline: DisciplineID | None = None
+    discipline: DisciplineID | Literal["factory", "decision"] | None = None
     kind: ToolKind | None = None
     category: str | None = Field(default=None, min_length=1, max_length=160)
     offset: int = Field(default=0, ge=0, le=10000)
@@ -589,12 +592,16 @@ class Request(Model):
             raise ValueError("tool requires tool_id")
         if self.tool_id and self.operation != "tool":
             raise ValueError("tool_id only applies to tool")
-        if self.operation != "tools" and (
+        if self.operation not in {"tools", "learn"} and (
             self.discipline
             or self.kind
             or self.category
             or self.offset
             or self.tool_status != "listed"
+        ):
+            raise ValueError("Directory filters only apply to tools")
+        if self.operation == "learn" and (
+            self.kind or self.category or self.offset or self.tool_status != "listed"
         ):
             raise ValueError("Directory filters only apply to tools")
         if self.operation in TOOL_OPERATIONS and (

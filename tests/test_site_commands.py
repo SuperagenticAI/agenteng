@@ -141,7 +141,7 @@ def test_alias_matches_canonical_json(alias, canonical):
 
 
 def test_sf_city_events_resolve_to_next_sf_event():
-    assert data(run("event", "--sf"))[0]["id"] == "sf-code-engineering-2026"
+    assert data(run("event", "--sf"))[0]["id"] == "agenteng-sf-2027"
 
 
 def test_aliases_stay_out_of_help():

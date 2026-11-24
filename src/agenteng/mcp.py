@@ -36,7 +36,11 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
             "Use disciplines to find the twelve tool-directory filters, tools to browse/search with "
             "discipline, kind, category, query, limit and offset, and tool with tool_id for links. "
             "Continue pagination with next_offset and unchanged filters. Listings are not popularity rankings. "
-            "AgentEng is the Agent Engineering Conference, organized by Agent Engineering HQ in London and San Francisco. "
+            "AgentEng is the leading builder-led Agent Engineering Conference series, organized by Agent Engineering HQ in London and San Francisco. "
+            "Upcoming flagship conferences: Agent Engineering London 2027 (Builders Edition, Wednesday 17 February 2027, Everyman Canary Wharf, limited spaces, early registration opening soon, https://agentengineering.world/london-2027) "
+            "and Agent Engineering San Francisco 2027 (Tuesday 29 June 2027, https://agentengineering.world/san-francisco). "
+            "Use learn (optional discipline such as harness, context, memory, eval, inference, protocol, code, factory or decision) "
+            "for offline learning resources, production agent practices, matching talks, tools and conference links. "
             "Use guide for the published London day guide (section arriving, getting-here, registration, qna, help, or list), "
             "about for the organiser, chair and connection details, hq for the manifesto, "
             "mindset and further reading, live for a now/next venue-screen snapshot (at overrides the clock), "
@@ -74,7 +78,7 @@ def create_mcp(service: Service, *, stdio: bool = False) -> FastMCP:
 
     @mcp.tool(
         name="agenteng",
-        description="Discover AgentEng conferences in London and San Francisco, browse agent-engineering tools across twelve disciplines, query public facts from Agent Engineering HQ.",
+        description="Discover AgentEng conferences (London 2027 Builders Edition, San Francisco 2027), learn all 14 agent engineering disciplines, browse 456+ agent tools and query Agent Engineering HQ.",
         annotations=ToolAnnotations(
             readOnlyHint=True,
             destructiveHint=False,

@@ -117,15 +117,35 @@ def dispatch(ctx, payload, output=None, *, quiet=False):
 
 
 @main.command()
+@click.option("--all", "show_all", is_flag=True, hidden=True)
+@click.option("--london-2027", "edition", flag_value="london-2027", hidden=True)
+@click.option("--sf-2027", "edition", flag_value="sf-2027", hidden=True)
 @click.pass_context
-def disciplines(ctx):
+def disciplines(ctx, show_all=False, edition=None):
     """List the site's disciplines, tool counts and available filters."""
     dispatch(ctx, dict(operation="disciplines"))
 
 
+ALL_DISCIPLINE_CHOICES = [*list(DISCIPLINES), "factory", "decision"]
+
+
+@main.command()
+@click.argument("discipline", required=False, type=click.Choice(ALL_DISCIPLINE_CHOICES))
+@click.option(
+    "--search", "query", default="", help="Search learning resources by discipline or keyword."
+)
+@click.pass_context
+def learn(ctx, discipline, query):
+    """Explore offline learning resources, talks, tools and practices across all 14 disciplines.
+
+    DISCIPLINE is optional, for example harness, context, memory, eval, protocol, code, factory or decision.
+    """
+    dispatch(ctx, dict(operation="learn", discipline=discipline, query=query))
+
+
 @main.command()
 @click.option(
-    "--discipline", type=click.Choice(list(DISCIPLINES)), help="Only tools in this discipline."
+    "--discipline", type=click.Choice(ALL_DISCIPLINE_CHOICES), help="Only tools in this discipline."
 )
 @click.option(
     "--kind", type=click.Choice(list(get_args(ToolKind))), help="Only tools of this kind."
@@ -231,9 +251,22 @@ def resolve_talk(ctx, identifier: str, event_id: str | None = None):
 
 
 def city_shortcuts(command):
-    """Hidden ``--london`` and ``--sf`` flags, as written on the website, for ``--city``."""
+    """Hidden city/edition flags, as written on the website, for ``--city`` and edition IDs."""
     command = click.option("--london", "city", flag_value="London", hidden=True)(command)
     return click.option("--sf", "--san-francisco", "city", flag_value="San Francisco", hidden=True)(
+        command
+    )
+
+
+def edition_shortcuts(command):
+    """Hidden edition flags (``--london-2027``, ``--london-2026``, ``--sf-2027``) as on the website."""
+    command = click.option(
+        "--london-2027", "edition_id", flag_value="agenteng-london-2027", hidden=True
+    )(command)
+    command = click.option(
+        "--london-2026", "edition_id", flag_value="agenteng-london-2026", hidden=True
+    )(command)
+    return click.option("--sf-2027", "edition_id", flag_value="agenteng-sf-2027", hidden=True)(
         command
     )
 
@@ -298,15 +331,19 @@ def events(ctx, where, city, upcoming, past, latest):
 @main.command()
 @click.argument("event_id", required=False)
 @city_shortcuts
+@edition_shortcuts
+@click.option("--json", "as_json_local", is_flag=True, hidden=True)
 @click.pass_context
-def event(ctx, event_id, city=None):
+def event(ctx, event_id, city=None, edition_id=None, as_json_local=False):
     """Read one event by its published ID (or a city: london, san-francisco).
 
     EVENT_ID is an event ID from agenteng events, or a city. Omit it in a terminal to pick one.
     """
     from .interactive import require_event_id
 
-    event_id = event_or_city(ctx, event_id, city)
+    if as_json_local:
+        ctx.obj["as_json"] = True
+    event_id = edition_id or event_or_city(ctx, event_id, city)
     dispatch(ctx, dict(operation="event", event_id=require_event_id(ctx, event_id)))
 
 
@@ -325,15 +362,16 @@ def event(ctx, event_id, city=None):
     "--output", type=click.Path(dir_okay=False), help="Write an .ics calendar when --format ics."
 )
 @city_shortcuts
+@edition_shortcuts
 @click.pass_context
-def agenda(ctx, event_id, topic, output_format, output, city=None):
+def agenda(ctx, event_id, topic, output_format, output, city=None, edition_id=None):
     """Read an event's public agenda; optionally export .ics.
 
     EVENT_ID is an event ID or a city (london, san-francisco). Omit it in a terminal to pick one.
     """
     from .interactive import require_event_id
 
-    event_id = event_or_city(ctx, event_id, city)
+    event_id = edition_id or event_or_city(ctx, event_id, city)
     dispatch(
         ctx,
         dict(
@@ -350,11 +388,14 @@ def agenda(ctx, event_id, topic, output_format, output, city=None):
 @click.option("--event", "event_id", help="Only speakers at this event ID.")
 @click.option("--city", help="Only speakers in London or San Francisco.")
 @city_shortcuts
+@edition_shortcuts
 @click.option("--search", "query", default="", help="Match name, company, talk title or abstract.")
 @click.pass_context
-def speakers(ctx, event_id, city, query):
+def speakers(ctx, event_id, city, query, edition_id=None):
     """List published speakers with roles, companies, talks and abstracts."""
-    dispatch(ctx, dict(operation="speakers", event_id=event_id, city=city, query=query))
+    dispatch(
+        ctx, dict(operation="speakers", event_id=edition_id or event_id, city=city, query=query)
+    )
 
 
 @main.command("speaker")
@@ -842,9 +883,83 @@ def bingo(ctx, event_id, size, seed, output_format, output, play, city=None):
         click.echo(f"Wrote {output}", err=True)
 
 
+@main.command("conferences", hidden=True)
+@click.option("--upcoming", "--next", is_flag=True, hidden=True)
+@click.option("--past", is_flag=True, hidden=True)
+@click.pass_context
+def conferences_shortcut(ctx, upcoming=False, past=False):
+    """Website wording for `agenteng events --upcoming` / `agenteng discover`."""
+    if upcoming or past:
+        dispatch(ctx, dict(operation="events", upcoming=upcoming, past=past))
+    else:
+        dispatch(ctx, dict(operation="discover"))
+
+
+@main.command("conference", hidden=True)
+@click.option("--overview", is_flag=True, hidden=True)
+@edition_shortcuts
+@click.pass_context
+def conference_shortcut(ctx, overview=False, edition_id=None):
+    """Website wording for `agenteng event agenteng-london-2027`."""
+    dispatch(ctx, dict(operation="event", event_id=edition_id or "agenteng-london-2027"))
+
+
+@main.command("edition", hidden=True)
+@click.option("--builders", is_flag=True, hidden=True)
+@click.pass_context
+def edition_shortcut(ctx, builders=False):
+    """Website wording for London 2027 Builders Edition."""
+    dispatch(ctx, dict(operation="event", event_id="agenteng-london-2027"))
+
+
+@main.command("format", hidden=True)
+@edition_shortcuts
+@click.pass_context
+def format_shortcut(ctx, edition_id=None):
+    """Website wording for conference format lookup."""
+    dispatch(ctx, dict(operation="event", event_id=edition_id or "agenteng-london-2027"))
+
+
+@main.command("register", hidden=True)
+@edition_shortcuts
+@click.option("--early", is_flag=True, hidden=True)
+@click.pass_context
+def register_shortcut(ctx, edition_id=None, early=False):
+    """Website wording for `agenteng tickets agenteng-london-2027`."""
+    dispatch(ctx, dict(operation="tickets", event_id=edition_id or "agenteng-london-2027"))
+
+
+@main.command("partner", hidden=True)
+@edition_shortcuts
+@click.option("--events", "all_events", is_flag=True, hidden=True)
+@click.pass_context
+def partner_shortcut(ctx, edition_id=None, all_events=False):
+    """Website wording for `agenteng sponsors`."""
+    dispatch(ctx, dict(operation="sponsors"))
+
+
 @main.command()
 @click.argument(
-    "client", type=click.Choice(["a2a", "mcp", "acp", "codex", "claude-code", "cursor", "generic"])
+    "client",
+    required=False,
+    type=click.Choice(
+        [
+            "all",
+            "a2a",
+            "mcp",
+            "acp",
+            "cli",
+            "codex",
+            "claude-code",
+            "cursor",
+            "windsurf",
+            "vscode",
+            "gemini-cli",
+            "opencode",
+            "cline",
+            "generic",
+        ]
+    ),
 )
 @click.option(
     "--transport",
@@ -859,13 +974,20 @@ def bingo(ctx, event_id, size, seed, output_format, output, play, city=None):
     show_default=True,
     help="Hosted server base URL for A2A or HTTP MCP.",
 )
-def connect(client, transport, url):
-    """Print A2A, MCP or ACP setup instructions without changing client configuration.
+@click.option("--protocol", "protocol_flag", hidden=True)
+@click.option("--sf-2027", "sf_flag", is_flag=True, hidden=True)
+def connect(client, transport, url, protocol_flag=None, sf_flag=False):
+    """Print A2A, MCP, ACP or CLI setup instructions without changing client configuration.
 
-    CLIENT is a2a, mcp, acp, codex, claude-code, cursor or generic. Output is plain text.
+    CLIENT is all, a2a, mcp, acp, cli, codex, claude-code, cursor, windsurf, vscode, gemini-cli, opencode, cline or generic. Output is plain text.
     """
+    picked = client or protocol_flag or ("all" if sf_flag else None)
+    if not picked:
+        raise click.UsageError(
+            "Choose a client: all, a2a, mcp, acp, cli, codex, claude-code, cursor, windsurf, vscode, gemini-cli, opencode, cline or generic."
+        )
     try:
-        click.echo(connection(client, transport, url))
+        click.echo(connection(picked, transport, url))
     except ValueError as exc:
         raise click.ClickException(str(exc)) from exc
 

@@ -117,6 +117,9 @@ def _event_card(event: dict) -> Panel:
         body.append("Fully booked  ·  ", style="ae.meta")
         body.append("agenteng guide", style="ae.accent")
         body.append(" for the day guide\n", style="ae.meta")
+    elif event.get("registration_status") == "coming_soon":
+        note = event.get("registration_note") or "Early registration opening soon."
+        body.append(display_text(note) + "\n", style="ae.accent")
     elif offer:
         body.append("From ", style="ae.meta")
         body.append(
@@ -989,6 +992,121 @@ def render_acp_agents(rows: list[dict], registry: str, console: Console | None =
     )
 
 
+def render_learn(console: Console, result: Result) -> None:
+    data = result.data if isinstance(result.data, dict) else {}
+    discipline = data.get("discipline")
+    if isinstance(discipline, dict):
+        body = Text()
+        body.append(display_text(discipline.get("description") or "") + "\n", style="ae.title")
+        if discipline.get("primitives"):
+            body.append("\nCore primitives: ", style="ae.accent")
+            body.append(", ".join(display_text(p) for p in discipline["primitives"]) + "\n")
+        if discipline.get("protocols"):
+            body.append("Open protocols: ", style="ae.accent")
+            body.append(", ".join(display_text(p) for p in discipline["protocols"]) + "\n")
+        if discipline.get("practices"):
+            body.append("\nProduction practices:\n", style="ae.accent")
+            for practice in discipline["practices"]:
+                body.append("  • " + display_text(practice) + "\n")
+        if discipline.get("cli_tools_command"):
+            body.append("\nExplore tools: ", style="ae.meta")
+            body.append(display_text(discipline["cli_tools_command"]) + "\n", style="ae.accent")
+        console.print(_panel(display_text(discipline.get("title") or "Learn"), body, border=VIOLET))
+
+        talks = data.get("talks") or []
+        if talks:
+            talk_table = Table(
+                title="Matching conference talks",
+                box=BOX,
+                border_style=BLUE,
+                header_style="ae.title",
+                expand=True,
+            )
+            talk_table.add_column("Talk", ratio=2)
+            talk_table.add_column("Speaker", ratio=1)
+            talk_table.add_column("Watch / Read", ratio=2)
+            for row in talks:
+                speaker = display_text(row.get("speaker") or "")
+                if row.get("company"):
+                    speaker = (
+                        f"{speaker} ({display_text(row['company'])})"
+                        if speaker
+                        else display_text(row["company"])
+                    )
+                link = str(row.get("youtube_url") or row.get("url") or "")
+                talk_table.add_row(display_text(row.get("title") or ""), speaker, link)
+            console.print(talk_table)
+
+        tools = data.get("sample_tools") or []
+        if tools:
+            tool_table = Table(
+                title=f"Sample tools ({data.get('tool_count', len(tools))} listed)",
+                box=BOX,
+                border_style=MAGENTA,
+                header_style="ae.title",
+                expand=True,
+            )
+            tool_table.add_column("Tool", style="ae.accent", no_wrap=True)
+            tool_table.add_column("Kind", style="ae.meta", no_wrap=True)
+            tool_table.add_column("Link", overflow="fold")
+            for row in tools:
+                tool_table.add_row(
+                    display_text(row.get("name") or row.get("id") or ""),
+                    display_text(row.get("kind") or ""),
+                    str(row.get("url") or ""),
+                )
+            console.print(tool_table)
+    else:
+        header = Text()
+        if data.get("summary"):
+            header.append(display_text(data["summary"]) + "\n", style="ae.title")
+        if data.get("website"):
+            header.append("Website: ", style="ae.meta")
+            header.append(str(data["website"]), style=BLUE)
+        console.print(
+            _panel(
+                display_text(data.get("title") or "Agent Engineering Learning Hub"),
+                header,
+                border=VIOLET,
+            )
+        )
+
+        table = Table(
+            title="14 Agent Engineering Disciplines",
+            box=BOX,
+            border_style=BLUE,
+            header_style="ae.title",
+            expand=True,
+        )
+        table.add_column("ID", style="ae.accent", no_wrap=True)
+        table.add_column("Discipline", ratio=1)
+        table.add_column("Core primitives", ratio=2)
+        table.add_column("Tools", justify="right", no_wrap=True)
+        for row in data.get("disciplines") or []:
+            primitives = ", ".join(display_text(p) for p in (row.get("primitives") or [])[:3])
+            count = str(row["tool_count"]) if row.get("tool_count") else "0"
+            table.add_row(
+                display_text(row.get("id") or ""),
+                display_text(row.get("title") or ""),
+                primitives,
+                count,
+            )
+        console.print(table)
+        console.print(
+            "[ae.meta]Deep dive into any discipline with[/] agenteng learn <discipline> [ae.meta](e.g. agenteng learn harness)[/]"
+        )
+
+    conferences = data.get("upcoming_conferences") or []
+    if conferences:
+        conf_body = _kv_table()
+        for conf in conferences:
+            label = (
+                f"{display_text(conf.get('title') or '')} ({display_text(conf.get('date') or '')})"
+            )
+            conf_body.add_row(label, str(conf.get("url") or ""))
+        console.print(_panel("Upcoming 2027 Conferences", conf_body, border=MAGENTA))
+
+
 def render_result(result: Result, operation: str, console: Console | None = None) -> None:
     """Render a service Result for humans. Does not change JSON shapes."""
     console = console or make_console()
@@ -1039,6 +1157,7 @@ def render_result(result: Result, operation: str, console: Console | None = None
         "ask": render_ask,
         "chat": render_ask,
         "disciplines": render_disciplines,
+        "learn": render_learn,
         "tools": render_tools,
         "tool": render_tool,
         "discover": render_discover,

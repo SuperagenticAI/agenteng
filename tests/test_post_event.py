@@ -149,7 +149,11 @@ def test_ask_routing_falls_back_to_the_past_conference(after):
     lunch = ask(after, "Where is lunch?")
     assert lunch.answer.startswith("AgentEng London 2026 took place on 16 October 2026")
     sf = ask(after, "When is the San Francisco event?")
-    assert {s.id for s in sf.sources} == {"sf-harness-engineering-2026", "sf-code-engineering-2026"}
+    assert {s.id for s in sf.sources} == {
+        "sf-harness-engineering-2026",
+        "sf-code-engineering-2026",
+        "agenteng-sf-2027",
+    }
     assert after.default_conference() is None
     assert after.past_conference().id == LONDON
 

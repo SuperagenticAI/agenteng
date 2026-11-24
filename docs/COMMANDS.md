@@ -615,7 +615,27 @@ agenteng participate [OPTIONS]
 agenteng participate
 ```
 
-## Tool directory
+## Tool directory and learning hub
+
+### agenteng learn
+
+Explore offline learning resources, talks, tools and practices across all 14 disciplines.
+
+DISCIPLINE is optional, for example harness, context, memory, eval, protocol, code, factory or decision.
+
+```text
+agenteng learn [OPTIONS] [[prompt|context|harness|eval|memory|inference|loop|agentic|code|protocol|graph|search|factory|decision]]
+```
+
+| Option | Meaning | Default |
+| --- | --- | --- |
+| `--search` TEXT | Search learning resources by discipline or keyword. |  |
+
+```sh
+agenteng learn
+agenteng learn harness
+agenteng learn protocol
+```
 
 ### agenteng disciplines
 
@@ -641,7 +661,7 @@ agenteng tools [OPTIONS]
 
 | Option | Meaning | Default |
 | --- | --- | --- |
-| `--discipline` CHOICE | Only tools in this discipline. One of: `prompt`, `context`, `harness`, `eval`, `memory`, `inference`, `loop`, `agentic`, `code`, `protocol`, `graph`, `search`. |  |
+| `--discipline` CHOICE | Only tools in this discipline. One of: `prompt`, `context`, `harness`, `eval`, `memory`, `inference`, `loop`, `agentic`, `code`, `protocol`, `graph`, `search`, `factory`, `decision`. |  |
 | `--kind` CHOICE | Only tools of this kind. One of: `agent`, `framework`, `cli`, `ide`, `extension`, `sandbox`, `connector`, `protocol`, `registry`, `model`, `runtime`, `hosting`, `database`, `search`, `evaluation`, `observability`, `security`, `browser`, `app`, `embedding`, `documentation`. |  |
 | `--category` TEXT | Exact source category; use agenteng --json disciplines to find categories. |  |
 | `--search` TEXT | Match names, aliases, IDs and category tags. |  |
@@ -671,12 +691,12 @@ agenteng tool langgraph
 
 ### agenteng connect
 
-Print A2A, MCP or ACP setup instructions without changing client configuration.
+Print A2A, MCP, ACP or CLI setup instructions without changing client configuration.
 
-CLIENT is a2a, mcp, acp, codex, claude-code, cursor or generic. Output is plain text.
+CLIENT is all, a2a, mcp, acp, cli, codex, claude-code, cursor, windsurf, vscode, gemini-cli, opencode, cline or generic. Output is plain text.
 
 ```text
-agenteng connect [OPTIONS] {a2a|mcp|acp|codex|claude-code|cursor|generic}
+agenteng connect [OPTIONS] {all|a2a|mcp|acp|cli|codex|claude-code|cursor|windsurf|vscode|gemini-cli|opencode|cline|generic}
 ```
 
 | Option | Meaning | Default |
@@ -685,10 +705,12 @@ agenteng connect [OPTIONS] {a2a|mcp|acp|codex|claude-code|cursor|generic}
 | `--url` TEXT | Hosted server base URL for A2A or HTTP MCP. | `https://a2a.agentengineering.world` |
 
 ```sh
+agenteng connect all
 agenteng connect a2a
 agenteng connect mcp --transport http
 agenteng connect acp
 agenteng connect claude-code --transport http
+agenteng connect gemini-cli
 ```
 
 ### agenteng mcp

@@ -47,16 +47,16 @@
 
 ## Why AgentEng?
 
-**AgentEng** brings [Agent Engineering HQ](https://agentengineering.world) to your terminal and coding agent. It is an offline-capable Python CLI, MCP server and A2A agent for conferences, meetups and events in **London** and **San Francisco**, with a directory of tools across **12 agent engineering disciplines**.
+**AgentEng** brings [Agent Engineering HQ](https://agentengineering.world) to your terminal and coding agent. It is an offline-capable Python CLI, MCP server, A2A 1.0 agent and ACP coding-agent companion for conferences, meetups and events in **London** and **San Francisco**, including **Agent Engineering London 2027 (Builders Edition, 17 February 2027, Limited spaces)** and **Agent Engineering San Francisco 2027 (29 June 2027)**, plus a learning hub and tool directory across **14 agent engineering disciplines**.
 
 Explore the bundled catalogue with **no provider key or model calls**. Read cards and tables in your terminal, or use the same structured results through CLI JSON, MCP, A2A and HTTP.
 
 | What you can do | How AgentEng helps |
 | --- | --- |
-| **Find your next event** | Browse events, speakers, talks, agendas and the day guide. |
-| **Explore the discipline** | Search tools, models and infrastructure across 12 disciplines, with source attribution. |
-| **Bring your coding agent** | Connect Codex, Claude Code or Cursor through MCP; use A2A or HTTP for other clients. |
-| **Make the most of event day** | Read the day guide and directions, follow the live now/next board and play talk bingo. |
+| **Find your next conference** | Browse London 2027 Builders Edition (`/london-2027`), San Francisco 2027 (`/san-francisco`), past talks, agendas and video recordings. |
+| **Learn all 14 disciplines** | Run `agenteng learn` for production practices, open protocols (MCP, A2A 1.0, ACP), matching conference talks and curated tools. |
+| **Explore the tool directory** | Search 456+ tools, models and infrastructure across 14 disciplines, with full source attribution. |
+| **Bring your coding agent** | Connect Claude Code, Codex, Cursor, Windsurf, VS Code, Gemini CLI, OpenCode or Cline through MCP, A2A 1.0 or ACP. |
 
 The catalogue is a snapshot. Follow official event and registration links for current details and ticket availability. See [data and attribution](docs/DATA.md).
 
@@ -86,16 +86,17 @@ To pin the installer to a release, pass the version to `sh`:
 curl -fsSL https://agentengineering.world/install.sh | AGENTENG_VERSION=0.0.29 sh
 ```
 
-### 2. Discover an event
+### 2. Discover an event or learn the discipline
 
 ```sh
 agenteng                            # interactive menu (TTY)
-agenteng discover                   # London / San Francisco overview
-agenteng events --upcoming
-agenteng event agenteng-london-2026
+agenteng discover                   # London / San Francisco 2027 overview
+agenteng events --upcoming          # London 2027 (17 Feb) & SF 2027 (29 Jun)
+agenteng event agenteng-london-2027 # London 2027 Builders Edition
+agenteng learn                      # 14-discipline learning hub
+agenteng learn harness              # Harness Engineering guide, talks & tools
 agenteng speakers --city London
-agenteng agenda agenteng-london-2026
-agenteng guide                      # London day guide
+agenteng gallery                    # London 2026 & SF video recordings
 ```
 
 Use the IDs returned by `agenteng events` to explore other published events. Run `agenteng --help` or `agenteng COMMAND --help` for options. The short alias `ae` also works: `ae talks` is equivalent to `agenteng talks`.
@@ -125,7 +126,7 @@ agenteng tool langgraph
 agenteng --json tools --discipline code --limit 25
 ```
 
-**The 12 disciplines:** Prompt · Context · Harness · Eval · Memory · Inference · Loop · Agentic · Code · Protocol · Graph · Search. `agenteng disciplines` also lists the site's Factory and Decision Engineering, which have no tool listings yet.
+**The 14 disciplines:** Prompt · Context · Harness · Eval · Memory · Inference · Loop · Agentic · Code · Protocol · Graph · Search · Factory · Decision. `agenteng learn` covers all 14 disciplines with production practices and matching conference talks; `agenteng tools` covers the 12 disciplines with directory listings.
 
 See the [tool directory guide](docs/TOOLS.md) for filters, pagination and attribution.
 
@@ -151,9 +152,15 @@ After installing `agenteng[server]`, add this to your client's MCP configuration
 For client-specific setup:
 
 ```sh
-agenteng connect codex
+agenteng connect all
 agenteng connect claude-code
+agenteng connect codex
 agenteng connect cursor
+agenteng connect windsurf
+agenteng connect vscode
+agenteng connect gemini-cli
+agenteng connect opencode
+agenteng connect cline
 ```
 
 See the [integration guide](docs/INTEGRATIONS.md) for local and hosted connections.
@@ -187,7 +194,7 @@ The same typed request works as an A2A JSON data part or an HTTP body. Request s
 <details>
 <summary><strong>Public operations across CLI, MCP, A2A and HTTP</strong></summary>
 
-Public operations (CLI, MCP, A2A, HTTP) include: `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `live`, `bingo`, `about`, `hq`, `guide`, `tickets`, `recordings`, `search`, `ask` and `participate`.
+Public operations (CLI, MCP, A2A, HTTP) include: `learn`, `disciplines`, `tools`, `tool`, `discover`, `events`, `event`, `agenda`, `speakers`, `speaker`, `talks`, `talk`, `gallery`, `faq`, `venue`, `sponsors`, `conduct`, `themes`, `now`, `next`, `live`, `bingo`, `about`, `hq`, `guide`, `tickets`, `recordings`, `a2a-talks`, `search`, `ask` and `participate`.
 
 Begin with `discover` for featured London/San Francisco events, or `events` for published IDs. Full command and flag reference: [docs/COMMANDS.md](docs/COMMANDS.md).
 

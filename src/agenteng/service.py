@@ -18,7 +18,13 @@ from .tool_directory import TOOL_OPERATIONS, ToolDirectory, load_tool_directory
 
 
 LONDON_ID = "agenteng-london-2026"
-EVENT_ALIASES = {"mongodb-london": "london-mongodb-2026"}
+EVENT_ALIASES = {
+    "mongodb-london": "london-mongodb-2026",
+    "london-2027": "agenteng-london-2027",
+    "london-2026": "agenteng-london-2026",
+    "sf-2027": "agenteng-sf-2027",
+    "san-francisco-2027": "agenteng-sf-2027",
+}
 # Renamed gallery slugs; the site redirects the old /gallery/<slug> pages too.
 OLD_GALLERY_SLUGS = {"sf-harness-engineering-2026-full-event": "sf-harness-engineering-2026-recap"}
 # "Will talks be recorded?", "Are the talks recorded?": the published FAQ answer.
@@ -552,13 +558,22 @@ class Service:
         if request.event_id:
             return request.event_id
         scoped = self.matching_events(request)
-        live = [e for e in scoped if self.state(e) in {"upcoming", "ongoing"} and e.start and e.end]
+        timed_ids = {s.event_id for s in self.catalogue.sessions if s.start and s.end}
+        live = [
+            e
+            for e in scoped
+            if self.state(e) in {"upcoming", "ongoing"} and e.start and e.end and e.id in timed_ids
+        ]
         if len(live) == 1:
             return live[0].id
         day = [
             e
             for e in scoped
-            if e.date_precision == "day" and e.start and e.end and self.state(e) != "cancelled"
+            if e.date_precision == "day"
+            and e.start
+            and e.end
+            and e.id in timed_ids
+            and self.state(e) != "cancelled"
         ]
         if len(day) == 1:
             return day[0].id
@@ -874,7 +889,7 @@ class Service:
                         f" Next in {ahead[0].city}: {ahead[0].title}, {long_date(ahead[0].date)}."
                     )
                 nxt = self.catalogue.site_links.next_event if self.catalogue.site_links else None
-                if nxt and nxt.name.casefold().endswith(request.city.casefold()):
+                if nxt and request.city.casefold() in nxt.name.casefold():
                     answer += f" {nxt.name} is {coming_label(nxt)}: {nxt.url}"
             return self.result(
                 answer,
@@ -922,6 +937,10 @@ class Service:
             )
         if request.operation == "a2a-talks":
             return self.a2a_talks_result(request.topic or request.query)
+        if request.operation == "learn":
+            from .learning import learn as learn_resources
+
+            return learn_resources(self, request)
         if request.operation == "ask":
             from .chat_context import focused_search, published_talk_answer
 
@@ -950,6 +969,25 @@ class Service:
             talk_answer = published_talk_answer(self, request)
             if talk_answer is not None:
                 return talk_answer
+            if (
+                not request.event_id
+                and not request.city
+                and query_terms
+                & {"learn", "learning", "tutorial", "resources", "guide", "practices"}
+                and not query_terms & {"day", "arriving", "doors", "venue", "lunch", "seating"}
+            ):
+                from .learning import DISCIPLINE_GUIDES
+
+                matched_disc = next(
+                    (d for d in DISCIPLINE_GUIDES if d in query_terms),
+                    None,
+                )
+                if matched_disc or query_terms & {"learn", "learning", "resources", "practices"}:
+                    return self.lookup(
+                        Request(
+                            operation="learn", discipline=matched_disc, query=matched_disc or ""
+                        )
+                    )
             if (
                 not request.event_id
                 and not request.city
@@ -1061,7 +1099,10 @@ class Service:
             if not city and re.search(r"\bsf\b", request.query.casefold()):
                 city = "San Francisco"
             scope = self.matching_events(request.model_copy(update={"city": city}))
-            current = [e for e in scope if self.state(e) in {"upcoming", "ongoing"}]
+            current = sorted(
+                (e for e in scope if self.state(e) in {"upcoming", "ongoing"}),
+                key=lambda e: (e.date, e.id),
+            )
             guide = self.default_conference()
             # Prefer the day-guide conference when it is in scope, even if the
             # question named the city and another meetup in that city is also upcoming.
@@ -1077,7 +1118,7 @@ class Service:
                 request.event_id
                 or (default.id if default else None)
                 or (recent.id if recent else None)
-                or (current[0].id if len(current) == 1 else None)
+                or (current[0].id if current and (len(current) == 1 or city) else None)
             )
             operation = None
             if query_terms & {
@@ -1152,7 +1193,9 @@ class Service:
         if request.operation in {"events", "event"}:
             rows = sorted(events, key=lambda e: (e.date, e.id))
             if request.latest and rows:
-                rows = [max(rows, key=lambda e: (e.date, e.id))]
+                held = [e for e in rows if self.state(e) in {"past", "ongoing"}]
+                pool = held or rows
+                rows = [max(pool, key=lambda e: (e.date, e.id))]
             rows = rows[: request.limit]
             return self.result(
                 f"{len(rows)} published event(s).",
@@ -1468,6 +1511,23 @@ class Service:
                 and not o.sold_out
                 and self.state(event) not in {"past", "cancelled"}
             ]
+            if event.registration_status == "coming_soon":
+                note = event.registration_note or "Early registration opening soon."
+                page = str(event.page_url) if event.page_url else "https://agentengineering.world"
+                return self.result(
+                    f"{event.title}: {note} Watch {page} for updates.",
+                    {
+                        "event_id": event.id,
+                        "registration_status": "coming_soon",
+                        "registration_note": note,
+                        "current_offers": [],
+                        "published_offers": [],
+                        "page_url": page,
+                        "state": self.state(event),
+                        "live_availability_verified": False,
+                    },
+                    event.source_ids,
+                )
             if event.registration_status == "fully_booked":
                 guide = self.catalogue.guide
                 past = self.state(event) == "past"
