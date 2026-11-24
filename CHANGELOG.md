@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.0.30 - 2026-11-24
+
+- Catalogue re-exported with the 2027 conference editions (14 published events, 51 FAQs): **Agent Engineering London 2027: Builders Edition** (`agenteng-london-2027`, 17 February 2027, Everyman Canary Wharf, `coming_soon`, limited spaces, speakers announcing soon) and **Agent Engineering San Francisco 2027** (`agenteng-sf-2027`, 29 June 2027, `coming_soon`), plus `london-2027`, `london-2026`, `sf-2027` and `san-francisco-2027` aliases.
+- Added the offline 14-discipline Learning Hub (`agenteng learn [DISCIPLINE]`, `{"operation": "learn"}` over MCP/A2A/HTTP, and the `agenteng-learn` A2A 1.0 skill) combining production primitives, open protocols (MCP, A2A 1.0, ACP, A2UI), matching conference talks/recordings, curated directory tools, further reading and links to upcoming 2027 conferences.
+- Expanded `agenteng connect` with `all`, `cli`, `windsurf`, `vscode`, `gemini-cli`, `opencode` and `cline` setup snippets alongside `a2a`, `mcp`, `acp`, `codex`, `claude-code`, `cursor` and `generic`, plus website CLI shortcuts (`conferences --next`, `conference --overview --london-2027`, `edition --builders`, `register --london-2027 --early`, `connect --protocol all`).
+- Updated `agenteng tools --discipline factory` and `decision` to return `status: "ok"` with direct pointers to `agenteng learn <discipline>`.
+- Fixed `default_live_event_id` to require published timed sessions, `events --latest` to select the most recently held event, and multi-upcoming-event city routing in `ask`.
+- Upgraded MCP instructions, A2A 1.0 card, hosted `/llms.txt` and discovery HTML for Agent Engine Optimization (AEO).
+
 ## 0.0.29 - 2026-11-22
 
 - Catalogue re-exported from site main 01239dd: Agents in Production at MongoDB (19 November 2026) is a past event at MongoDB UK, 240 Blackfriars Rd, with the published recording https://www.youtube.com/watch?v=Cn3t7ucLVcE, its event page at `/london/events/agents-in-production-at-mongodb`, and the four speakers plus talks and panel from the site.
